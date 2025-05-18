@@ -1,0 +1,40 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "tql",
+      "camelcase": "TQL",
+      "title": "Tenzir Query Language (TQL)",
+      "scope": "source.tql",
+      "file-types": [
+        "tql"
+      ],
+      "injection-regex": "^tql$",
+      "class-name": "TreeSitterTql"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "The Tenzir Query Language (TQL) is a pipeline-style dataflow language.",
+    "authors": [
+      {
+        "name": "Tenzir",
+        "email": "engineering@tenzir.com",
+        "url": "https://tenzir.com/"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/tenzir/tree-sitter-tql"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}
