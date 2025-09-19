@@ -1,0 +1,145 @@
+==================
+Empty pipeline
+==================
+
+
+
+---
+
+(program)
+
+==================
+Single operator
+==================
+
+version
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Single operator with arguments
+==================
+
+from file.csv
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))))
+
+==================
+Piped operators
+==================
+
+from stdin | where x > 0 | head 10
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))))))
+
+==================
+Newline-separated operators
+==================
+
+from file.json
+where status == "active"
+select user, timestamp
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))))

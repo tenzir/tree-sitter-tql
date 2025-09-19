@@ -1,0 +1,221 @@
+==================
+OCSF transformation example
+==================
+
+activity_name = "Launch"
+activity_id = 1
+actor.process = {
+  file: {
+    path: path,
+    parent_folder: std::path::parent(src.event_data.ParentImage),
+    name: std::path::file_name(src.event_data.ParentImage),
+    "type": "Unknown",
+    type_id: 0,
+  },
+  pid: int(src.event_data.ParentProcessId),
+}
+drop src.event_data.ParentImage, src.event_data.ParentProcessId
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)
+            (identifier)))
+        (expression
+          (primary_expression
+            (record
+              (record_field
+                (identifier)
+                (expression
+                  (primary_expression
+                    (record
+                      (record_field
+                        (identifier)
+                        (expression
+                          (primary_expression
+                            (identifier))))
+                      (record_field
+                        (identifier)
+                        (expression
+                          (call_expression
+                            (entity
+                              (identifier)
+                              (identifier)
+                              (identifier))
+                            (call_argument
+                              (expression
+                                (member_expression
+                                  (expression
+                                    (member_expression
+                                      (expression
+                                        (primary_expression
+                                          (identifier)))
+                                      (identifier)))
+                                  (identifier)))))))
+                      (record_field
+                        (identifier)
+                        (expression
+                          (call_expression
+                            (entity
+                              (identifier)
+                              (identifier)
+                              (identifier))
+                            (call_argument
+                              (expression
+                                (member_expression
+                                  (expression
+                                    (member_expression
+                                      (expression
+                                        (primary_expression
+                                          (identifier)))
+                                      (identifier)))
+                                  (identifier)))))))
+                      (record_field
+                        (string)
+                        (expression
+                          (primary_expression
+                            (literal
+                              (string)))))
+                      (record_field
+                        (identifier)
+                        (expression
+                          (primary_expression
+                            (literal
+                              (number)))))))))
+              (record_field
+                (identifier)
+                (expression
+                  (call_expression
+                    (entity
+                      (identifier))
+                    (call_argument
+                      (expression
+                        (member_expression
+                          (expression
+                            (member_expression
+                              (expression
+                                (primary_expression
+                                  (identifier)))
+                              (identifier)))
+                          (identifier))))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (member_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (identifier)))
+                (identifier))))
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (member_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (identifier)))
+                (identifier)))))))))
+
+==================
+Pipeline with if-else
+==================
+
+from file
+if this.type == "important" {
+  enrich important_data
+  publish kafka
+} else {
+  compress
+  save backup
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression))
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier))
+              (arguments
+                (argument
+                  (expression
+                    (primary_expression
+                      (identifier)))))))
+          (statement
+            (invocation
+              (entity
+                (identifier))
+              (arguments
+                (argument
+                  (expression
+                    (primary_expression
+                      (identifier))))))))
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier))))
+          (statement
+            (invocation
+              (entity
+                (identifier))
+              (arguments
+                (argument
+                  (expression
+                    (primary_expression
+                      (identifier))))))))))))

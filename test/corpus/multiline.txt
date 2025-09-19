@@ -1,0 +1,90 @@
+==================
+Multiline operator with commas
+==================
+
+a b,
+  c,
+  d, e
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+==================
+Backslash continuation
+==================
+
+h \
+  i,
+  j\
+  ,k
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+==================
+Operator continuation with binary operator
+==================
+
+l m +
+  n
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))

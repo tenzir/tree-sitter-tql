@@ -1,0 +1,150 @@
+==================
+Group with pipeline
+==================
+
+group count {
+  head $group.count
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))
+                arguments: (arguments
+                  (argument
+                    (expression
+                      (member_expression
+                        (expression
+                          (primary_expression
+                            (dollar_var)))
+                        (identifier)))))))))))))
+
+==================
+Group with let statement
+==================
+
+let $foo = 42
+group count {
+  head $group.count
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        name: (dollar_var)
+        value: (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))
+                arguments: (arguments
+                  (argument
+                    (expression
+                      (member_expression
+                        (expression
+                          (primary_expression
+                            (dollar_var)))
+                        (identifier)))))))))))))
+
+==================
+Aggregate function
+==================
+
+summarize total=sum(amount)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (assignment
+              left: (selector
+                (field_selector
+                  (identifier)))
+              right: (expression
+                (call_expression
+                  (entity
+                    (identifier))
+                  (call_argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))))
+
+==================
+Multiple aggregations
+==================
+
+summarize total=sum(amount), avg=mean(value)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (assignment
+              left: (selector
+                (field_selector
+                  (identifier)))
+              right: (expression
+                (call_expression
+                  (entity
+                    (identifier))
+                  (call_argument
+                    (expression
+                      (primary_expression
+                        (identifier))))))))
+          (argument
+            (assignment
+              left: (selector
+                (field_selector
+                  (identifier)))
+              right: (expression
+                (call_expression
+                  (entity
+                    (identifier))
+                  (call_argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))))

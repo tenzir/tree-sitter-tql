@@ -1,0 +1,238 @@
+==================
+Let statement
+==================
+
+let $foo = 42
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==================
+Multiple let statements
+==================
+
+let $foo = 42
+let $bar = now()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (call_expression
+            (entity
+              (identifier))))))))
+
+==================
+Let with dependency
+==================
+
+let $foo = 42
+let $bar = $foo + 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (dollar_var)))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))))))
+
+==================
+Simple if statement
+==================
+
+if b == 42 {
+  c d
+  e f=g
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier))
+              (arguments
+                (argument
+                  (expression
+                    (primary_expression
+                      (identifier)))))))
+          (statement
+            (invocation
+              (entity
+                (identifier))
+              (arguments
+                (argument
+                  (assignment
+                    (selector
+                      (field_selector
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))))
+
+==================
+If-else statement
+==================
+
+if i {} else {}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (primary_expression
+            (identifier)))))))
+
+==================
+Match statement empty
+==================
+
+match k {}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))))))
+
+==================
+Match with single arm
+==================
+
+match k { "foo" => { bar } }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (match_arm
+          (expression
+            (primary_expression
+              (literal
+                (string))))
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))))))))))
+
+==================
+Match with multiple arms
+==================
+
+match k {
+  "foo" => {
+    bar
+  }
+  42 => {
+    foo bar
+    qux bar
+  }
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (match_arm
+          (expression
+            (primary_expression
+              (literal
+                (string))))
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))))))
+        (match_arm
+          (expression
+            (primary_expression
+              (literal
+                (number))))
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))))

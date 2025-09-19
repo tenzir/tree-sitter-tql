@@ -1,0 +1,168 @@
+==================
+Simple assignment
+==================
+
+a = b()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))))))))
+
+==================
+Assignment with function arguments
+==================
+
+a = b(c)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (identifier))))))))))
+
+==================
+Assignment with named argument
+==================
+
+a = b(c=d)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Assignment with mixed arguments
+==================
+
+a = b(c, d=e)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (identifier))))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Field path assignment
+==================
+
+foo.bar = 42
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==================
+Meta selector assignment
+==================
+
+@tag = "value"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (meta_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+==================
+Assignment in operator context
+==================
+
+foo a.b()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (call_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (entity
+                  (identifier))))))))))

@@ -1,0 +1,203 @@
+==================
+IPv4 subnet
+==================
+
+from {
+  x: 1.2.3.4/24
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet))))))))))))))
+
+==================
+IPv6 subnet with prefix
+==================
+
+from {
+  z: ::ffff:1.2.3.4/120
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet))))))))))))))
+
+==================
+IPv6 subnet short form
+==================
+
+from {
+  y: ::/1
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet))))))))))))))
+
+==================
+Multiple subnet types
+==================
+
+from {
+  x: 1.2.3.4/24,
+  z: ::ffff:1.2.3.4/120,
+  y: ::/1,
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (subnet))))))))))))))
+
+==================
+IPv4 address
+==================
+
+where src == 192.168.1.1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (ip))))))))))))
+
+==================
+IPv6 address full form
+==================
+
+where src == 2001:0db8:0000:0000:0000:0000:0000:0001
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (ip))))))))))))
+
+==================
+IPv6 address short form
+==================
+
+where src == ::1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (ip))))))))))))

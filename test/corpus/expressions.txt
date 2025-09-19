@@ -1,0 +1,290 @@
+==================
+Binary expression precedence
+==================
+
+where 1 + 2 * 3
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Comparison operators
+==================
+
+where x > 0 and y < 10
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Logical operators with parentheses
+==================
+
+where (x or y) and z
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (expression
+                      (binary_expression
+                        (expression
+                          (primary_expression
+                            (identifier)))
+                        (expression
+                          (primary_expression
+                            (identifier)))))))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Field access
+==================
+
+select user.name
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))))
+
+==================
+Optional field access
+==================
+
+select user.?email
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))))
+
+==================
+Index access
+==================
+
+select items[0]
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (index_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+This expression
+==================
+
+where this.status == "active"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (member_expression
+                    (expression
+                      (primary_expression))
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))))))
+
+==================
+Underscore placeholder
+==================
+
+map _ + 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+Unary operators
+==================
+
+where not active and -balance > 0
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (unary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))))
+                (expression
+                  (binary_expression
+                    (expression
+                      (unary_expression
+                        (expression
+                          (primary_expression
+                            (identifier)))))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Lambda expression
+==================
+
+map x => x + 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (lambda_expression
+                (identifier)
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))

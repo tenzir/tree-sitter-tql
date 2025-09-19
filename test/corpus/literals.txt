@@ -1,0 +1,310 @@
+==================
+Null literal
+==================
+
+select null
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal)))))))))
+
+==================
+Boolean literals
+==================
+
+where active == true and disabled == false
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal)))))
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal)))))))))))))
+
+==================
+Integer literals
+==================
+
+select 0, 42, -100
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+Float literals
+==================
+
+select 3.14, 0.5, -2.718
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+String literals
+==================
+
+select "hello", 'world', "with \"quotes\""
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+List literal
+==================
+
+select [1, 2, 3]
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (list
+                  (expression
+                    (primary_expression
+                      (literal
+                        (number))))
+                  (expression
+                    (primary_expression
+                      (literal
+                        (number))))
+                  (expression
+                    (primary_expression
+                      (literal
+                        (number)))))))))))))
+
+==================
+Record literal
+==================
+
+select {foo: "bar", count: 42}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Duration literals
+==================
+
+every 5s
+delay 10min
+timeout 1h
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (duration))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (duration))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (duration))))))))))
+
+==================
+IP address literal
+==================
+
+where ip == 192.168.1.1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (ip))))))))))))
+
+==================
+Subnet literal
+==================
+
+where subnet == 10.0.0.0/8
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (subnet))))))))))))

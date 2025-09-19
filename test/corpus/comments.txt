@@ -1,0 +1,141 @@
+==================
+Single-line comment
+==================
+
+// This is a comment
+version
+
+---
+
+(program
+  (comment)
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Multiple single-line comments
+==================
+
+// First comment
+from file.csv
+// Second comment
+where x > 0
+
+---
+
+(program
+  (comment)
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))
+    (comment)
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+Block comment
+==================
+
+/* This is a
+   multi-line comment */
+version
+
+---
+
+(program
+  (comment)
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Inline block comment
+==================
+
+from /* source */ file.csv
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (comment)
+        (arguments
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))))
+
+==================
+Comments in control flow
+==================
+
+if x == 42 {
+  // Comment in if block
+  foo
+} else {
+  /* Comment in else block */
+  bar
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))
+        (comment)
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier)))))
+        (comment)
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier)))))))))

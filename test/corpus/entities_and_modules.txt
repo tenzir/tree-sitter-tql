@@ -1,0 +1,153 @@
+==================
+Simple entity
+==================
+
+version
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Module path entity
+==================
+
+std::path::parent "/path/to/file"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier)
+          (identifier)
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+Entity with parenthesized arguments
+==================
+
+filter(x > 0)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Entity with non-parenthesized arguments
+==================
+
+filter x > 0
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+Mixed entity forms in pipeline
+==================
+
+std::source::file "data.json"
+| parse json
+| filter status == "active"
+| std::sink::file "output.csv"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier)
+          (identifier)
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier)
+          (identifier)
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))

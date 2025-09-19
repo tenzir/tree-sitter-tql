@@ -1,0 +1,12 @@
+// This is a line comment
+export
+
+/* This is a
+   multi-line comment */
+from file foo.txt
+
+// Another comment
+where x > 0 // inline comment
+
+/* Nested /* comment */ test */
+export

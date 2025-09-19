@@ -1,0 +1,115 @@
+==================
+Empty pipeline
+==================
+
+---
+
+(program)
+
+==================
+Single operator
+==================
+
+version
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Operator with single argument
+==================
+
+where x > 0
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+Simple assignment
+==================
+
+a = b()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))))))))
+
+==================
+Let statement
+==================
+
+let $foo = 42
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var)
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==================
+Simple if statement
+==================
+
+if x == 42 {
+  foo
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))
+        (pipeline
+          (statement
+            (invocation
+              (entity
+                (identifier)))))))))
