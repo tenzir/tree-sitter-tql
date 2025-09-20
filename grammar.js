@@ -24,9 +24,7 @@ module.exports = grammar({
 
   conflicts: ($) => [
     // These are necessary conflicts
-
     [$.record],
-
     [$.pipeline_block, $.pipeline_expr], // Both are '{' pipeline '}'
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
