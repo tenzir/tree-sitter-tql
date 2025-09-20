@@ -127,7 +127,7 @@ foo.bar = 42
 Meta selector assignment
 ==================
 
-@tag = "value"
+@name = "value"
 
 ---
 
