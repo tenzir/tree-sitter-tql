@@ -283,6 +283,46 @@ select 2024-06-15T14:30:45.123456, 2100-01-01, 2025-01-02T00:00:00Z, 2023-02-20T
                   (time))))))))))
 
 ==================
+Format string literals
+==================
+
+select f"pre {foo.bar[0]} post", f"{{}}"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (format_expr
+                  (format_text)
+                  (format_replacement
+                    (expression
+                      (index_expression
+                        (expression
+                          (member_expression
+                            (expression
+                              (primary_expression
+                                (identifier)))
+                            (identifier)))
+                        (expression
+                          (primary_expression
+                            (literal
+                              (number)))))))
+                  (format_text)))))
+          (argument
+            (expression
+              (primary_expression
+                (format_expr
+                  (format_text))))))))))
+
+==================
 List literal
 ==================
 

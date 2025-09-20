@@ -25,7 +25,6 @@ module.exports = grammar({
   conflicts: ($) => [
     // These are necessary conflicts
     [$.record],
-    [$.pipeline_block, $.pipeline_expr], // Both are '{' pipeline '}'
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
@@ -142,11 +141,13 @@ module.exports = grammar({
         seq(
           optional(seq("this", ".")),
           $.identifier,
-          repeat(seq(".", $.identifier)),
+          optional("?"),
+          repeat(seq(".", $.identifier, optional("?"))),
         ),
       ),
 
-    entity: ($) => sep1($.identifier, "::"),
+    entity: ($) =>
+      seq($.identifier, repeat(seq(alias($.module_separator, "::"), $.identifier))),
 
     arguments: ($) => commaSep1($.argument),
 
@@ -186,13 +187,14 @@ module.exports = grammar({
     primary_expression: ($) =>
       choice(
         $.literal,
+        $.format_expr,
         $.identifier,
         $.dollar_var,
+        $.meta_selector,
         "this",
         "_",
         $.list,
         $.record,
-        $.pipeline_expr,
         seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
       ),
 
@@ -245,7 +247,7 @@ module.exports = grammar({
     // Unary operators
     unary_expression: ($) =>
       choice(
-        prec(5, seq("not", $.expression)),
+        prec(5, seq(choice("not", "move"), $.expression)),
         prec(9, seq(choice("+", "-"), $.expression)),
       ),
 
@@ -254,7 +256,7 @@ module.exports = grammar({
       prec.left(
         11,
         choice(
-          seq($.expression, ".", $.identifier),
+          seq($.expression, ".", $.identifier, optional("?")),
           seq($.expression, ".?", $.identifier),
         ),
       ),
@@ -293,6 +295,27 @@ module.exports = grammar({
         ),
       ),
 
+    format_expr: ($) =>
+      seq(
+        token(seq("f", '"')),
+        repeat(choice($.format_text, $.format_replacement)),
+        token.immediate('"'),
+      ),
+
+    format_text: ($) =>
+      prec.right(
+        repeat1(
+          choice(
+            token.immediate(/[^{"\\]+/),
+            token.immediate("{{"),
+            token.immediate("}}"),
+            token.immediate(/\\./),
+          ),
+        ),
+      ),
+
+    format_replacement: ($) => seq("{", $.expression, "}"),
+
     // Lambda expression
     lambda_expression: ($) =>
       prec.right(2, seq($.identifier, "=>", $.expression)),
@@ -322,9 +345,6 @@ module.exports = grammar({
         repeat("\n"),
         "}",
       ),
-
-    // Nested pipeline expression: { pipeline }
-    pipeline_expr: ($) => seq("{", repeat("\n"), $.pipeline, repeat("\n"), "}"),
 
     record_field: ($) =>
       seq(
@@ -374,6 +394,8 @@ module.exports = grammar({
         token(rawStringRegex("br")),
       ),
 
+    module_separator: (_) => token(prec(1, "::")),
+
     ip: ($) =>
       token(
         choice(
@@ -386,7 +408,7 @@ module.exports = grammar({
           /::([0-9a-fA-F]{1,4}:)+[0-9a-fA-F]{1,4}/, // At least one group before the final segment
           /::[0-9a-fA-F]{2,4}/, // Or at least 2 hex digits after ::
           /([0-9a-fA-F]{1,4}:){1,7}:/,
-          /::/, // IPv6 unspecified address
+          prec(-1, "::"), // IPv6 unspecified address
           // IPv4-mapped IPv6
           /::ffff:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,
           // Other compressed forms
