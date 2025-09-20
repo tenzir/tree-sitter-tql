@@ -209,7 +209,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "identifier",
@@ -399,6 +399,10 @@
         },
         {
           "type": "subnet",
+          "named": true
+        },
+        {
+          "type": "time",
           "named": true
         }
       ]
@@ -747,14 +751,6 @@
     "named": false
   },
   {
-    "type": "\"",
-    "named": false
-  },
-  {
-    "type": "'",
-    "named": false
-  },
-  {
     "type": "(",
     "named": false
   },
@@ -828,6 +824,10 @@
   },
   {
     "type": ">=",
+    "named": false
+  },
+  {
+    "type": "?",
     "named": false
   },
   {
@@ -914,6 +914,10 @@
   {
     "type": "this",
     "named": false
+  },
+  {
+    "type": "time",
+    "named": true
   },
   {
     "type": "true",

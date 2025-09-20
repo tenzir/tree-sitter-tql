@@ -151,6 +151,138 @@ select "hello", "world", "with \"quotes\""
                   (string))))))))))
 
 ==================
+Blob string literals
+==================
+
+select b"foo", b"\x41", b"multi
+line"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+Raw string literals
+==================
+
+select r"raw\nvalue", r#"with ""quotes"""#, r"first line
+second line"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+Raw blob string literals
+==================
+
+select br"raw\nblob", br#"hash # value"#, br"line1
+line2"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+Time literals
+==================
+
+select 2024-06-15T14:30:45.123456, 2100-01-01, 2025-01-02T00:00:00Z, 2023-02-20T12:34:56+02:00
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (time)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (time)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (time)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (time))))))))))
+
+==================
 List literal
 ==================
 

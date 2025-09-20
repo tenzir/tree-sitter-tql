@@ -88,3 +88,42 @@ l m +
                 (expression
                   (primary_expression
                     (identifier)))))))))))
+
+==================
+Parenthesized arguments with leading newline
+==================
+
+from (
+  {x: 1},
+  {y: 2}
+)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier))
+        arguments: (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    key: (identifier)
+                    value: (expression
+                      (primary_expression
+                        (literal
+                          (number)))))))))
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    key: (identifier)
+                    value: (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))

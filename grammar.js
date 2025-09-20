@@ -28,6 +28,7 @@ module.exports = grammar({
     [$.pipeline_block, $.pipeline_expr], // Both are '{' pipeline '}'
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
+    [$.argument, $.primary_expression],
   ],
 
   rules: {
@@ -111,7 +112,12 @@ module.exports = grammar({
     invocation: ($) =>
       seq(
         field("operator", $.entity),
-        optional(field("arguments", $.arguments)),
+        optional(
+          field(
+            "arguments",
+            choice(alias($.parenthesized_arguments, $.arguments), $.arguments),
+          ),
+        ),
         optional($.pipeline_block),
       ),
 
@@ -131,15 +137,31 @@ module.exports = grammar({
     meta_selector: ($) => seq("@", $.identifier),
 
     field_selector: ($) =>
-      seq(
-        optional(seq("this", ".")),
-        $.identifier,
-        repeat(seq(".", $.identifier)),
+      choice(
+        "this",
+        seq(
+          optional(seq("this", ".")),
+          $.identifier,
+          repeat(seq(".", $.identifier)),
+        ),
       ),
 
     entity: ($) => sep1($.identifier, "::"),
 
     arguments: ($) => commaSep1($.argument),
+
+    parenthesized_arguments: ($) =>
+      prec.dynamic(
+        1,
+        seq(
+          "(",
+          repeat1("\n"),
+          commaSep1($.argument),
+          optional(seq(repeat("\n"), ",")),
+          repeat("\n"),
+          ")",
+        ),
+      ),
 
     // Arguments can be expressions or assignments (for named arguments)
     argument: ($) =>
@@ -171,7 +193,7 @@ module.exports = grammar({
         $.list,
         $.record,
         $.pipeline_expr,
-        seq("(", $.expression, ")"),
+        seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
       ),
 
     literal: ($) =>
@@ -183,6 +205,7 @@ module.exports = grammar({
         $.string,
         $.ip,
         $.subnet,
+        $.time,
         $.duration,
       ),
 
@@ -238,13 +261,13 @@ module.exports = grammar({
 
     // Index access
     index_expression: ($) =>
-      prec.left(11, seq($.expression, "[", $.expression, "]")),
+      prec.left(11, seq($.expression, "[", $.expression, "]", optional("?"))),
 
     // Function calls
     call_expression: ($) =>
       choice(
         // Regular function call: foo()
-        seq($.entity, "(", commaSep($.call_argument), ")"),
+        seq($.entity, "(", commaSep($.call_argument), repeat("\n"), ")"),
         // Method call (UFCS): a.b()
         prec(
           12,
@@ -254,6 +277,7 @@ module.exports = grammar({
             field("method", $.entity),
             "(",
             commaSep($.call_argument),
+            repeat("\n"),
             ")",
           ),
         ),
@@ -261,9 +285,12 @@ module.exports = grammar({
 
     // Arguments in function calls can be assignments or expressions
     call_argument: ($) =>
-      choice(
-        $.assignment, // Named argument: foo=bar
-        $.expression,
+      seq(
+        repeat("\n"),
+        choice(
+          $.assignment, // Named argument: foo=bar
+          $.expression,
+        ),
       ),
 
     // Lambda expression
@@ -341,8 +368,10 @@ module.exports = grammar({
 
     string: ($) =>
       choice(
-        seq('"', repeat(choice(/[^"\\]+/, /\\./)), '"'),
-        seq("'", repeat(choice(/[^'\\]+/, /\\./)), "'"),
+        token(seq(optional("b"), '"', repeat(choice(/[^"\\]/, /\\./)), '"')),
+        token(seq(optional("b"), "'", repeat(choice(/[^'\\]/, /\\./)), "'")),
+        token(rawStringRegex("r")),
+        token(rawStringRegex("br")),
       ),
 
     ip: ($) =>
@@ -357,7 +386,7 @@ module.exports = grammar({
           /::([0-9a-fA-F]{1,4}:)+[0-9a-fA-F]{1,4}/, // At least one group before the final segment
           /::[0-9a-fA-F]{2,4}/, // Or at least 2 hex digits after ::
           /([0-9a-fA-F]{1,4}:){1,7}:/,
-          // Note: standalone :: removed to avoid conflict with module paths
+          /::/, // IPv6 unspecified address
           // IPv4-mapped IPv6
           /::ffff:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,
           // Other compressed forms
@@ -383,10 +412,44 @@ module.exports = grammar({
         ),
       ),
 
+    time: ($) =>
+      token(
+        seq(
+          /\d{4}-\d{2}-\d{2}/,
+          optional(
+            seq(
+              "T",
+              /\d{2}:\d{2}:\d{2}/,
+              optional(seq(".", /\d{1,9}/)),
+              optional(choice("Z", seq(/[+-]\d{2}:\d{2}/))),
+            ),
+          ),
+        ),
+      ),
+
     duration: ($) =>
       /\d+(ns|us|ms|s|sec|seconds?|m|min|minutes?|h|hr|hours?|d|days?|w|weeks?|y|years?)/,
   },
 });
+
+function rawStringRegex(prefix, maxHashes = 8) {
+  const variants = [];
+  variants.push(`${prefix}"[^"]*"`);
+  for (let i = 1; i <= maxHashes; i += 1) {
+    const hashes = "#".repeat(i);
+    const allowedQuotes = [];
+    for (let k = 0; k < i; k += 1) {
+      const innerHashes = "#".repeat(k);
+      allowedQuotes.push(`"${innerHashes}[^#]`);
+    }
+    const baseChar = '[^\"]';
+    const body = allowedQuotes.length
+      ? `${baseChar}|${allowedQuotes.join("|")}`
+      : baseChar;
+    variants.push(`${prefix}${hashes}"(?:${body})*"${hashes}`);
+  }
+  return new RegExp(`(?:${variants.join("|")})`);
+}
 
 // Helper functions for common grammar patterns
 
