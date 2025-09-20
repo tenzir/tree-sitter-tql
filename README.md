@@ -109,38 +109,6 @@ pnpm tree-sitter playground
 
 This opens a web interface where you can input TQL code and see the parse tree in real-time.
 
-## Examples
-
-### Basic Pipeline
-
-```tql
-from file, data.json
-| where status == "active"
-| select user, timestamp
-| sort timestamp desc
-```
-
-### Control Flow
-
-```tql
-if severity == "critical" {
-  alert
-  exit 1
-} else {
-  log "Non-critical event"
-}
-```
-
-### Complex Assignment
-
-```tql
-result = {
-  total: count(),
-  average: sum(value) / count(),
-  items: collect(name)
-}
-```
-
 ## Language Support
 
 ### Editor Integration
