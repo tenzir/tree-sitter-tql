@@ -215,6 +215,132 @@ select {foo: "bar", count: 42}
                           (number))))))))))))))
 
 ==================
+SI suffix numbers
+==================
+
+select 1Mi, 2.5k, -3Gi
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (number)))))
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))
+
+==================
+List spread literal
+==================
+
+select [...items, 3]
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (list
+                  (spread
+                    (expression
+                      (primary_expression
+                        (identifier))))
+                  (expression
+                    (primary_expression
+                      (literal
+                        (number)))))))))))))
+
+==================
+Record spread literal
+==================
+
+select {...base, count: 2}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (spread
+                    (expression
+                      (primary_expression
+                        (identifier))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
+Multiline record literal
+==================
+
+select {
+  foo: 1,
+  bar: 2,
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+==================
 Duration literals
 ==================
 

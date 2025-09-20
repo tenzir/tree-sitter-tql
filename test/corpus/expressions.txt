@@ -173,6 +173,30 @@ select items[0]
                       (number))))))))))))
 
 ==================
+Dynamic index access
+==================
+
+z = x[y]
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (index_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+==================
 This expression
 ==================
 
@@ -259,6 +283,30 @@ where not active and -balance > 0
                       (primary_expression
                         (literal
                           (number))))))))))))))
+
+==================
+Function call with null argument
+==================
+
+x = ip(null)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (literal))))))))))
 
 ==================
 Lambda expression

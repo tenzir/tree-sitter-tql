@@ -314,7 +314,30 @@ module.exports = grammar({
 
     dollar_var: ($) => /\$[a-zA-Z_][a-zA-Z0-9_]*/,
 
-    number: ($) => /\d+(\.\d+)?([eE][+-]?\d+)?/,
+    number: ($) =>
+      token(
+        seq(
+          /\d+(?:_\d+)*/,
+          optional(seq(".", /\d+(?:_\d+)*/)),
+          optional(seq(/[eE]/, optional(choice("+", "-")), /\d+(?:_\d+)*/)),
+          optional(
+            choice(
+              "k",
+              "M",
+              "G",
+              "T",
+              "P",
+              "E",
+              "Ki",
+              "Mi",
+              "Gi",
+              "Ti",
+              "Pi",
+              "Ei",
+            ),
+          ),
+        ),
+      ),
 
     string: ($) =>
       choice(
