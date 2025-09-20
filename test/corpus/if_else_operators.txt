@@ -1,0 +1,124 @@
+================================================================================
+If binary operator
+================================================================================
+
+x = a if b
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+================================================================================
+Else binary operator
+================================================================================
+
+x = a else b
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+================================================================================
+Combined if-else expression
+================================================================================
+
+result = default else value if condition
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+================================================================================
+If-else with other operators
+================================================================================
+
+x = (a + b) if c > 0 else d * 2
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (expression
+                      (binary_expression
+                        (expression
+                          (primary_expression
+                            (identifier)))
+                        (expression
+                          (primary_expression
+                            (identifier)))))))
+                (expression
+                  (binary_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))))

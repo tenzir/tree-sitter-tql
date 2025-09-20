@@ -1,0 +1,80 @@
+================================================================================
+In operator in assignment
+================================================================================
+
+result = x in y
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+================================================================================
+Not in operator in assignment
+================================================================================
+
+result = x not in y
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (expression
+              (primary_expression
+                (identifier)))))))))
+
+================================================================================
+Complex in expression
+================================================================================
+
+where status in ["active", "pending"]
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (list
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string))))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string)))))))))))))))
