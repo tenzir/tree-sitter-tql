@@ -10,6 +10,7 @@ on:
       - bindings/**
       - examples/**
       - tree-sitter.json
+      - .github/workflows/**
   pull_request:
     paths:
       - grammar.js
@@ -18,6 +19,7 @@ on:
       - bindings/**
       - examples/**
       - tree-sitter.json
+      - .github/workflows/**
   workflow_dispatch:
 
 concurrency:
