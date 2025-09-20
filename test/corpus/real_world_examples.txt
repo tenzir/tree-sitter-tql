@@ -166,16 +166,16 @@ if this.type == "important" {
   (pipeline
     (statement
       (invocation
-        (entity
+        operator: (entity
           (identifier))
-        (arguments
+        arguments: (arguments
           (argument
             (expression
               (primary_expression
                 (identifier)))))))
     (statement
       (if_statement
-        (expression
+        condition: (expression
           (binary_expression
             (expression
               (member_expression
@@ -186,36 +186,38 @@ if this.type == "important" {
               (primary_expression
                 (literal
                   (string))))))
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier))
-              (arguments
-                (argument
-                  (expression
-                    (primary_expression
-                      (identifier)))))))
-          (statement
-            (invocation
-              (entity
-                (identifier))
-              (arguments
-                (argument
-                  (expression
-                    (primary_expression
-                      (identifier))))))))
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier))))
-          (statement
-            (invocation
-              (entity
-                (identifier))
-              (arguments
-                (argument
-                  (expression
-                    (primary_expression
-                      (identifier))))))))))))
+        consequence: (then_block
+          body: (pipeline
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))
+                arguments: (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))
+                arguments: (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))
+        alternative: (else_block
+          body: (pipeline
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))))
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))
+                arguments: (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))))

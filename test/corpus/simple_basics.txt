@@ -108,8 +108,9 @@ if x == 42 {
               (primary_expression
                 (literal
                   (number))))))
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier)))))))))
+        (then_block
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))))))))))

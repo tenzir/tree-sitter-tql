@@ -131,15 +131,17 @@ if x == 42 {
               (primary_expression
                 (literal
                   (number))))))
-        (comment)
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier)))))
-        (comment)
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier)))))))))
+        (then_block
+          (comment)
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))))))
+        (else_block
+          (comment)
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))))))))))
