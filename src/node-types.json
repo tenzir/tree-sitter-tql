@@ -134,6 +134,22 @@
     }
   },
   {
+    "type": "else_block",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "pipeline",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "entity",
     "named": true,
     "fields": {},
@@ -211,7 +227,11 @@
         "required": false,
         "types": [
           {
-            "type": "pipeline",
+            "type": "else_block",
+            "named": true
+          },
+          {
+            "type": "if_statement",
             "named": true
           }
         ]
@@ -228,24 +248,14 @@
       },
       "consequence": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
-            "type": "pipeline",
+            "type": "then_block",
             "named": true
           }
         ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "if_statement",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -696,6 +706,22 @@
     "type": "subnet",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "then_block",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "pipeline",
+            "named": true
+          }
+        ]
+      }
+    }
   },
   {
     "type": "unary_expression",

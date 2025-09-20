@@ -97,29 +97,30 @@ if b == 42 {
               (primary_expression
                 (literal
                   (number))))))
-        (pipeline
-          (statement
-            (invocation
-              (entity
-                (identifier))
-              (arguments
-                (argument
-                  (expression
-                    (primary_expression
-                      (identifier)))))))
-          (statement
-            (invocation
-              (entity
-                (identifier))
-              (arguments
-                (argument
-                  (assignment
-                    (selector
-                      (field_selector
-                        (identifier)))
+        (then_block
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
                     (expression
                       (primary_expression
-                        (identifier)))))))))))))
+                        (identifier)))))))
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (assignment
+                      (selector
+                        (field_selector
+                          (identifier)))
+                      (expression
+                        (primary_expression
+                          (identifier))))))))))))))
 
 ==================
 If-else statement
@@ -135,7 +136,9 @@ if i {} else {}
       (if_statement
         (expression
           (primary_expression
-            (identifier)))))))
+            (identifier)))
+        (then_block)
+        (else_block)))))
 
 ==================
 Match statement empty

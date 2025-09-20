@@ -79,21 +79,13 @@ module.exports = grammar({
         seq(
           "if",
           field("condition", $.expression),
-          "{",
-          repeat("\n"),
-          field("consequence", optional($.pipeline)),
-          "}",
+          field("consequence", alias($.block, $.then_block)),
           optional(
             seq(
               "else",
-              choice(
-                $.if_statement,
-                seq(
-                  "{",
-                  repeat("\n"),
-                  field("alternative", optional($.pipeline)),
-                  "}",
-                ),
+              field(
+                "alternative",
+                choice($.if_statement, alias($.block, $.else_block)),
               ),
             ),
           ),
@@ -124,6 +116,8 @@ module.exports = grammar({
       ),
 
     pipeline_block: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
+
+    block: ($) => seq("{", repeat("\n"), field("body", optional($.pipeline)), "}"),
 
     assignment: ($) =>
       prec.right(

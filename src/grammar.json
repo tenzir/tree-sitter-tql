@@ -203,35 +203,17 @@
             }
           },
           {
-            "type": "STRING",
-            "value": "{"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "STRING",
-              "value": "\n"
-            }
-          },
-          {
             "type": "FIELD",
             "name": "consequence",
             "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "pipeline"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "block"
+              },
+              "named": true,
+              "value": "then_block"
             }
-          },
-          {
-            "type": "STRING",
-            "value": "}"
           },
           {
             "type": "CHOICE",
@@ -244,49 +226,26 @@
                     "value": "else"
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "if_statement"
-                      },
-                      {
-                        "type": "SEQ",
-                        "members": [
-                          {
-                            "type": "STRING",
-                            "value": "{"
+                    "type": "FIELD",
+                    "name": "alternative",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "if_statement"
+                        },
+                        {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "block"
                           },
-                          {
-                            "type": "REPEAT",
-                            "content": {
-                              "type": "STRING",
-                              "value": "\n"
-                            }
-                          },
-                          {
-                            "type": "FIELD",
-                            "name": "alternative",
-                            "content": {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "pipeline"
-                                },
-                                {
-                                  "type": "BLANK"
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "type": "STRING",
-                            "value": "}"
-                          }
-                        ]
-                      }
-                    ]
+                          "named": true,
+                          "value": "else_block"
+                        }
+                      ]
+                    }
                   }
                 ]
               },
@@ -480,6 +439,42 @@
         {
           "type": "SYMBOL",
           "name": "pipeline"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "STRING",
+            "value": "\n"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "body",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "pipeline"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
         },
         {
           "type": "STRING",
