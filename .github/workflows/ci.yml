@@ -67,7 +67,7 @@ jobs:
         uses: tree-sitter/parser-test-action@v2
         with:
           test-rust: true
-          test-node: false
+          test-node: true
           test-python: true
           test-go: true
           test-swift: false
@@ -82,19 +82,6 @@ jobs:
         with:
           name: failures-${{runner.os}}
           path: ${{steps.parse-files.outputs.failures}}
-      - name: Install pnpm
-        run: corepack enable pnpm
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-          cache-dependency-path: pnpm-lock.yaml
-      - name: Run Node binding tests
-        shell: bash
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm test
   fuzz:
     name: Fuzz scanner
     runs-on: ubuntu-latest
