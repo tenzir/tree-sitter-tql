@@ -86,6 +86,8 @@ pnpm install
 pnpm tree-sitter generate
 ```
 
+> Tree-sitter CLI version: both local development and CI are pinned to `tree-sitter-cli@0.25.4`. Install that exact version (`pnpm add -g tree-sitter-cli@0.25.4` or use `npx tree-sitter@0.25.4`) before regenerating parser artifacts. When upgrading the CLI, update the workflows (`tree-sitter/setup-action/cli@v2` `version` input), regenerate `src/parser.c` and related files, and commit the changes together.
+
 ## Testing
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
