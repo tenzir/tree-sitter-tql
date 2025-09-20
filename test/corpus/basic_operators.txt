@@ -27,30 +27,7 @@ version
 Single operator with arguments
 ==================
 
-from file.csv
-
----
-
-(program
-  (pipeline
-    (statement
-      (invocation
-        (entity
-          (identifier))
-        (arguments
-          (argument
-            (expression
-              (member_expression
-                (expression
-                  (primary_expression
-                    (identifier)))
-                (identifier)))))))))
-
-==================
-Piped operators
-==================
-
-from stdin | where x > 0 | head 10
+from_file "/path/to/file.csv"
 
 ---
 
@@ -64,7 +41,23 @@ from stdin | where x > 0 | head 10
           (argument
             (expression
               (primary_expression
-                (identifier)))))))
+                (literal
+                  (string))))))))))
+
+==================
+Piped operators
+==================
+
+from_stdin | where x > 0 | head
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))
     (statement
       (invocation
         (entity
@@ -83,19 +76,13 @@ from stdin | where x > 0 | head 10
     (statement
       (invocation
         (entity
-          (identifier))
-        (arguments
-          (argument
-            (expression
-              (primary_expression
-                (literal
-                  (number))))))))))
+          (identifier))))))
 
 ==================
 Newline-separated operators
 ==================
 
-from file.json
+from_file "/path/to/file.json"
 where status == "active"
 select user, timestamp
 
@@ -110,11 +97,9 @@ select user, timestamp
         (arguments
           (argument
             (expression
-              (member_expression
-                (expression
-                  (primary_expression
-                    (identifier)))
-                (identifier)))))))
+              (primary_expression
+                (literal
+                  (string))))))))
     (statement
       (invocation
         (entity

@@ -2,7 +2,7 @@
 IPv4 subnet
 ==================
 
-from {
+load {
   x: 1.2.3.4/24
 }
 
@@ -30,7 +30,7 @@ from {
 IPv6 subnet with prefix
 ==================
 
-from {
+load {
   z: ::ffff:1.2.3.4/120
 }
 
@@ -58,7 +58,7 @@ from {
 IPv6 subnet short form
 ==================
 
-from {
+load {
   y: ::/1
 }
 
@@ -86,7 +86,7 @@ from {
 Multiple subnet types
 ==================
 
-from {
+load {
   x: 1.2.3.4/24,
   z: ::ffff:1.2.3.4/120,
   y: ::/1,

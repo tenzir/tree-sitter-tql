@@ -151,7 +151,7 @@ drop src.event_data.ParentImage, src.event_data.ParentProcessId
 Pipeline with if-else
 ==================
 
-from file
+load file
 if this.type == "important" {
   enrich important_data
   publish kafka

@@ -20,7 +20,7 @@ Multiple single-line comments
 ==================
 
 // First comment
-from file.csv
+load "file.csv", csv
 // Second comment
 where x > 0
 
@@ -36,10 +36,12 @@ where x > 0
         (arguments
           (argument
             (expression
-              (member_expression
-                (expression
-                  (primary_expression
-                    (identifier)))
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
                 (identifier)))))))
     (comment)
     (statement
@@ -80,7 +82,7 @@ version
 Inline block comment
 ==================
 
-from /* source */ file.csv
+load /* source */ "file.csv", csv
 
 ---
 
@@ -94,10 +96,12 @@ from /* source */ file.csv
         (arguments
           (argument
             (expression
-              (member_expression
-                (expression
-                  (primary_expression
-                    (identifier)))
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
                 (identifier)))))))))
 
 ==================
