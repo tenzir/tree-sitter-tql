@@ -148,3 +148,37 @@ summarize total=sum(amount), avg=mean(value)
                     (expression
                       (primary_expression
                         (identifier)))))))))))))
+
+==================
+Pipeline run with trailing argument
+==================
+
+pipeline::run {
+  discard
+}, id="test-id"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        operator: (entity
+          (identifier)
+          (identifier))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                operator: (entity
+                  (identifier))))))
+        arguments: (arguments
+          (argument
+            (assignment
+              left: (selector
+                (field_selector
+                  (identifier)))
+              right: (expression
+                (primary_expression
+                  (literal
+                    (string)))))))))))

@@ -117,12 +117,18 @@ module.exports = grammar({
             choice(alias($.parenthesized_arguments, $.arguments), $.arguments),
           ),
         ),
-        optional($.pipeline_block),
+        optional(
+          seq(
+            $.pipeline_block,
+            optional(seq(",", repeat("\n"), field("arguments", $.arguments))),
+          ),
+        ),
       ),
 
     pipeline_block: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
 
-    block: ($) => seq("{", repeat("\n"), field("body", optional($.pipeline)), "}"),
+    block: ($) =>
+      seq("{", repeat("\n"), field("body", optional($.pipeline)), "}"),
 
     assignment: ($) =>
       prec.right(
@@ -147,7 +153,10 @@ module.exports = grammar({
       ),
 
     entity: ($) =>
-      seq($.identifier, repeat(seq(alias($.module_separator, "::"), $.identifier))),
+      seq(
+        $.identifier,
+        repeat(seq(alias($.module_separator, "::"), $.identifier)),
+      ),
 
     arguments: ($) => commaSep1($.argument),
 

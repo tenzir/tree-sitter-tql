@@ -317,7 +317,7 @@
     "named": true,
     "fields": {
       "arguments": {
-        "multiple": false,
+        "multiple": true,
         "required": false,
         "types": [
           {
