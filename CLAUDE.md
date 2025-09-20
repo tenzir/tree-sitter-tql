@@ -5,7 +5,8 @@ code in this repository.
 
 ## Project Overview
 
-Tree-sitter grammar for the **Tenzir Query Language (TQL)** - a pipeline-style dataflow language.
+Tree-sitter grammar for the **Tenzir Query Language (TQL)** - a pipeline-style
+dataflow language.
 
 ## Development Workflow
 
@@ -14,20 +15,11 @@ Tree-sitter grammar for the **Tenzir Query Language (TQL)** - a pipeline-style d
 3. **Test changes**: Run `pnpm tree-sitter test`
 4. **Verify interactively**: Run `pnpm start` to open playground
 
-## Testing Commands
+For any TQL program, you can get its authoritative AST by running:
 
 ```bash
-# Test grammar changes
-pnpm tree-sitter test
-
-# Interactive testing playground
-pnpm start
-
-# Node.js binding tests
-pnpm test
+tenzir --dump-ast '<pipeline>'
 ```
 
-## Key Files
-
-- **grammar.js**: Edit this to modify the language grammar
-- **test/corpus/**: Add test cases here to verify grammar changes
+This gives you the EXACT AST structure that the tree-sitter grammar should
+produce. Use this as the ground truth when writing test expectations!
