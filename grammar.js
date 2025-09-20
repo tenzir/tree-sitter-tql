@@ -195,16 +195,25 @@ module.exports = grammar({
     // Binary expressions - allow newlines after operators for continuation
     binary_expression: ($) =>
       choice(
+        // Lowest precedence: else (precedence 1)
+        prec.left(1, seq($.expression, "else", repeat("\n"), $.expression)),
+        // if has precedence 2
+        prec.left(2, seq($.expression, "if", repeat("\n"), $.expression)),
         prec.left(3, seq($.expression, "or", repeat("\n"), $.expression)),
         prec.left(4, seq($.expression, "and", repeat("\n"), $.expression)),
         prec.left(
           6,
           seq(
             $.expression,
-            choice("==", "!=", ">", ">=", "<", "<="),
+            choice("==", "!=", ">", ">=", "<", "<=", "in"),
             repeat("\n"),
             $.expression,
           ),
+        ),
+        // 'not in' is handled specially - parsed as 'not (x in y)'
+        prec.left(
+          6,
+          seq($.expression, seq("not", "in"), repeat("\n"), $.expression),
         ),
         prec.left(
           7,
