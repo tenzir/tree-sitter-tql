@@ -4,26 +4,24 @@
 
 This repository hosts the tree-sitter grammar for **TQL**, the [Tenzir Query Language](https://docs.tenzir.com/explanations/language).
 
+Features:
+
+- 🚀 Complete syntax support for TQL pipelines, operators, and expressions
+- 📝 Proper handling of significant newlines and pipe separators
+- 🔢 Support for all TQL literal types (strings, numbers, IPs, durations, etc.)
+- 🔀 Control flow structures (if/else, match statements)
+- 📦 Module paths and function calls
+- 💬 Comments (line and block)
+
 # Usage
 
-## Features
-
-- Complete syntax support for TQL pipelines, operators, and expressions
-- Proper handling of significant newlines and pipe separators
-- Support for all TQL literal types (strings, numbers, IPs, durations, etc.)
-- Control flow structures (if/else, match statements)
-- Module paths and function calls
-- Comments (line and block)
-
-## Installation
-
-### Node.js
+## Node.js
 
 ```bash
 pnpm add tree-sitter-tql
 ```
 
-### Rust
+## Rust
 
 Add to your `Cargo.toml`:
 
@@ -33,25 +31,15 @@ tree-sitter = "0.22"
 tree-sitter-tql = { git = "https://github.com/tenzir/tree-sitter-tql" }
 ```
 
-## Language Support
+## Neovim
 
-### Editor Integration
-
-- **Neovim**: Use [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
-- **Emacs**: Use [tree-sitter-langs](https://github.com/emacs-tree-sitter/tree-sitter-langs)
-- **VS Code**: Extension coming soon
-
-### Neovim Setup
-
-- Download the `tree-sitter-tql-<version>-bundle.tar.gz` asset from the latest GitHub release and extract it somewhere on your runtime path (e.g. `~/.local/share/nvim/site/pack/treesitter/start/tree-sitter-tql`).
-- Point `nvim-treesitter` at the extracted files:
+Configure `nvim-treesitter` to install directly from this repository:
 
 ```lua
 require('nvim-treesitter.parsers').get_parser_configs().tql = {
   install_info = {
-    files = { 'src/parser.c', 'src/node-types.json' },
-    url = '/absolute/path/to/tree-sitter-tql',
-    branch = 'main',
+    url = 'https://github.com/tenzir/tree-sitter-tql',
+    files = { 'src/parser.c' },
   },
   filetype = 'tql',
 }
@@ -62,9 +50,7 @@ require('nvim-treesitter.configs').setup {
 }
 ```
 
-- Alternatively, install directly from this repository with `:TSInstallFromGrammar https://github.com/tenzir/tree-sitter-tql` (requires a recent `nvim-treesitter`).
-- We plan to upstream this configuration so it becomes available via `:TSInstall tql` once the grammar stabilises.
-- Using [lazy.nvim](https://github.com/folke/lazy.nvim):
+Or using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
@@ -82,35 +68,9 @@ require('nvim-treesitter.configs').setup {
 }
 ```
 
-- To pin against a release bundle instead of cloning the repo, change `install_info.url` to the extracted bundle path (see above) and remove the `branch` field.
-
-### Syntax Highlighting
-
-The grammar provides detailed node types suitable for syntax highlighting:
-
-- Keywords: `if`, `else`, `match`, `let`
-- Operators: `and`, `or`, `not`, `in`
-- Literals: strings, numbers, booleans, IPs, durations
-- Comments: line (`//`) and block (`/* */`)
-- Identifiers and module paths
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Based on the [Tenzir](https://tenzir.com) Query Language specification
-- Grammar design inspired by tree-sitter grammars for JavaScript and Rust
-- Test cases derived from Tenzir's comprehensive test suite
-
 # Development
 
-## Prerequisites
-
-- Node.js (v16 or higher)
-- pnpm (v8 or higher) — this project uses pnpm as its package manager
-- tree-sitter CLI (`pnpm add -g tree-sitter-cli`)
+Contributions are welcome! 🎉
 
 ## Setup
 
@@ -144,26 +104,10 @@ pnpm tree-sitter test test/corpus/statements.txt
 pnpm tree-sitter test --update
 ```
 
-### Test Organization
-
-- `test/corpus/comments.txt` — comment handling
-- `test/corpus/expressions.txt` — expression parsing and precedence
-- `test/corpus/literals.txt` — all TQL literal types
-- `test/corpus/statements.txt` — statement types (let, if, match, assignments)
-- `test/corpus/pipelines.txt` — pipeline composition
-- `test/corpus/real_world.txt` — real-world TQL examples
-- `test/corpus/tenzir_examples.txt` — examples from Tenzir's test suite
-
 ## Grammar Development
 
-The grammar is defined in `grammar.js`. Key design decisions:
-
-1. **Significant Newlines**: Newlines are statement separators (like pipes) and are not included in `extras`.
-2. **Comment Handling**: Comments use `token(choice(...))` to take lexer priority over the `/` operator.
-3. **Operator Precedence**: Mirrors the C++ parser implementation with nine precedence levels.
-4. **Conflicts**: Only two conflicts are required for lookahead disambiguation.
-
-To regenerate the parser after grammar changes:
+The grammar is defined in `grammar.js`. To regenerate the parser after grammar
+changes:
 
 ```bash
 pnpm tree-sitter generate
@@ -204,3 +148,7 @@ Contributions are welcome! Please ensure:
 - Configure a repository secret `PYPI_API_TOKEN` (optionally scoped to a `pypi` environment) containing an API token created at https://pypi.org/manage/account/token.
 - Follow the [tree-sitter publishing guide](https://tree-sitter.github.io/tree-sitter/creating-parsers/6-publishing.html): update the version with `tree-sitter version`, commit, tag, and push the tag to run the release pipeline.
 - npm and crates.io publishing steps can be added later by extending the workflow with `package-npm.yml` or `package-crates.yml` from [tree-sitter/workflows](https://github.com/tree-sitter/workflows).
+
+# License
+
+This project is licensed under the [MIT License](LICENSE).
