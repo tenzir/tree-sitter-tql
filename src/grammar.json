@@ -1750,25 +1750,7 @@
   ],
   "conflicts": [
     [
-      "expression"
-    ],
-    [
-      "invocation",
-      "expression"
-    ],
-    [
-      "entity",
-      "expression"
-    ],
-    [
       "record"
-    ],
-    [
-      "pipeline_expr"
-    ],
-    [
-      "record",
-      "pipeline_expr"
     ],
     [
       "pipeline_block",
