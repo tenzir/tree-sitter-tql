@@ -1,0 +1,73 @@
+name: Publish packages
+
+on:
+  push:
+    tags: ["*"]
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  github:
+    name: Release to GitHub
+    uses: tree-sitter/workflows/.github/workflows/release.yml@main
+    with:
+      generate: true
+      attestations: true
+  bundle:
+    name: Package editor artifacts
+    needs: github
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{vars.NODE_VERSION || '22'}}
+      - name: Set up tree-sitter CLI
+        uses: tree-sitter/setup-action/cli@v2
+        with:
+          version: 0.25.4
+      - name: Build Wasm parser
+        run: tree-sitter build --wasm
+      - name: Assemble bundle
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          DEST="bundle/tree-sitter-tql-${VERSION}"
+          rm -rf bundle
+          mkdir -p "$DEST/src"
+          cp grammar.js tree-sitter.json "$DEST/"
+          cp tree-sitter-tql.wasm "$DEST/"
+          cp src/parser.c src/node-types.json src/grammar.json "$DEST/src/"
+          if [ -d queries ]; then
+            cp -R queries "$DEST/"
+          fi
+          tar -czf "tree-sitter-tql-${VERSION}-bundle.tar.gz" -C bundle "tree-sitter-tql-${VERSION}"
+          printf '%s\n' "tree-sitter-tql-${VERSION}-bundle.tar.gz" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{github.token}}
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release upload "${GITHUB_REF_NAME}" "tree-sitter-tql-${VERSION}-bundle.tar.gz" --clobber
+          gh release upload "${GITHUB_REF_NAME}" tree-sitter-tql.wasm --clobber
+  pypi:
+    name: Publish PyPI package
+    uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@main
+    needs: github
+    secrets:
+      PYPI_API_TOKEN: ${{secrets.PYPI_API_TOKEN}}
+    with:
+      generate: true
+      attestations: true
