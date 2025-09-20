@@ -36,7 +36,7 @@ jobs:
       - name: Set up tree-sitter CLI
         uses: tree-sitter/setup-action/cli@v2
         with:
-          version: 0.25.4
+          tree-sitter-ref: v0.25.4
       - name: Build Wasm parser
         run: tree-sitter build --wasm
       - name: Assemble bundle

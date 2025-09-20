@@ -74,37 +74,33 @@ Contributions are welcome! 🎉
 
 ## Setup
 
-```bash
-# Clone the repository
-git clone https://github.com/tenzir/tree-sitter-tql
-cd tree-sitter-tql
+1. Clone the repository and install dependencies:
 
-# Install dependencies
-pnpm install
+   ```bash
+   git clone https://github.com/tenzir/tree-sitter-tql
+   cd tree-sitter-tql
+   pnpm install
+   ```
 
-# Generate the parser
-pnpm tree-sitter generate
-```
+2. Regenerate the parser when needed:
 
-> Tree-sitter CLI version: both local development and CI are pinned to `tree-sitter-cli@0.25.4`. Install that exact version (`pnpm add -g tree-sitter-cli@0.25.4` or use `npx tree-sitter@0.25.4`) before regenerating parser artifacts. When upgrading the CLI, update the workflows (`tree-sitter/setup-action/cli@v2` `version` input), regenerate `src/parser.c` and related files, and commit the changes together.
+   ```bash
+   pnpm tree-sitter generate
+   ```
+
+3. Tree-sitter CLI version pin:
+   - Local development and CI both use `tree-sitter-cli@0.25.4`.
+   - Install it via `pnpm add -g tree-sitter-cli@0.25.4` or `npx tree-sitter@0.25.4`.
+   - When upgrading the CLI, update the workflows (`tree-sitter/setup-action/cli@v2` with `tree-sitter-ref: vX.Y.Z`), regenerate `src/parser.c` and related files, and commit the changes together.
 
 ## Testing
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
 
-```bash
-# Run all tests
-pnpm tree-sitter test
-
-# Run specific test
-pnpm tree-sitter test --include "Simple assignment"
-
-# Run tests from a specific file
-pnpm tree-sitter test test/corpus/statements.txt
-
-# Update test expectations
-pnpm tree-sitter test --update
-```
+1. Run all tests: `pnpm tree-sitter test`
+2. Run a specific test: `pnpm tree-sitter test --include "Simple assignment"`
+3. Run a test corpus file: `pnpm tree-sitter test test/corpus/statements.txt`
+4. Update expectations: `pnpm tree-sitter test --update`
 
 ## Grammar Development
 
