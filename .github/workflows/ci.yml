@@ -18,6 +18,7 @@ on:
       - bindings/**
       - examples/**
       - tree-sitter.json
+  workflow_dispatch:
 
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}
