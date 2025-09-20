@@ -101,6 +101,7 @@ The grammar includes a comprehensive test suite in the `test/corpus/` directory:
 2. Run a specific test: `pnpm tree-sitter test --include "Simple assignment"`
 3. Run a test corpus file: `pnpm tree-sitter test test/corpus/statements.txt`
 4. Update expectations: `pnpm tree-sitter test --update`
+5. Run Node binding tests: `pnpm test`
 
 ## Grammar Development
 
