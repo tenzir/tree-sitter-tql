@@ -52,7 +52,7 @@ const HIGHLIGHT_STRUCTURAL_PATTERNS = [
 ];
 
 const PUNCTUATION_BRACKETS = ["(", ")"];
-const PUNCTUATION_DELIMITERS = [",", ";"];
+const PUNCTUATION_DELIMITERS = [","];
 const OPERATORS = [
   "=",
   "=>",
