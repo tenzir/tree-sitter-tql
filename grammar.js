@@ -7,6 +7,73 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
+const KEYWORDS = [
+  "let",
+  "if",
+  "else",
+  "match",
+  "and",
+  "or",
+  "not",
+  "move",
+  "in",
+  "this",
+  "?",
+  ".",
+  "...",
+  "[",
+  "]",
+  "{",
+  "}",
+  ":",
+];
+
+const BUILTIN_VARIABLES = ["_"];
+const BOOLEAN_LITERALS = ["true", "false"];
+const NULL_LITERAL = "null";
+
+const HIGHLIGHT_NODE_CAPTURES = [
+  { node: "dollar_var", capture: "@variable" },
+  { node: "meta_selector", capture: "@attribute" },
+  { node: "number", capture: "@number" },
+  { node: "string", capture: "@string" },
+  { node: "format_expr", capture: "@string" },
+  { node: "ip", capture: "@constant" },
+  { node: "subnet", capture: "@constant" },
+  { node: "time", capture: "@number" },
+  { node: "duration", capture: "@number" },
+  { node: "comment", capture: "@comment" },
+];
+
+const HIGHLIGHT_STRUCTURAL_PATTERNS = [
+  `(invocation\n  operator: (entity) @function.call)`,
+  `(call_expression\n  (entity) @function.call)`,
+  `(call_expression\n  method: (entity) @function.method)`,
+];
+
+const PUNCTUATION_BRACKETS = ["(", ")"];
+const PUNCTUATION_DELIMITERS = [",", ";"];
+const OPERATORS = [
+  "=",
+  "=>",
+  "|",
+  "::",
+  "==",
+  "!=",
+  ">",
+  ">=",
+  "<",
+  "<=",
+  "+",
+  "-",
+  "*",
+  "/",
+];
+
+const KEYWORD = literalEnum(KEYWORDS);
+const BUILTIN = literalEnum(BUILTIN_VARIABLES);
+const BOOLEAN = literalEnum(BOOLEAN_LITERALS);
+
 module.exports = grammar({
   name: "tql",
 
@@ -66,7 +133,7 @@ module.exports = grammar({
       prec(
         2,
         seq(
-          "let",
+          KEYWORD.LET,
           field("name", $.dollar_var),
           "=",
           field("value", $.expression),
@@ -77,12 +144,12 @@ module.exports = grammar({
       prec(
         2,
         seq(
-          "if",
+          KEYWORD.IF,
           field("condition", $.expression),
           field("consequence", alias($.block, $.then_block)),
           optional(
             seq(
-              "else",
+              KEYWORD.ELSE,
               field(
                 "alternative",
                 choice($.if_statement, alias($.block, $.else_block)),
@@ -96,7 +163,7 @@ module.exports = grammar({
       prec(
         2,
         seq(
-          "match",
+          KEYWORD.MATCH,
           field("expr", $.expression),
           "{",
           repeat("\n"),
@@ -143,9 +210,9 @@ module.exports = grammar({
 
     field_selector: ($) =>
       choice(
-        "this",
+        KEYWORD.THIS,
         seq(
-          optional(seq("this", ".")),
+          optional(seq(KEYWORD.THIS, ".")),
           $.identifier,
           optional("?"),
           repeat(seq(".", $.identifier, optional("?"))),
@@ -200,8 +267,8 @@ module.exports = grammar({
         $.identifier,
         $.dollar_var,
         $.meta_selector,
-        "this",
-        "_",
+        KEYWORD.THIS,
+        BUILTIN._,
         $.list,
         $.record,
         seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
@@ -209,9 +276,9 @@ module.exports = grammar({
 
     literal: ($) =>
       choice(
-        "null",
-        "true",
-        "false",
+        NULL_LITERAL,
+        BOOLEAN.TRUE,
+        BOOLEAN.FALSE,
         $.number,
         $.string,
         $.ip,
@@ -224,16 +291,16 @@ module.exports = grammar({
     binary_expression: ($) =>
       choice(
         // Lowest precedence: else (precedence 1)
-        prec.left(1, seq($.expression, "else", repeat("\n"), $.expression)),
+        prec.left(1, seq($.expression, KEYWORD.ELSE, repeat("\n"), $.expression)),
         // if has precedence 2
-        prec.left(2, seq($.expression, "if", repeat("\n"), $.expression)),
-        prec.left(3, seq($.expression, "or", repeat("\n"), $.expression)),
-        prec.left(4, seq($.expression, "and", repeat("\n"), $.expression)),
+        prec.left(2, seq($.expression, KEYWORD.IF, repeat("\n"), $.expression)),
+        prec.left(3, seq($.expression, KEYWORD.OR, repeat("\n"), $.expression)),
+        prec.left(4, seq($.expression, KEYWORD.AND, repeat("\n"), $.expression)),
         prec.left(
           6,
           seq(
             $.expression,
-            choice("==", "!=", ">", ">=", "<", "<=", "in"),
+            choice("==", "!=", ">", ">=", "<", "<=", KEYWORD.IN),
             repeat("\n"),
             $.expression,
           ),
@@ -241,7 +308,7 @@ module.exports = grammar({
         // 'not in' is handled specially - parsed as 'not (x in y)'
         prec.left(
           6,
-          seq($.expression, seq("not", "in"), repeat("\n"), $.expression),
+          seq($.expression, seq(KEYWORD.NOT, KEYWORD.IN), repeat("\n"), $.expression),
         ),
         prec.left(
           7,
@@ -256,7 +323,7 @@ module.exports = grammar({
     // Unary operators
     unary_expression: ($) =>
       choice(
-        prec(5, seq(choice("not", "move"), $.expression)),
+        prec(5, seq(choice(KEYWORD.NOT, KEYWORD.MOVE), $.expression)),
         prec(9, seq(choice("+", "-"), $.expression)),
       ),
 
@@ -462,6 +529,32 @@ module.exports = grammar({
       /\d+(ns|us|ms|s|sec|seconds?|m|min|minutes?|h|hr|hours?|d|days?|w|weeks?|y|years?)/,
   },
 });
+
+module.exports.highlightConstants = {
+  KEYWORDS,
+  BUILTIN_VARIABLES,
+  BOOLEAN_LITERALS,
+  NULL_LITERAL,
+  NODE_CAPTURES: HIGHLIGHT_NODE_CAPTURES,
+  STRUCTURAL_PATTERNS: HIGHLIGHT_STRUCTURAL_PATTERNS,
+  PUNCTUATION_BRACKETS,
+  PUNCTUATION_DELIMITERS,
+  OPERATORS,
+};
+
+function literalEnum(literals) {
+  return literals.reduce((acc, literal, index) => {
+    let key = literal.toUpperCase().replace(/[^A-Z0-9_]+/g, "_");
+    if (key.length === 0) {
+      key = `LITERAL_${index}`;
+    }
+    while (Object.prototype.hasOwnProperty.call(acc, key)) {
+      key = `${key}_${index}`;
+    }
+    acc[key] = literal;
+    return acc;
+  }, {});
+}
 
 function rawStringRegex(prefix, maxHashes = 8) {
   const variants = [];
