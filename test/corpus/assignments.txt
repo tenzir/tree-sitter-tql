@@ -137,6 +137,7 @@ Meta selector assignment
       (assignment
         (selector
           (meta_selector
+            (metadata_sigil)
             (identifier)))
         (expression
           (primary_expression

@@ -10,7 +10,9 @@ let $foo = 42
   (pipeline
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (primary_expression
             (literal
@@ -29,14 +31,18 @@ let $bar = now()
   (pipeline
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (primary_expression
             (literal
               (number))))))
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (call_expression
             (entity
@@ -55,19 +61,25 @@ let $bar = $foo + 1
   (pipeline
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (primary_expression
             (literal
               (number))))))
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (binary_expression
             (expression
               (primary_expression
-                (dollar_var)))
+                (dollar_var
+                  (global_sigil)
+                  (identifier))))
             (expression
               (primary_expression
                 (literal

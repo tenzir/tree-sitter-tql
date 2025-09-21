@@ -31,7 +31,9 @@ group count {
                       (member_expression
                         (expression
                           (primary_expression
-                            (dollar_var)))
+                            (dollar_var
+                              sigil: (global_sigil)
+                              (identifier))))
                         (identifier)))))))))))))
 
 ==================
@@ -49,7 +51,9 @@ group count {
   (pipeline
     (statement
       (let_statement
-        name: (dollar_var)
+        name: (dollar_var
+          sigil: (global_sigil)
+          (identifier))
         value: (expression
           (primary_expression
             (literal
@@ -75,7 +79,9 @@ group count {
                       (member_expression
                         (expression
                           (primary_expression
-                            (dollar_var)))
+                            (dollar_var
+                              sigil: (global_sigil)
+                              (identifier))))
                         (identifier)))))))))))))
 
 ==================

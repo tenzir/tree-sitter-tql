@@ -37,6 +37,8 @@ const HIGHLIGHT_NODE_CAPTURES = [
   // highlight color from editor themes until native @variable styling is
   // widely supported. Keep this aligned with HIGHLIGHT_STRUCTURAL_PATTERNS.
   { node: "dollar_var", capture: "@variable.builtin" },
+  { node: "global_sigil", capture: "@keyword" },
+  { node: "metadata_sigil", capture: "@keyword" },
   { node: "meta_selector", capture: "@attribute" },
   { node: "number", capture: "@number" },
   { node: "string", capture: "@string" },
@@ -198,7 +200,8 @@ module.exports = grammar({
     selector: ($) => choice($.meta_selector, $.field_selector),
 
     // Meta selector - more flexible to allow any identifier after @
-    meta_selector: ($) => seq("@", $.identifier),
+    meta_selector: ($) =>
+      seq(field("sigil", alias("@", $.metadata_sigil)), $.identifier),
 
     field_selector: ($) =>
       choice(
@@ -438,7 +441,8 @@ module.exports = grammar({
     // Identifier - keywords are handled with higher precedence
     identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
-    dollar_var: ($) => /\$[a-zA-Z_][a-zA-Z0-9_]*/,
+    dollar_var: ($) =>
+      seq(field("sigil", alias("$", $.global_sigil)), $.identifier),
 
     number: ($) =>
       token(
@@ -472,6 +476,10 @@ module.exports = grammar({
         token(rawStringRegex("r")),
         token(rawStringRegex("br")),
       ),
+
+    metadata_sigil: (_) => "@",
+
+    global_sigil: (_) => "$",
 
     module_separator: (_) => token(prec(1, "::")),
 

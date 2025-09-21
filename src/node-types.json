@@ -134,6 +134,32 @@
     }
   },
   {
+    "type": "dollar_var",
+    "named": true,
+    "fields": {
+      "sigil": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "global_sigil",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "else_block",
     "named": true,
     "fields": {
@@ -514,7 +540,18 @@
   {
     "type": "meta_selector",
     "named": true,
-    "fields": {},
+    "fields": {
+      "sigil": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "metadata_sigil",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": false,
       "required": true,
@@ -863,10 +900,6 @@
     "named": false
   },
   {
-    "type": "@",
-    "named": false
-  },
-  {
     "type": "[",
     "named": false
   },
@@ -888,10 +921,6 @@
     "extra": true
   },
   {
-    "type": "dollar_var",
-    "named": true
-  },
-  {
     "type": "duration",
     "named": true
   },
@@ -902,6 +931,10 @@
   {
     "type": "false",
     "named": false
+  },
+  {
+    "type": "global_sigil",
+    "named": true
   },
   {
     "type": "identifier",
@@ -926,6 +959,10 @@
   {
     "type": "match",
     "named": false
+  },
+  {
+    "type": "metadata_sigil",
+    "named": true
   },
   {
     "type": "move",

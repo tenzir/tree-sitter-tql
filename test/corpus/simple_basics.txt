@@ -79,7 +79,9 @@ let $foo = 42
   (pipeline
     (statement
       (let_statement
-        (dollar_var)
+        (dollar_var
+          (global_sigil)
+          (identifier))
         (expression
           (primary_expression
             (literal
