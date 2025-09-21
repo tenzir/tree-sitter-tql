@@ -1,0 +1,103 @@
+name: Update Zed Extension
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - grammar.js
+      - scripts/generate-highlights.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: update-zed-extension
+  cancel-in-progress: false
+
+jobs:
+  regenerate-and-push:
+    name: Synchronize highlights and metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree-sitter-tql
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate highlights file
+        run: node scripts/generate-highlights.mjs "${{ runner.temp }}/highlights.scm"
+
+      - name: Capture current commit hash
+        id: repo_meta
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Generate an app token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.TENZIR_AUTOBUMPER_APP_ID }}
+          private-key: ${{ secrets.TENZIR_AUTOBUMPER_APP_PRIVATE_KEY }}
+          owner: tenzir
+
+      - name: Clone tenzir/zed-tql
+        run: |
+          git clone --depth 1 \
+            https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com/tenzir/zed-tql.git \
+            "${{ runner.temp }}/zed-tql"
+
+      - name: Update highlights and metadata
+        id: diffcheck
+        env:
+          HIGHLIGHTS_PATH: ${{ runner.temp }}/highlights.scm
+          ZED_TQL_DIR: ${{ runner.temp }}/zed-tql
+        run: |
+          set -euo pipefail
+          cd "$ZED_TQL_DIR"
+          git fetch origin main
+          git checkout main
+          cp "$HIGHLIGHTS_PATH" "languages/tql/highlights.scm"
+          sed -i "s/^commit = \".*\"/commit = \"${{ steps.repo_meta.outputs.commit }}\"/" extension.toml
+          if git diff --quiet --exit-code; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up GPG for signing
+        if: steps.diffcheck.outputs.changed == 'true'
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.TENZIR_BOT_GPG_SIGNING_KEY }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Commit and push
+        if: steps.diffcheck.outputs.changed == 'true'
+        env:
+          TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          set -euo pipefail
+          cd "${{ runner.temp }}/zed-tql"
+          git config user.name "tenzir-bot"
+          git config user.email "engineering@tenzir.com"
+          git add languages/tql/highlights.scm extension.toml
+          git commit -m "Sync Tree-sitter grammar"
+          git push "https://x-access-token:$TOKEN@github.com/tenzir/zed-tql.git" HEAD:main
+
+      - name: Report no changes needed
+        if: steps.diffcheck.outputs.changed != 'true'
+        run: echo 'No updates required.'
