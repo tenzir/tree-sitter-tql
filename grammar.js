@@ -33,7 +33,10 @@ const BOOLEAN_LITERALS = ["true", "false"];
 const NULL_LITERAL = "null";
 
 const HIGHLIGHT_NODE_CAPTURES = [
-  { node: "dollar_var", capture: "@variable" },
+  // NOTE: Capture dollar-prefixed globals as builtin variables to inherit the
+  // highlight color from editor themes until native @variable styling is
+  // widely supported. Keep this aligned with HIGHLIGHT_STRUCTURAL_PATTERNS.
+  { node: "dollar_var", capture: "@variable.builtin" },
   { node: "meta_selector", capture: "@attribute" },
   { node: "number", capture: "@number" },
   { node: "string", capture: "@string" },
@@ -49,6 +52,9 @@ const HIGHLIGHT_STRUCTURAL_PATTERNS = [
   `(invocation\n  operator: (entity) @function.call)`,
   `(call_expression\n  (entity) @function.call)`,
   `(call_expression\n  method: (entity) @function.method)`,
+  // NOTE: Structural fallback so dollar-prefixed identifiers highlighted as
+  // builtin variables even when not parsed as dollar_var (e.g., errors).
+  `((identifier) @variable.builtin (#match? @variable.builtin "^\\$[A-Za-z_]\\w*$"))`,
 ];
 
 const PUNCTUATION_BRACKETS = ["(", ")"];
