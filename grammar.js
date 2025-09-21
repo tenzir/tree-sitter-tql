@@ -53,22 +53,8 @@ const HIGHLIGHT_STRUCTURAL_PATTERNS = [
 
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
-const OPERATORS = [
-  "=",
-  "=>",
-  "|",
-  "::",
-  "==",
-  "!=",
-  ">",
-  ">=",
-  "<",
-  "<=",
-  "+",
-  "-",
-  "*",
-  "/",
-];
+const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
+const ARITHMETIC_OPERATORS = ["+", "-", "*", "/"];
 
 const KEYWORD = literalEnum(KEYWORDS);
 const BUILTIN = literalEnum(BUILTIN_VARIABLES);
@@ -291,11 +277,17 @@ module.exports = grammar({
     binary_expression: ($) =>
       choice(
         // Lowest precedence: else (precedence 1)
-        prec.left(1, seq($.expression, KEYWORD.ELSE, repeat("\n"), $.expression)),
+        prec.left(
+          1,
+          seq($.expression, KEYWORD.ELSE, repeat("\n"), $.expression),
+        ),
         // if has precedence 2
         prec.left(2, seq($.expression, KEYWORD.IF, repeat("\n"), $.expression)),
         prec.left(3, seq($.expression, KEYWORD.OR, repeat("\n"), $.expression)),
-        prec.left(4, seq($.expression, KEYWORD.AND, repeat("\n"), $.expression)),
+        prec.left(
+          4,
+          seq($.expression, KEYWORD.AND, repeat("\n"), $.expression),
+        ),
         prec.left(
           6,
           seq(
@@ -308,7 +300,12 @@ module.exports = grammar({
         // 'not in' is handled specially - parsed as 'not (x in y)'
         prec.left(
           6,
-          seq($.expression, seq(KEYWORD.NOT, KEYWORD.IN), repeat("\n"), $.expression),
+          seq(
+            $.expression,
+            seq(KEYWORD.NOT, KEYWORD.IN),
+            repeat("\n"),
+            $.expression,
+          ),
         ),
         prec.left(
           7,
@@ -540,6 +537,7 @@ module.exports.highlightConstants = {
   PUNCTUATION_BRACKETS,
   PUNCTUATION_DELIMITERS,
   OPERATORS,
+  ARITHMETIC_OPERATORS,
 };
 
 function literalEnum(literals) {
