@@ -1,0 +1,40 @@
+==================
+Frontmatter with pipeline
+==================
+
+---
+title: Example
+enabled: true
+---
+
+version
+
+---
+
+(program
+  (frontmatter
+    (frontmatter_delimiter)
+    (frontmatter_line)
+    (frontmatter_line)
+    (frontmatter_delimiter))
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))))))
+
+==================
+Frontmatter only
+==================
+
+---
+author: nobody
+---
+
+---
+
+(program
+  (frontmatter
+    (frontmatter_delimiter)
+    (frontmatter_line)
+    (frontmatter_delimiter)))

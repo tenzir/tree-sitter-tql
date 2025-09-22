@@ -284,6 +284,30 @@
     "fields": {}
   },
   {
+    "type": "frontmatter",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "frontmatter_delimiter",
+          "named": true
+        },
+        {
+          "type": "frontmatter_line",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "frontmatter_delimiter",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "if_statement",
     "named": true,
     "fields": {
@@ -642,9 +666,13 @@
     "root": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "frontmatter",
+          "named": true
+        },
         {
           "type": "pipeline",
           "named": true
@@ -931,6 +959,10 @@
   {
     "type": "false",
     "named": false
+  },
+  {
+    "type": "frontmatter_line",
+    "named": true
   },
   {
     "type": "global_sigil",

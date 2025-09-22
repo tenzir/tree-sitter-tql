@@ -47,6 +47,8 @@ const HIGHLIGHT_NODE_CAPTURES = [
   { node: "subnet", capture: "@constant" },
   { node: "time", capture: "@number" },
   { node: "duration", capture: "@number" },
+  { node: "frontmatter", capture: "@comment" },
+  { node: "frontmatter_line", capture: "@comment" },
   { node: "comment", capture: "@comment" },
 ];
 
@@ -93,7 +95,32 @@ module.exports = grammar({
 
   rules: {
     // Entry point - a TQL program
-    program: ($) => seq(repeat("\n"), optional($.pipeline)),
+    program: ($) =>
+      seq(
+        repeat("\n"),
+        optional(seq($.frontmatter, repeat("\n"))),
+        optional($.pipeline),
+      ),
+
+    frontmatter: ($) =>
+      seq(
+        alias($._frontmatter_open, $.frontmatter_delimiter),
+        repeat(alias($._frontmatter_line, $.frontmatter_line)),
+        alias($._frontmatter_close, $.frontmatter_delimiter),
+      ),
+
+    _frontmatter_open: (_) => token(seq("---", /[ \t]*\r?\n/)),
+
+    _frontmatter_close: (_) =>
+      choice(token(seq("---", /[ \t]*\r?\n/)), token(seq("---", /[ \t]*/))),
+
+    _frontmatter_line: (_) =>
+      token(
+        choice(
+          /[ \t]*\r?\n/,
+          seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/),
+        ),
+      ),
 
     // Comments should be explicit nodes but handled as extras
     comment: (_) =>
