@@ -48,7 +48,7 @@
   },
   "scripts": {
     "install": "node-gyp-build",
-    "generate": "tree-sitter generate && node scripts/generate-highlights.mjs",
+    "generate": "tree-sitter generate && node scripts/generate-highlights.mjs && node scripts/generate-injections.mjs",
     "prestart": "tree-sitter build --wasm",
     "start": "tree-sitter playground",
     "test": "node --test bindings/node/*_test.js"
