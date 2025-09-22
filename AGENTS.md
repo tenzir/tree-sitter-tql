@@ -27,10 +27,10 @@ tree-sitter grammar repository.
 ## Development Workflow
 
 1. Edit `grammar.js` to add or adjust syntax rules.
-2. Run `pnpm run generate` to refresh `src/` artifacts and regenerate highlight
-   queries (alias: `pnpm tree-sitter generate`).
-3. Execute `pnpm tree-sitter test` (optionally scoped with `--include`).
-4. Open the playground via `pnpm start` for interactive validation.
+2. Run `npm run generate` to refresh `src/` artifacts and regenerate highlight
+   queries (alias: `npx tree-sitter generate`).
+3. Execute `npx tree-sitter test` (optionally scoped with `--include`).
+4. Open the playground via `npm run start` for interactive validation.
 
 For any pipeline under test, you can confirm the expected AST via:
 
@@ -43,7 +43,7 @@ tenzir --dump-ast '<pipeline>'
 - `scripts/generate-highlights.mjs` builds both `languages/tql/highlights.scm`
   (for Zed and other consumers) and `queries/tql/highlights.scm` (for
   tree-sitter runtime use) from the exported `highlightConstants`. Run it via
-  `pnpm run generate` whenever those constants change.
+  `npm run generate` whenever those constants change.
 - The `Update Zed Extension` workflow invokes the script and syncs the Zed
   grammar; keep the script and exports in lockstep with grammar changes.
 - Do not hand-edit generated highlight files; regenerate them through the
@@ -51,20 +51,20 @@ tenzir --dump-ast '<pipeline>'
 
 ## Build, Test & Development Commands
 
-- `pnpm install`: install dependencies, including `tree-sitter-cli@0.25.x`.
-- `pnpm run generate`: refresh `src/parser.c`, `src/scanner.c`, and regenerate
+- `npm install`: install dependencies, including `tree-sitter-cli@0.25.x`.
+- `npm run generate`: refresh `src/parser.c`, `src/scanner.c`, and regenerate
   highlight queries after grammar edits.
-- `pnpm tree-sitter test [--include "Case" | --update]`: run corpus tests
+- `npx tree-sitter test [--include "Case" | --update]`: run corpus tests
   selectively or regenerate expectations.
-- `pnpm test`: execute Node binding smoke tests via `node --test`.
-- `pnpm start`: open the tree-sitter playground; `tenzir --dump-ast '<pipeline>'`
+- `npm test`: execute Node binding smoke tests via `node --test`.
+- `npm run start`: open the tree-sitter playground; `tenzir --dump-ast '<pipeline>'`
   supplies ground-truth ASTs.
 
 ## Coding Style & Naming Conventions
 
 - Follow 2-space indentation and the spacing emitted by Prettier; wrap long
   alternatives for readability.
-- Run `pnpm exec prettier --check grammar.js test/corpus` and fix issues with
+- Run `npx prettier --check grammar.js test/corpus` and fix issues with
   `--write` when needed.
 - Name grammar rules in lower_snake_case, reserve ALL_CAPS for shared tokens,
   and keep helper comments focused on ambiguity or precedence.
@@ -104,7 +104,7 @@ tenzir --dump-ast '<pipeline>'
   group grammar, generated files, and fixtures together.
 - Summaries should call out observable syntax or AST changes and link issues or
   specs when relevant.
-- List the commands you executed (typically `pnpm tree-sitter generate` and
-  `pnpm tree-sitter test`) in the PR body.
+- List the commands you executed (typically `npx tree-sitter generate` and
+  `npx tree-sitter test`) in the PR body.
 - Ensure CI is green before requesting review; re-run local tests after rebases
   or merges.

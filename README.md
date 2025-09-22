@@ -100,30 +100,30 @@ Contributions are welcome! 🎉
    ```bash
    git clone https://github.com/tenzir/tree-sitter-tql
    cd tree-sitter-tql
-   pnpm install
+   npm install
    ```
 
 2. Regenerate the parser (and highlights) when needed:
 
    ```bash
-   pnpm run generate
+   npm run generate
    ```
 
 > [!NOTE]
 > Highlights stay in sync because they are generated and committed alongside
 > the parser. CI re-runs the generator and fails if the checked-in files would
-> change, so always execute `pnpm run generate` after touching the grammar or
+> change, so always execute `npm run generate` after touching the grammar or
 > highlight constants.
 
 ## Testing
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
 
-1. Run all tests: `pnpm tree-sitter test`
-2. Run a specific test: `pnpm tree-sitter test --include "Simple assignment"`
-3. Run a test corpus file: `pnpm tree-sitter test test/corpus/statements.txt`
-4. Update expectations: `pnpm tree-sitter test --update`
-5. Run Node binding tests: `pnpm test`
+1. Run all tests: `npx tree-sitter test`
+2. Run a specific test: `npx tree-sitter test --include "Simple assignment"`
+3. Run a test corpus file: `npx tree-sitter test test/corpus/statements.txt`
+4. Update expectations: `npx tree-sitter test --update`
+5. Run Node binding tests: `npm test`
 
 ## Grammar Development
 
@@ -131,8 +131,8 @@ The grammar is defined in `grammar.js`. To regenerate the parser after grammar
 changes:
 
 ```bash
-pnpm tree-sitter generate
-pnpm tree-sitter test
+npx tree-sitter generate
+npx tree-sitter test
 ```
 
 ## Playground
@@ -140,9 +140,9 @@ pnpm tree-sitter test
 To interactively test the grammar:
 
 ```bash
-pnpm start
+npm run start
 # or
-pnpm tree-sitter playground
+npx tree-sitter playground
 ```
 
 This opens a web interface where you can input TQL code and see the parse tree in real time.
@@ -151,7 +151,7 @@ This opens a web interface where you can input TQL code and see the parse tree i
 
 Contributions are welcome! Please ensure:
 
-1. All tests pass (`pnpm tree-sitter test`).
+1. All tests pass (`npx tree-sitter test`).
 2. New features include test cases.
 3. Grammar changes are documented.
 
