@@ -47,8 +47,6 @@ const HIGHLIGHT_NODE_CAPTURES = [
   { node: "subnet", capture: "@constant" },
   { node: "time", capture: "@number" },
   { node: "duration", capture: "@number" },
-  { node: "frontmatter", capture: "@comment" },
-  { node: "frontmatter_line", capture: "@comment" },
   { node: "comment", capture: "@comment" },
 ];
 
