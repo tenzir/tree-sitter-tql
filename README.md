@@ -15,21 +15,11 @@ Features:
 
 # Usage
 
-## Node.js
+## Zed
 
-```bash
-pnpm add tree-sitter-tql
-```
-
-## Rust
-
-Add to your `Cargo.toml`:
-
-```toml
-[dependencies]
-tree-sitter = "0.22"
-tree-sitter-tql = { git = "https://github.com/tenzir/tree-sitter-tql" }
-```
+The [tenzir/zed-tql](https://github.com/tenzir/zed-tql) extension bundles the
+latest highlights and parser for TQL. Install it from the repository or through
+the Zed extensions view.
 
 ## Neovim
 
@@ -37,12 +27,18 @@ Lazy.nvim example that registers the parser and filetype. The tree-sitter
 highlights ship in `queries/tql/highlights.scm`, so no extra build step is
 required:
 
+<details>
+<summary>Lazy.nvim example</summary>
+
 ```lua
-{
+return {
   'nvim-treesitter/nvim-treesitter',
   build = ':TSUpdate',
+  dependencies = {
+    'tenzir/tree-sitter-tql',
+  },
   opts = function(_, opts)
-    opts.ensure_installed = vim.list_extend(opts.ensure_installed or {}, {
+    opts.ensure_installed = {
       'bash',
       'c',
       'comment',
@@ -55,10 +51,26 @@ required:
       'r',
       'tql',
       'yaml',
-    })
+    }
 
-    opts.highlight = opts.highlight or {}
-    opts.highlight.enable = true
+    opts.highlight = {
+      enable = true,
+      additional_vim_regex_highlighting = true,
+    }
+
+    opts.incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection = '<CR>',
+        scope_incremental = '<CR>',
+        node_incremental = '<TAB>',
+        node_decremental = '<S-TAB>',
+      },
+    }
+
+    return opts
+  end,
+  config = function(_, opts)
     local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
     parser_config.tql = {
       install_info = {
@@ -69,15 +81,13 @@ required:
       filetype = 'tql',
     }
 
+    require('nvim-treesitter.configs').setup(opts)
     vim.filetype.add({ extension = { tql = 'tql' } })
   end,
 }
 ```
 
-Highlights stay in sync when you update the parser because they are generated
-and committed alongside the grammar. CI re-runs the generator and fails if the
-checked-in files would change, so always execute `pnpm run generate` after
-touching the grammar or highlight constants.
+</details>
 
 # Development
 
@@ -98,6 +108,12 @@ Contributions are welcome! 🎉
    ```bash
    pnpm run generate
    ```
+
+> [!NOTE]
+> Highlights stay in sync because they are generated and committed alongside
+> the parser. CI re-runs the generator and fails if the checked-in files would
+> change, so always execute `pnpm run generate` after touching the grammar or
+> highlight constants.
 
 3. Tree-sitter CLI version pin:
    - Local development and CI both use `tree-sitter-cli@0.25.4`.
