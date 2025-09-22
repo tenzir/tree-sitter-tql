@@ -57,18 +57,11 @@ jobs:
         uses: tree-sitter/parser-test-action@v2
         with:
           test-rust: true
-          test-node: false
+          test-node: true
+          node-version: 20
           test-python: true
           test-go: true
           test-swift: false
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install Node dependencies
-        run: npm install
-      - name: Run Node binding tests
-        run: npm test
       - name: Parse sample files
         uses: tree-sitter/parse-action@v4
         id: parse-files
