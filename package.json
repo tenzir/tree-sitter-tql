@@ -36,10 +36,11 @@
     "markdownlint-cli": "^0.45.0",
     "prebuildify": "^6.0.1",
     "prettier": "^3.6.2",
+    "tree-sitter": "0.25.0",
     "tree-sitter-cli": "0.25.4"
   },
   "peerDependencies": {
-    "tree-sitter": "^0.21.1"
+    "tree-sitter": "^0.25.0"
   },
   "peerDependenciesMeta": {
     "tree-sitter": {

@@ -14,9 +14,6 @@ importers:
       node-gyp-build:
         specifier: ^4.8.4
         version: 4.8.4
-      tree-sitter:
-        specifier: ^0.21.1
-        version: 0.21.1
     devDependencies:
       markdownlint-cli:
         specifier: ^0.45.0
@@ -27,6 +24,9 @@ importers:
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
+      tree-sitter:
+        specifier: 0.25.0
+        version: 0.25.0
       tree-sitter-cli:
         specifier: 0.25.4
         version: 0.25.4
@@ -450,8 +450,8 @@ packages:
     engines: {node: '>=12.0.0'}
     hasBin: true
 
-  tree-sitter@0.21.1:
-    resolution: {integrity: sha512-7dxoA6kYvtgWw80265MyqJlkRl4yawIjO7S5MigytjELkX43fV2WsAXzsNfO7sBpPPCF5Gp0+XzHk0DwLCq3xQ==}
+  tree-sitter@0.25.0:
+    resolution: {integrity: sha512-PGZZzFW63eElZJDe/b/R/LbsjDDYJa5UEjLZJB59RQsMX+fo0j54fqBPn1MGKav/QNa0JR0zBiVaikYDWCj5KQ==}
 
   uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
@@ -987,7 +987,7 @@ snapshots:
 
   tree-sitter-cli@0.25.4: {}
 
-  tree-sitter@0.21.1:
+  tree-sitter@0.25.0:
     dependencies:
       node-addon-api: 8.5.0
       node-gyp-build: 4.8.4
