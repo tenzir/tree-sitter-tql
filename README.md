@@ -1,4 +1,4 @@
-# Tree-sitter TQL
+# Tree-sitter TQL 🌳
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
@@ -114,11 +114,6 @@ Contributions are welcome! 🎉
 > the parser. CI re-runs the generator and fails if the checked-in files would
 > change, so always execute `pnpm run generate` after touching the grammar or
 > highlight constants.
-
-3. Tree-sitter CLI version pin:
-   - Local development and CI both use `tree-sitter-cli@0.25.4`.
-   - Install it via `pnpm add -g tree-sitter-cli@0.25.4` or `npx tree-sitter@0.25.4`.
-   - When upgrading the CLI, update the workflows (`tree-sitter/setup-action/cli@v2` with `tree-sitter-ref: vX.Y.Z`), regenerate `src/parser.c` and related files, and commit the changes together.
 
 ## Testing
 
