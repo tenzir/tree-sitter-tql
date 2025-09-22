@@ -16,7 +16,7 @@
   "metadata": {
     "version": "0.1.0",
     "license": "MIT",
-    "description": "The Tenzir Query Language (TQL) is a pipeline-style dataflow language.",
+    "description": "Tree-sitter grammar for the Tenzir Query Language (TQL)",
     "authors": [
       {
         "name": "Tenzir",
