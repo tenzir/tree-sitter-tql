@@ -8,6 +8,8 @@ tree-sitter grammar repository.
 - Tree-sitter grammar for the Tenzir Query Language (TQL), a pipeline-style
   dataflow language.
 - Grammar changes must mirror the AST emitted by `tenzir --dump-ast '<pipeline>'`.
+  Use this command as the ground truth when shaping grammar updates and
+  authoring test expectations.
 - Highlight-related constants exported from `grammar.js` feed editor tooling;
   regenerate downstream artifacts instead of touching generated files.
 
@@ -25,9 +27,16 @@ tree-sitter grammar repository.
 ## Development Workflow
 
 1. Edit `grammar.js` to add or adjust syntax rules.
-2. Run `pnpm run generate` to refresh `src/` artifacts and regenerate highlight queries.
+2. Run `pnpm run generate` to refresh `src/` artifacts and regenerate highlight
+   queries (alias: `pnpm tree-sitter generate`).
 3. Execute `pnpm tree-sitter test` (optionally scoped with `--include`).
 4. Open the playground via `pnpm start` for interactive validation.
+
+For any pipeline under test, you can confirm the expected AST via:
+
+```bash
+tenzir --dump-ast '<pipeline>'
+```
 
 ## Highlight Generation
 
