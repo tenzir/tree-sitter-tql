@@ -124,16 +124,25 @@ function buildHighlights() {
 }
 
 function main() {
-  const outputArg = process.argv[2] ?? "languages/tql/highlights.scm";
-  const outputPath = resolve(process.cwd(), outputArg);
-  const outputDir = dirname(outputPath);
-  if (!existsSync(outputDir)) {
-    mkdirSync(outputDir, { recursive: true });
-  }
+  const args = process.argv.slice(2);
+  const outputs = args.length > 0
+    ? args
+    : [
+        "languages/tql/highlights.scm",
+        "queries/tql/highlights.scm",
+      ];
 
   const content = buildHighlights();
-  writeFileSync(outputPath, content, "utf8");
-  console.log(`Wrote ${outputPath}`);
+
+  for (const outputArg of outputs) {
+    const outputPath = resolve(process.cwd(), outputArg);
+    const outputDir = dirname(outputPath);
+    if (!existsSync(outputDir)) {
+      mkdirSync(outputDir, { recursive: true });
+    }
+    writeFileSync(outputPath, content, "utf8");
+    console.log(`Wrote ${outputPath}`);
+  }
 }
 
 main();

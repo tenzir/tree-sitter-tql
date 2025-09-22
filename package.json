@@ -23,7 +23,8 @@
     "binding.gyp",
     "prebuilds/**",
     "bindings/node/*",
-    "queries/*",
+    "queries/**",
+    "languages/**",
     "src/**",
     "*.wasm"
   ],
@@ -47,6 +48,7 @@
   },
   "scripts": {
     "install": "node-gyp-build",
+    "generate": "tree-sitter generate && node scripts/generate-highlights.mjs",
     "prestart": "tree-sitter build --wasm",
     "start": "tree-sitter playground",
     "test": "node --test bindings/node/*_test.js"

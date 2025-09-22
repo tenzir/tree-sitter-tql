@@ -25,15 +25,16 @@ tree-sitter grammar repository.
 ## Development Workflow
 
 1. Edit `grammar.js` to add or adjust syntax rules.
-2. Run `pnpm tree-sitter generate` to refresh `src/` artifacts.
+2. Run `pnpm run generate` to refresh `src/` artifacts and regenerate highlight queries.
 3. Execute `pnpm tree-sitter test` (optionally scoped with `--include`).
 4. Open the playground via `pnpm start` for interactive validation.
 
 ## Highlight Generation
 
-- `scripts/generate-highlights.mjs` builds `languages/tql/highlights.scm` from
-  the exported `highlightConstants`. Run `node scripts/generate-highlights.mjs`
-  (optionally with an output path) whenever those constants change.
+- `scripts/generate-highlights.mjs` builds both `languages/tql/highlights.scm`
+  (for Zed and other consumers) and `queries/tql/highlights.scm` (for
+  tree-sitter runtime use) from the exported `highlightConstants`. Run it via
+  `pnpm run generate` whenever those constants change.
 - The `Update Zed Extension` workflow invokes the script and syncs the Zed
   grammar; keep the script and exports in lockstep with grammar changes.
 - Do not hand-edit generated highlight files; regenerate them through the
@@ -42,8 +43,8 @@ tree-sitter grammar repository.
 ## Build, Test & Development Commands
 
 - `pnpm install`: install dependencies, including `tree-sitter-cli@0.25.x`.
-- `pnpm tree-sitter generate`: refresh `src/parser.c`, `src/scanner.c`, and WASM
-  artifacts after grammar edits.
+- `pnpm run generate`: refresh `src/parser.c`, `src/scanner.c`, and regenerate
+  highlight queries after grammar edits.
 - `pnpm tree-sitter test [--include "Case" | --update]`: run corpus tests
   selectively or regenerate expectations.
 - `pnpm test`: execute Node binding smoke tests via `node --test`.

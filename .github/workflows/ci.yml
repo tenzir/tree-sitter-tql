@@ -9,6 +9,10 @@ on:
       - test/**
       - bindings/**
       - examples/**
+      - languages/**
+      - queries/**
+      - scripts/generate-highlights.mjs
+      - package.json
       - tree-sitter.json
       - .github/workflows/**
   pull_request:
@@ -18,6 +22,10 @@ on:
       - test/**
       - bindings/**
       - examples/**
+      - languages/**
+      - queries/**
+      - scripts/generate-highlights.mjs
+      - package.json
       - tree-sitter.json
       - .github/workflows/**
   workflow_dispatch:
@@ -37,32 +45,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Ensure highlights are committed
+        run: |
+          node scripts/generate-highlights.mjs
+          git diff --exit-code languages/tql/highlights.scm queries/tql/highlights.scm
       - name: Set up tree-sitter CLI
         uses: tree-sitter/setup-action/cli@v2
         with:
           tree-sitter-ref: v0.25.4
-      - name: Validate queries
-        shell: bash
-        run: |
-          if [ ! -d queries ]; then
-            echo "No queries directory; skipping validation"
-            exit 0
-          fi
-          tree-sitter build
-          LIB=$(find build -maxdepth 1 -type f \( -name '*tree-sitter-tql*.so' -o -name '*tree-sitter-tql*.dylib' -o -name '*tree-sitter-tql*.dll' \) | head -n1)
-          if [ -z "$LIB" ]; then
-            echo "Failed to locate compiled parser library" >&2
-            exit 1
-          fi
-          SAMPLE=$(find examples -type f -name '*.tql' | head -n1)
-          if [ -z "$SAMPLE" ]; then
-            echo "No sample .tql file found for query validation" >&2
-            exit 1
-          fi
-          while IFS= read -r query; do
-            echo "Checking $query"
-            tree-sitter query "$LIB" "$query" "$SAMPLE" >/dev/null
-          done < <(find queries -type f -name '*.scm' | sort)
       - name: Run parser and binding tests
         uses: tree-sitter/parser-test-action@v2
         with:

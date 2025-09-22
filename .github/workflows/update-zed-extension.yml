@@ -7,6 +7,7 @@ on:
     paths:
       - grammar.js
       - scripts/generate-highlights.mjs
+      - languages/**
   workflow_dispatch:
 
 permissions:
@@ -27,19 +28,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate highlights file
-        run: node scripts/generate-highlights.mjs "${{ runner.temp }}/highlights.scm"
+      - name: Copy committed highlights
+        run: |
+          mkdir -p "${{ runner.temp }}/languages/tql"
+          cp languages/tql/highlights.scm "${{ runner.temp }}/languages/tql/highlights.scm"
 
       - name: Capture current commit hash
         id: repo_meta
@@ -62,7 +54,7 @@ jobs:
       - name: Update highlights and metadata
         id: diffcheck
         env:
-          HIGHLIGHTS_PATH: ${{ runner.temp }}/highlights.scm
+          HIGHLIGHTS_PATH: ${{ runner.temp }}/languages/tql/highlights.scm
           ZED_TQL_DIR: ${{ runner.temp }}/zed-tql
         run: |
           set -euo pipefail

@@ -33,40 +33,51 @@ tree-sitter-tql = { git = "https://github.com/tenzir/tree-sitter-tql" }
 
 ## Neovim
 
-Configure `nvim-treesitter` to install directly from this repository:
-
-```lua
-require('nvim-treesitter.parsers').get_parser_configs().tql = {
-  install_info = {
-    url = 'https://github.com/tenzir/tree-sitter-tql',
-    files = { 'src/parser.c' },
-  },
-  filetype = 'tql',
-}
-
-require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'tql' },
-  highlight = { enable = true },
-}
-```
-
-Or using [lazy.nvim](https://github.com/folke/lazy.nvim):
+Lazy.nvim example that registers the parser and filetype. The tree-sitter
+highlights ship in `queries/tql/highlights.scm`, so no extra build step is
+required:
 
 ```lua
 {
   'nvim-treesitter/nvim-treesitter',
+  build = ':TSUpdate',
   opts = function(_, opts)
-    require('nvim-treesitter.parsers').get_parser_configs().tql = {
+    opts.ensure_installed = vim.list_extend(opts.ensure_installed or {}, {
+      'bash',
+      'c',
+      'comment',
+      'cpp',
+      'fish',
+      'json',
+      'lua',
+      'markdown',
+      'python',
+      'r',
+      'tql',
+      'yaml',
+    })
+
+    opts.highlight = opts.highlight or {}
+    opts.highlight.enable = true
+    local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+    parser_config.tql = {
       install_info = {
         url = 'https://github.com/tenzir/tree-sitter-tql',
         files = { 'src/parser.c' },
+        branch = 'main',
       },
       filetype = 'tql',
     }
-    opts.ensure_installed = vim.list_extend(opts.ensure_installed or {}, { 'tql' })
+
+    vim.filetype.add({ extension = { tql = 'tql' } })
   end,
 }
 ```
+
+Highlights stay in sync when you update the parser because they are generated
+and committed alongside the grammar. CI re-runs the generator and fails if the
+checked-in files would change, so always execute `pnpm run generate` after
+touching the grammar or highlight constants.
 
 # Development
 
@@ -82,10 +93,10 @@ Contributions are welcome! 🎉
    pnpm install
    ```
 
-2. Regenerate the parser when needed:
+2. Regenerate the parser (and highlights) when needed:
 
    ```bash
-   pnpm tree-sitter generate
+   pnpm run generate
    ```
 
 3. Tree-sitter CLI version pin:
