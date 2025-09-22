@@ -13,10 +13,11 @@ version
 
 (program
   (frontmatter
-    (frontmatter_delimiter)
-    (frontmatter_line)
-    (frontmatter_line)
-    (frontmatter_delimiter))
+    (frontmatter_open)
+    (frontmatter_body
+      (frontmatter_line)
+      (frontmatter_line))
+    (frontmatter_close))
   (pipeline
     (statement
       (invocation
@@ -35,6 +36,7 @@ author: nobody
 
 (program
   (frontmatter
-    (frontmatter_delimiter)
-    (frontmatter_line)
-    (frontmatter_delimiter)))
+    (frontmatter_open)
+    (frontmatter_body
+      (frontmatter_line))
+    (frontmatter_close)))

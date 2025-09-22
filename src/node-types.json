@@ -286,15 +286,47 @@
   {
     "type": "frontmatter",
     "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "frontmatter_body",
+            "named": true
+          }
+        ]
+      },
+      "close": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "frontmatter_close",
+            "named": true
+          }
+        ]
+      },
+      "open": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "frontmatter_open",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "frontmatter_body",
+    "named": true,
     "fields": {},
     "children": {
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "frontmatter_delimiter",
-          "named": true
-        },
         {
           "type": "frontmatter_line",
           "named": true
@@ -303,7 +335,12 @@
     }
   },
   {
-    "type": "frontmatter_delimiter",
+    "type": "frontmatter_close",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "frontmatter_open",
     "named": true,
     "fields": {}
   },

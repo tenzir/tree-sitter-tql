@@ -48,6 +48,8 @@
 (subnet) @constant
 (time) @number
 (duration) @number
+(frontmatter_open) @comment
+(frontmatter_close) @comment
 (comment) @comment
 
 (invocation

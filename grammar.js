@@ -47,6 +47,8 @@ const HIGHLIGHT_NODE_CAPTURES = [
   { node: "subnet", capture: "@constant" },
   { node: "time", capture: "@number" },
   { node: "duration", capture: "@number" },
+  { node: "frontmatter_open", capture: "@comment" },
+  { node: "frontmatter_close", capture: "@comment" },
   { node: "comment", capture: "@comment" },
 ];
 
@@ -102,17 +104,19 @@ module.exports = grammar({
 
     frontmatter: ($) =>
       seq(
-        alias($._frontmatter_open, $.frontmatter_delimiter),
-        repeat(alias($._frontmatter_line, $.frontmatter_line)),
-        alias($._frontmatter_close, $.frontmatter_delimiter),
+        field("open", $.frontmatter_open),
+        field("body", optional($.frontmatter_body)),
+        field("close", $.frontmatter_close),
       ),
 
-    _frontmatter_open: (_) => token(seq("---", /[ \t]*\r?\n/)),
+    frontmatter_open: (_) => token(seq("---", /[ \t]*\r?\n/)),
 
-    _frontmatter_close: (_) =>
+    frontmatter_close: (_) =>
       choice(token(seq("---", /[ \t]*\r?\n/)), token(seq("---", /[ \t]*/))),
 
-    _frontmatter_line: (_) =>
+    frontmatter_body: ($) => repeat1($.frontmatter_line),
+
+    frontmatter_line: (_) =>
       token(
         choice(
           /[ \t]*\r?\n/,
