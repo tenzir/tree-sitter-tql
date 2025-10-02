@@ -14,6 +14,7 @@ Features:
 - 💬 Comments (line and block)
 - 📏 Indentation guidance for braces, pipelines, and collections via Tree-sitter indent queries
 - 🔻 Folding queries for blocks, match statements, and collection literals
+- 🧠 Lambda parameters tracked for editor tooling via locals queries
 
 # Usage
 
@@ -26,7 +27,8 @@ the Zed extensions view.
 ## Neovim
 
 Lazy.nvim example that registers the parser and filetype. Tree-sitter queries
-(highlights, indents, folds) ship in `queries/tql`, so no extra build step is
+(highlights, indents, folds, locals) ship in `queries/tql`, so no extra build
+step is
 required:
 
 <details>
@@ -112,9 +114,9 @@ Contributions are welcome! 🎉
    ```
 
 > [!NOTE]
-> Highlights, indentation, and folding queries stay in sync because they are
-> generated and committed alongside the parser. CI re-runs the generator and
-> fails if the checked-in files would change, so always execute
+> Highlights, indentation, folding, and locals queries stay in sync because
+> they are generated and committed alongside the parser. CI re-runs the
+> generator and fails if the checked-in files would change, so always execute
 > `npm run generate` after touching the grammar or related constants.
 
 ## Testing

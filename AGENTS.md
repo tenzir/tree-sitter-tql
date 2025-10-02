@@ -50,6 +50,8 @@ tenzir --dump-ast '<pipeline>'
   related grammar metadata.
 - `scripts/generate-folds.mjs` emits folding queries for blocks, match
   statements, and collection literals based on `foldConstants`.
+- `scripts/generate-locals.mjs` emits locals queries for lexical bindings
+  defined in `localConstants` (currently lambda parameters).
 - The `Update Zed Extension` workflow copies all committed query artifacts into
   the downstream repository; keep the scripts and exported constants in lockstep
   with grammar changes.

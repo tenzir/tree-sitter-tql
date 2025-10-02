@@ -87,6 +87,12 @@ const FOLD_NODES = [
   "frontmatter",
 ];
 
+const LOCAL_SCOPES = ["lambda_expression"];
+
+const LOCAL_DEFINITIONS = [
+  { node: "lambda_expression", field: "parameter", type: "identifier" },
+];
+
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
 const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
@@ -455,7 +461,14 @@ module.exports = grammar({
 
     // Lambda expression
     lambda_expression: ($) =>
-      prec.right(2, seq($.identifier, "=>", $.expression)),
+      prec.right(
+        2,
+        seq(
+          field("parameter", $.identifier),
+          "=>",
+          field("body", $.expression),
+        ),
+      ),
 
     list: ($) =>
       seq(
@@ -617,6 +630,11 @@ module.exports.indentConstants = {
 
 module.exports.foldConstants = {
   NODES: FOLD_NODES,
+};
+
+module.exports.localConstants = {
+  SCOPES: LOCAL_SCOPES,
+  DEFINITIONS: LOCAL_DEFINITIONS,
 };
 
 function literalEnum(literals) {

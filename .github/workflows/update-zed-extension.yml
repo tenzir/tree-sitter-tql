@@ -9,6 +9,7 @@ on:
       - scripts/generate-highlights.mjs
       - scripts/generate-indents.mjs
       - scripts/generate-folds.mjs
+      - scripts/generate-locals.mjs
       - languages/**
   workflow_dispatch:
 
@@ -37,6 +38,7 @@ jobs:
           cp languages/tql/injections.scm "${{ runner.temp }}/languages/tql/injections.scm"
           cp languages/tql/indents.scm "${{ runner.temp }}/languages/tql/indents.scm"
           cp languages/tql/folds.scm "${{ runner.temp }}/languages/tql/folds.scm"
+          cp languages/tql/locals.scm "${{ runner.temp }}/languages/tql/locals.scm"
 
       - name: Capture current commit hash
         id: repo_meta
@@ -63,6 +65,7 @@ jobs:
           INJECTIONS_PATH: ${{ runner.temp }}/languages/tql/injections.scm
           INDENTS_PATH: ${{ runner.temp }}/languages/tql/indents.scm
           FOLDS_PATH: ${{ runner.temp }}/languages/tql/folds.scm
+          LOCALS_PATH: ${{ runner.temp }}/languages/tql/locals.scm
           ZED_TQL_DIR: ${{ runner.temp }}/zed-tql
         run: |
           set -euo pipefail
@@ -73,6 +76,7 @@ jobs:
           cp "$INJECTIONS_PATH" "languages/tql/injections.scm"
           cp "$INDENTS_PATH" "languages/tql/indents.scm"
           cp "$FOLDS_PATH" "languages/tql/folds.scm"
+          cp "$LOCALS_PATH" "languages/tql/locals.scm"
           sed -i "s/^commit = \".*\"/commit = \"${{ steps.repo_meta.outputs.commit }}\"/" extension.toml
           if git diff --quiet --exit-code; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -101,6 +105,7 @@ jobs:
             languages/tql/injections.scm \
             languages/tql/indents.scm \
             languages/tql/folds.scm \
+            languages/tql/locals.scm \
             extension.toml
           git commit -m "Sync Tree-sitter grammar"
           git push "https://x-access-token:$TOKEN@github.com/tenzir/zed-tql.git" HEAD:main
