@@ -99,7 +99,7 @@ tenzir --dump-ast '<pipeline>'
 
 ## Publishing
 
-- Tagging a release (for example `v0.2.0`) launches the `Publish packages`
+- Tagging a release (for example `v0.3.0`) launches the `Publish packages`
   workflow that builds bundles, uploads Wasm artifacts, and publishes to PyPI.
 - Before tagging, bump the version everywhere (`package.json`, `Cargo.toml`,
   `tree-sitter.json`, etc.), run `npm run generate`, and commit the regenerated

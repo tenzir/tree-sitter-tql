@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(tree-sitter-tql
-        VERSION "0.2.0"
+        VERSION "0.3.0"
         DESCRIPTION "The Tenzir Query Language (TQL) is a pipeline-style dataflow language."
         HOMEPAGE_URL "https://github.com/tenzir/tree-sitter-tql"
         LANGUAGES C)

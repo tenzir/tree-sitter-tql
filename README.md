@@ -168,7 +168,7 @@ Contributions are welcome! Please ensure:
 
 ## Publishing
 
-- Pushing a tag (for example `v0.2.0`) triggers the `Publish packages` workflow.
+- Pushing a tag (for example `v0.3.0`) triggers the `Publish packages` workflow.
 - The workflow generates a GitHub release with source and Wasm artifacts, then builds and publishes wheels and an sdist to PyPI.
 - Configure a repository secret `PYPI_API_TOKEN` (optionally scoped to a `pypi` environment) containing an API token created at https://pypi.org/manage/account/token.
 - Follow the [tree-sitter publishing guide](https://tree-sitter.github.io/tree-sitter/creating-parsers/6-publishing.html): update the version with `tree-sitter version`, commit, tag, and push the tag to run the release pipeline.
