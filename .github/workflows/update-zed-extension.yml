@@ -7,6 +7,7 @@ on:
     paths:
       - grammar.js
       - scripts/generate-highlights.mjs
+      - scripts/generate-indents.mjs
       - languages/**
   workflow_dispatch:
 
@@ -33,6 +34,7 @@ jobs:
           mkdir -p "${{ runner.temp }}/languages/tql"
           cp languages/tql/highlights.scm "${{ runner.temp }}/languages/tql/highlights.scm"
           cp languages/tql/injections.scm "${{ runner.temp }}/languages/tql/injections.scm"
+          cp languages/tql/indents.scm "${{ runner.temp }}/languages/tql/indents.scm"
 
       - name: Capture current commit hash
         id: repo_meta
@@ -52,11 +54,12 @@ jobs:
             https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com/tenzir/zed-tql.git \
             "${{ runner.temp }}/zed-tql"
 
-      - name: Update highlights and metadata
+      - name: Update grammar assets
         id: diffcheck
         env:
           HIGHLIGHTS_PATH: ${{ runner.temp }}/languages/tql/highlights.scm
           INJECTIONS_PATH: ${{ runner.temp }}/languages/tql/injections.scm
+          INDENTS_PATH: ${{ runner.temp }}/languages/tql/indents.scm
           ZED_TQL_DIR: ${{ runner.temp }}/zed-tql
         run: |
           set -euo pipefail
@@ -65,6 +68,7 @@ jobs:
           git checkout main
           cp "$HIGHLIGHTS_PATH" "languages/tql/highlights.scm"
           cp "$INJECTIONS_PATH" "languages/tql/injections.scm"
+          cp "$INDENTS_PATH" "languages/tql/indents.scm"
           sed -i "s/^commit = \".*\"/commit = \"${{ steps.repo_meta.outputs.commit }}\"/" extension.toml
           if git diff --quiet --exit-code; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -89,7 +93,10 @@ jobs:
           cd "${{ runner.temp }}/zed-tql"
           git config user.name "tenzir-bot"
           git config user.email "engineering@tenzir.com"
-          git add languages/tql/highlights.scm languages/tql/injections.scm extension.toml
+          git add languages/tql/highlights.scm \
+            languages/tql/injections.scm \
+            languages/tql/indents.scm \
+            extension.toml
           git commit -m "Sync Tree-sitter grammar"
           git push "https://x-access-token:$TOKEN@github.com/tenzir/zed-tql.git" HEAD:main
 

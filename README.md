@@ -12,6 +12,7 @@ Features:
 - 🔀 Control flow structures (if/else, match statements)
 - 📦 Module paths and function calls
 - 💬 Comments (line and block)
+- 📏 Indentation guidance for braces, pipelines, and collections via Tree-sitter indent queries
 
 # Usage
 
@@ -23,9 +24,8 @@ the Zed extensions view.
 
 ## Neovim
 
-Lazy.nvim example that registers the parser and filetype. The tree-sitter
-highlights ship in `queries/tql/highlights.scm`, so no extra build step is
-required:
+Lazy.nvim example that registers the parser and filetype. Tree-sitter queries
+ship in `queries/tql`, so no extra build step is required:
 
 <details>
 <summary>Lazy.nvim example</summary>
@@ -110,10 +110,10 @@ Contributions are welcome! 🎉
    ```
 
 > [!NOTE]
-> Highlights stay in sync because they are generated and committed alongside
-> the parser. CI re-runs the generator and fails if the checked-in files would
-> change, so always execute `npm run generate` after touching the grammar or
-> highlight constants.
+> Highlights and indentation queries stay in sync because they are generated
+> and committed alongside the parser. CI re-runs the generator and fails if the
+> checked-in files would change, so always execute `npm run generate` after
+> touching the grammar or related constants.
 
 ## Testing
 

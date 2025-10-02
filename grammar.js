@@ -61,6 +61,21 @@ const HIGHLIGHT_STRUCTURAL_PATTERNS = [
   `((identifier) @variable.builtin (#match? @variable.builtin "^\\$[A-Za-z_]\\w*$"))`,
 ];
 
+const INDENT_BLOCK_RULES = [
+  { node: "then_block", open: "{", close: "}" },
+  { node: "else_block", open: "{", close: "}" },
+  { node: "pipeline_block", open: "{", close: "}" },
+  { node: "match_statement", open: "{", close: "}" },
+  { node: "match_arm", open: "{", close: "}" },
+];
+
+const INDENT_COLLECTION_RULES = [
+  { node: "list", open: "[", close: "]" },
+  { node: "record", open: "{", close: "}" },
+];
+
+const INDENT_ALIGNMENT_RULES = [];
+
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
 const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
@@ -581,6 +596,12 @@ module.exports.highlightConstants = {
   PUNCTUATION_DELIMITERS,
   OPERATORS,
   ARITHMETIC_OPERATORS,
+};
+
+module.exports.indentConstants = {
+  BLOCKS: INDENT_BLOCK_RULES,
+  COLLECTIONS: INDENT_COLLECTION_RULES,
+  ALIGNMENTS: INDENT_ALIGNMENT_RULES,
 };
 
 function literalEnum(literals) {
