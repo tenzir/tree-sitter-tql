@@ -38,16 +38,23 @@ For any pipeline under test, you can confirm the expected AST via:
 tenzir --dump-ast '<pipeline>'
 ```
 
-## Highlight Generation
+## Query Generation
 
 - `scripts/generate-highlights.mjs` builds both `languages/tql/highlights.scm`
   (for Zed and other consumers) and `queries/tql/highlights.scm` (for
-  tree-sitter runtime use) from the exported `highlightConstants`. Run it via
-  `npm run generate` whenever those constants change.
-- The `Update Zed Extension` workflow invokes the script and syncs the Zed
-  grammar; keep the script and exports in lockstep with grammar changes.
-- Do not hand-edit generated highlight files; regenerate them through the
-  script.
+  tree-sitter runtime use) from the exported `highlightConstants`.
+- `scripts/generate-injections.mjs` keeps the YAML frontmatter injection query
+  in sync across `languages/` and `queries/`.
+- `scripts/generate-indents.mjs` derives indentation queries from
+  `indentConstants` in `grammar.js`, so always regenerate after adjusting the
+  related grammar metadata.
+- `scripts/generate-folds.mjs` emits folding queries for blocks, match
+  statements, and collection literals based on `foldConstants`.
+- The `Update Zed Extension` workflow copies all committed query artifacts into
+  the downstream repository; keep the scripts and exported constants in lockstep
+  with grammar changes.
+- Do not hand-edit generated query files; run `npm run generate` to refresh
+  them.
 
 ## Build, Test & Development Commands
 

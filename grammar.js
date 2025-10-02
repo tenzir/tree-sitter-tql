@@ -76,6 +76,17 @@ const INDENT_COLLECTION_RULES = [
 
 const INDENT_ALIGNMENT_RULES = [];
 
+const FOLD_NODES = [
+  "then_block",
+  "else_block",
+  "pipeline_block",
+  "match_statement",
+  "match_arm",
+  "list",
+  "record",
+  "frontmatter",
+];
+
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
 const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
@@ -602,6 +613,10 @@ module.exports.indentConstants = {
   BLOCKS: INDENT_BLOCK_RULES,
   COLLECTIONS: INDENT_COLLECTION_RULES,
   ALIGNMENTS: INDENT_ALIGNMENT_RULES,
+};
+
+module.exports.foldConstants = {
+  NODES: FOLD_NODES,
 };
 
 function literalEnum(literals) {
