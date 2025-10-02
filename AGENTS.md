@@ -92,8 +92,13 @@ tenzir --dump-ast '<pipeline>'
 
 - Tagging a release (for example `v0.2.0`) launches the `Publish packages`
   workflow that builds bundles, uploads Wasm artifacts, and publishes to PyPI.
-- Ensure `tree-sitter version` reflects the release, commit the version bump,
-  tag, and push the tag.
+- Before tagging, bump the version everywhere (`package.json`, `Cargo.toml`,
+  `tree-sitter.json`, etc.), run `npm run generate`, and commit the regenerated
+  artifacts—this ensures `src/parser.c` embeds the matching
+  `metadata.minor_version`.
+- Run `npx tree-sitter test` (and any binding smoke tests) after regeneration,
+  then push the commit and wait for CI to turn green. Only create the tag once
+  the release commit has landed on `main` with a clean worktree.
 - Provide a `PYPI_API_TOKEN` secret for PyPI publication; npm and crates.io
   steps can be added later via upstream workflows.
 
