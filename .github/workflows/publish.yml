@@ -11,7 +11,6 @@ concurrency:
 permissions:
   contents: write
   id-token: write
-  attestations: write
 
 jobs:
   github:
@@ -19,7 +18,6 @@ jobs:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
     with:
       generate: true
-      attestations: true
   prebuilds:
     name: Build prebuilds (${{matrix.os}})
     needs: github
@@ -149,4 +147,3 @@ jobs:
       PYPI_API_TOKEN: ${{secrets.PYPI_API_TOKEN}}
     with:
       generate: true
-      attestations: true
