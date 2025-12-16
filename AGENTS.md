@@ -7,9 +7,9 @@ tree-sitter grammar repository.
 
 - Tree-sitter grammar for the Tenzir Query Language (TQL), a pipeline-style
   dataflow language.
-- Grammar changes must mirror the AST emitted by `tenzir --dump-ast '<pipeline>'`.
-  Use this command as the ground truth when shaping grammar updates and
-  authoring test expectations.
+- Grammar changes must mirror the AST emitted by
+  `tenzir --dump-ast '<pipeline>'`. Use this command as the ground truth when
+  shaping grammar updates and authoring test expectations.
 - Highlight-related constants exported from `grammar.js` feed editor tooling;
   regenerate downstream artifacts instead of touching generated files.
 
@@ -66,8 +66,8 @@ tenzir --dump-ast '<pipeline>'
 - `npx tree-sitter test [--include "Case" | --update]`: run corpus tests
   selectively or regenerate expectations.
 - `npm test`: execute Node binding smoke tests via `node --test`.
-- `npm run start`: open the tree-sitter playground; `tenzir --dump-ast '<pipeline>'`
-  supplies ground-truth ASTs.
+- `npm run start`: open the tree-sitter playground;
+  `tenzir --dump-ast '<pipeline>'` supplies ground-truth ASTs.
 
 ## Coding Style & Naming Conventions
 
@@ -100,7 +100,11 @@ tenzir --dump-ast '<pipeline>'
 ## Publishing
 
 - Tagging a release (for example `v0.3.0`) launches the `Publish packages`
-  workflow that builds bundles, uploads Wasm artifacts, and publishes to PyPI.
+  workflow that:
+  - Creates a GitHub release with source bundles and WASM artifacts
+  - Builds prebuilt native binaries for Linux, macOS (x64 + arm64), and Windows
+  - Publishes to npm with OIDC trusted publishing and provenance attestations
+  - Publishes Python wheels to PyPI
 - Before tagging, bump the version everywhere (`package.json`, `Cargo.toml`,
   `tree-sitter.json`, etc.), run `npm run generate`, and commit the regenerated
   artifacts—this ensures `src/parser.c` embeds the matching
@@ -108,8 +112,8 @@ tenzir --dump-ast '<pipeline>'
 - Run `npx tree-sitter test` (and any binding smoke tests) after regeneration,
   then push the commit and wait for CI to turn green. Only create the tag once
   the release commit has landed on `main` with a clean worktree.
-- Provide a `PYPI_API_TOKEN` secret for PyPI publication; npm and crates.io
-  steps can be added later via upstream workflows.
+- Required secrets: `PYPI_API_TOKEN` for PyPI. npm uses OIDC trusted publishing
+  (no token required—configured at npmjs.com/package/tree-sitter-tql/access).
 
 ## Commit & Pull Request Guidelines
 
