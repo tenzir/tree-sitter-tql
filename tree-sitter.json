@@ -6,15 +6,13 @@
       "camelcase": "TQL",
       "title": "Tenzir Query Language (TQL)",
       "scope": "source.tql",
-      "file-types": [
-        "tql"
-      ],
+      "file-types": ["tql"],
       "injection-regex": "^tql$",
       "class-name": "TreeSitterTql"
     }
   ],
   "metadata": {
-    "version": "0.3.0",
+    "version": "1.0.0",
     "license": "MIT",
     "description": "Tree-sitter grammar for the Tenzir Query Language (TQL)",
     "authors": [

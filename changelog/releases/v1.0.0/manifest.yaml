@@ -1,0 +1,8 @@
+created: 2025-12-16
+title: Tree-sitter TQL v1.0.0
+intro: >-
+  This release marks the first stable version of the Tree-sitter TQL grammar.
+
+  It adds prebuilt native binaries and npm publishing with OIDC provenance,
+
+  eliminating compilation for most users.

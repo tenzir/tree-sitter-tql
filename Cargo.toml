@@ -1,7 +1,7 @@
 [package]
 name = "tree-sitter-tql"
 description = "Tree-sitter grammar for the Tenzir Query Language (TQL)"
-version = "0.3.0"
+version = "1.0.0"
 authors = ["Tenzir <engineering@tenzir.com>"]
 license = "MIT"
 readme = "README.md"
