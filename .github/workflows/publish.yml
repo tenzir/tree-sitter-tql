@@ -138,6 +138,8 @@ jobs:
           ls -la prebuilds/
           echo "WASM:"
           ls -la tree-sitter-tql.wasm
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest && npm --version
       - name: Publish to npm with provenance
         run: npm publish --access public --provenance
   pypi:
