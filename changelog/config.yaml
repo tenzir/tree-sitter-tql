@@ -1,0 +1,6 @@
+id: tree-sitter-tql
+name: Tree-sitter TQL
+description: >-
+  A Tree-sitter grammar for the Tenzir Query Language (TQL) with bindings for
+  Node.js, Python, Rust, Go, and Swift.
+repository: tenzir/tree-sitter-tql
