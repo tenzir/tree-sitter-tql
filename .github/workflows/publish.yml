@@ -20,6 +20,52 @@ jobs:
     with:
       generate: true
       attestations: true
+  prebuilds:
+    name: Build prebuilds (${{matrix.os}})
+    needs: github
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{vars.NODE_VERSION || '22'}}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build prebuilds
+        run: npx prebuildify --napi --strip
+      - name: Build prebuilds (cross-compile arm64)
+        if: matrix.os == 'macos-latest'
+        run: npx prebuildify --napi --strip --arch arm64
+      - name: Upload prebuild artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuilds-${{runner.os}}
+          path: prebuilds/
+  upload-prebuilds:
+    name: Upload prebuilds to release
+    needs: prebuilds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all prebuild artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuilds-*
+          path: prebuilds-all
+          merge-multiple: true
+      - name: Create prebuilds archive
+        run: |
+          tar -czf prebuilds.tar.gz -C prebuilds-all .
+          ls -la prebuilds-all/
+      - name: Upload prebuilds to release
+        env:
+          GITHUB_TOKEN: ${{github.token}}
+        run: gh release upload "${GITHUB_REF_NAME}" prebuilds.tar.gz --clobber --repo ${{github.repository}}
   bundle:
     name: Package editor artifacts
     needs: github
@@ -62,6 +108,39 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           gh release upload "${GITHUB_REF_NAME}" "tree-sitter-tql-${VERSION}-bundle.tar.gz" --clobber
           gh release upload "${GITHUB_REF_NAME}" tree-sitter-tql.wasm --clobber
+  npm:
+    name: Publish npm package
+    needs: [prebuilds, bundle]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{vars.NODE_VERSION || '22'}}
+          registry-url: https://registry.npmjs.org
+      - name: Download all prebuild artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuilds-*
+          path: prebuilds
+          merge-multiple: true
+      - name: Download WASM artifact
+        env:
+          GITHUB_TOKEN: ${{github.token}}
+        run: gh release download "${GITHUB_REF_NAME}" --pattern "tree-sitter-tql.wasm" --repo ${{github.repository}}
+      - name: Verify artifacts
+        run: |
+          echo "Prebuilds:"
+          ls -la prebuilds/
+          echo "WASM:"
+          ls -la tree-sitter-tql.wasm
+      - name: Publish to npm with provenance
+        run: npm publish --access public --provenance
   pypi:
     name: Publish PyPI package
     uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@main
