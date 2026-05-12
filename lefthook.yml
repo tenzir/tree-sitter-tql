@@ -1,0 +1,13 @@
+pre-push:
+  parallel: false
+  commands:
+    generated:
+      run: npm run generate && git diff --exit-code -- src/parser.c src/grammar.json src/node-types.json bindings/c/tree_sitter/tree-sitter-tql.h languages/tql queries/tql
+    tree-sitter:
+      run: npm exec tree-sitter -- test
+
+fix:
+  parallel: false
+  commands:
+    generated:
+      run: npm run generate

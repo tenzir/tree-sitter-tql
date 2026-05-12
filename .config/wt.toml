@@ -1,0 +1,5 @@
+# Keep new worktrees ready to use and install the shared Git hooks.
+pre-start = "npm install && npm exec lefthook -- install"
+
+# Run the same fast quality gate before Worktrunk merges as local pushes and CI.
+pre-merge = "npm run check"
