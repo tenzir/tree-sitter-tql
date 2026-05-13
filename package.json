@@ -36,6 +36,7 @@
     "node-gyp-build": "^4.8.4"
   },
   "devDependencies": {
+    "lefthook": "^2.1.6",
     "markdownlint-cli": "^0.45.0",
     "prebuildify": "^6.0.1",
     "prettier": "^3.6.2",
@@ -51,6 +52,8 @@
     }
   },
   "scripts": {
+    "check": "lefthook run pre-push --all-files",
+    "fix": "lefthook run fix --all-files",
     "install": "node-gyp-build",
     "generate": "tree-sitter generate && node scripts/generate-highlights.mjs && node scripts/generate-injections.mjs && node scripts/generate-indents.mjs && node scripts/generate-folds.mjs && node scripts/generate-locals.mjs",
     "prestart": "tree-sitter build --wasm",

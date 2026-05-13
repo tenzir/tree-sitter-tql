@@ -11,8 +11,10 @@ on:
       - examples/**
       - languages/**
       - queries/**
-      - scripts/generate-highlights.mjs
+      - scripts/**
+      - lefthook.yml
       - package.json
+      - package-lock.json
       - tree-sitter.json
       - .github/workflows/**
   pull_request:
@@ -24,8 +26,10 @@ on:
       - examples/**
       - languages/**
       - queries/**
-      - scripts/generate-highlights.mjs
+      - scripts/**
+      - lefthook.yml
       - package.json
+      - package-lock.json
       - tree-sitter.json
       - .github/workflows/**
   workflow_dispatch:
@@ -45,10 +49,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Ensure highlights are committed
-        run: |
-          node scripts/generate-highlights.mjs
-          git diff --exit-code languages/tql/highlights.scm queries/tql/highlights.scm
+      - name: Set up Node.js
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: npm ci
+      - name: Run fast quality checks
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run check
       - name: Set up tree-sitter CLI
         uses: tree-sitter/setup-action/cli@v2
         with:

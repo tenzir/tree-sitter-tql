@@ -105,6 +105,7 @@ Contributions are welcome! 🎉
    git clone https://github.com/tenzir/tree-sitter-tql
    cd tree-sitter-tql
    npm install
+   npm exec lefthook -- install
    ```
 
 2. Regenerate the parser (and highlights) when needed:
@@ -123,11 +124,13 @@ Contributions are welcome! 🎉
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
 
-1. Run all tests: `npx tree-sitter test`
-2. Run a specific test: `npx tree-sitter test --include "Simple assignment"`
-3. Run a test corpus file: `npx tree-sitter test test/corpus/statements.txt`
-4. Update expectations: `npx tree-sitter test --update`
-5. Run Node binding tests: `npm test`
+1. Run the fast quality gate: `npm run check`
+2. Apply formatting and generated-file updates: `npm run fix`
+3. Run all grammar tests: `npx tree-sitter test`
+4. Run a specific test: `npx tree-sitter test --include "Simple assignment"`
+5. Run a test corpus file: `npx tree-sitter test test/corpus/statements.txt`
+6. Update expectations: `npx tree-sitter test --update`
+7. Run Node binding tests: `npm test`
 
 ## Grammar Development
 
