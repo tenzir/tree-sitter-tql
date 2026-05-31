@@ -2,7 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-This repository hosts the tree-sitter grammar for **TQL**, the [Tenzir Query Language](https://docs.tenzir.com/explanations/language).
+This repository hosts the tree-sitter grammar for **TQL**, the [Tenzir Query
+Language](https://docs.tenzir.com/explanations/language).
 
 Features:
 
@@ -16,15 +17,15 @@ Features:
 - 🔻 Folding queries for blocks, match statements, and collection literals
 - 🧠 Lambda parameters tracked for editor tooling via locals queries
 
-# Usage
+## Usage
 
-## Zed
+### Zed
 
 The [tenzir/zed-tql](https://github.com/tenzir/zed-tql) extension bundles the
 latest highlights and parser for TQL. Install it from the repository or through
 the Zed extensions view.
 
-## Neovim
+### Neovim
 
 Lazy.nvim example that registers the parser and filetype. Tree-sitter queries
 (highlights, indents, folds, locals) ship in `queries/tql`, so no extra build
@@ -93,11 +94,11 @@ return {
 
 </details>
 
-# Development
+## Development
 
 Contributions are welcome! 🎉
 
-## Setup
+### Setup
 
 1. Clone the repository and install dependencies:
 
@@ -120,29 +121,7 @@ Contributions are welcome! 🎉
 > generator and fails if the checked-in files would change, so always execute
 > `npm run generate` after touching the grammar or related constants.
 
-## Testing
-
-The grammar includes a comprehensive test suite in the `test/corpus/` directory:
-
-1. Run the fast quality gate: `npm run check`
-2. Apply formatting and generated-file updates: `npm run fix`
-3. Run all grammar tests: `npx tree-sitter test`
-4. Run a specific test: `npx tree-sitter test --include "Simple assignment"`
-5. Run a test corpus file: `npx tree-sitter test test/corpus/statements.txt`
-6. Update expectations: `npx tree-sitter test --update`
-7. Run Node binding tests: `npm test`
-
-## Grammar Development
-
-The grammar is defined in `grammar.js`. To regenerate the parser after grammar
-changes:
-
-```bash
-npx tree-sitter generate
-npx tree-sitter test
-```
-
-## Playground
+### Playground
 
 To interactively test the grammar:
 
@@ -152,31 +131,9 @@ npm run start
 npx tree-sitter playground
 ```
 
-This opens a web interface where you can input TQL code and see the parse tree in real time.
+This opens a web interface where you can input TQL code and see the parse tree
+in real time.
 
-## Contributing
-
-Contributions are welcome! Please ensure:
-
-1. All tests pass (`npx tree-sitter test`).
-2. New features include test cases.
-3. Grammar changes are documented.
-
-## Continuous Integration
-
-- GitHub Actions runs the `CI` workflow on pushes and pull requests touching the grammar, bindings, or examples.
-- The matrix covers Linux, macOS, and Windows runners to exercise parser generation and binding smoke tests for Rust, Node.js, Python, Go, and Swift.
-- Example pipelines in `examples/**` are parsed to provide quick coverage feedback.
-- Scanner fuzzing is triggered automatically whenever `src/scanner.c` changes.
-
-## Publishing
-
-- Pushing a tag (for example `v0.3.0`) triggers the `Publish packages` workflow.
-- The workflow generates a GitHub release with source and Wasm artifacts, then builds and publishes wheels and an sdist to PyPI.
-- Configure a repository secret `PYPI_API_TOKEN` (optionally scoped to a `pypi` environment) containing an API token created at https://pypi.org/manage/account/token.
-- Follow the [tree-sitter publishing guide](https://tree-sitter.github.io/tree-sitter/creating-parsers/6-publishing.html): update the version with `tree-sitter version`, commit, tag, and push the tag to run the release pipeline.
-- npm and crates.io publishing steps can be added later by extending the workflow with `package-npm.yml` or `package-crates.yml` from [tree-sitter/workflows](https://github.com/tree-sitter/workflows).
-
-# License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
