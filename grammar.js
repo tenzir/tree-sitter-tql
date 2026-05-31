@@ -95,7 +95,19 @@ const LOCAL_DEFINITIONS = [
 
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
-const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
+const OPERATORS = [
+  "=",
+  "=>",
+  "|",
+  "..",
+  "::",
+  "==",
+  "!=",
+  ">",
+  ">=",
+  "<",
+  "<=",
+];
 const ARITHMETIC_OPERATORS = ["+", "-", "*", "/"];
 
 const KEYWORD = literalEnum(KEYWORDS);
@@ -150,10 +162,7 @@ module.exports = grammar({
 
     frontmatter_line: (_) =>
       token(
-        choice(
-          /[ \t]*\r?\n/,
-          seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/),
-        ),
+        choice(/[ \t]*\r?\n/, seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/)),
       ),
 
     // Comments should be explicit nodes but handled as extras
@@ -222,13 +231,35 @@ module.exports = grammar({
           field("expr", $.expression),
           "{",
           repeat("\n"),
-          repeat(seq($.match_arm, repeat(choice("\n", ",")))),
+          repeat(seq($.match_arm, optional(","), repeat("\n"))),
           "}",
         ),
       ),
 
     match_arm: ($) =>
-      seq(commaSep1($.expression), "=>", "{", repeat("\n"), $.pipeline, "}"),
+      seq(
+        sep1_newline(field("patterns", $.match_pattern), "|"),
+        optional(seq(KEYWORD.IF, field("guard", $.expression))),
+        "=>",
+        "{",
+        repeat("\n"),
+        field("body", optional($.pipeline)),
+        "}",
+      ),
+
+    match_pattern: ($) =>
+      choice($.wildcard_pattern, $.range_pattern, $.expression_pattern),
+
+    wildcard_pattern: (_) => prec(1, BUILTIN._),
+
+    expression_pattern: ($) => $.pattern_expression,
+
+    range_pattern: ($) =>
+      seq(
+        field("lower", $.pattern_expression),
+        "..",
+        field("upper", $.pattern_expression),
+      ),
 
     invocation: ($) =>
       seq(
@@ -313,6 +344,104 @@ module.exports = grammar({
           $.call_expression,
           $.lambda_expression,
           $.primary_expression,
+        ),
+      ),
+
+    pattern_expression: ($) =>
+      prec.left(
+        1,
+        choice(
+          $.pattern_binary_expression,
+          $.unary_expression,
+          $.member_expression,
+          $.index_expression,
+          $.call_expression,
+          $.pattern_primary_expression,
+        ),
+      ),
+
+    pattern_binary_expression: ($) =>
+      choice(
+        // Lowest precedence: else (precedence 1). This mirrors the C++ parser,
+        // where match patterns use parse_expression(min_prec=1, stop_at_if=true).
+        prec.left(
+          1,
+          seq(
+            $.pattern_expression,
+            KEYWORD.ELSE,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          3,
+          seq(
+            $.pattern_expression,
+            KEYWORD.OR,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          4,
+          seq(
+            $.pattern_expression,
+            KEYWORD.AND,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          6,
+          seq(
+            $.pattern_expression,
+            choice("==", "!=", ">", ">=", "<", "<=", KEYWORD.IN),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          6,
+          seq(
+            $.pattern_expression,
+            seq(KEYWORD.NOT, KEYWORD.IN),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          7,
+          seq(
+            $.pattern_expression,
+            choice("+", "-"),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          8,
+          seq(
+            $.pattern_expression,
+            choice("*", "/"),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+      ),
+
+    pattern_primary_expression: ($) =>
+      prec(
+        1,
+        choice(
+          $.literal,
+          $.format_expr,
+          $.identifier,
+          $.dollar_var,
+          $.meta_selector,
+          KEYWORD.THIS,
+          $.list,
+          $.record,
+          seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
         ),
       ),
 
@@ -462,7 +591,7 @@ module.exports = grammar({
     // Lambda expression
     lambda_expression: ($) =>
       prec.right(
-        2,
+        -1,
         seq(
           field("parameter", $.identifier),
           "=>",
