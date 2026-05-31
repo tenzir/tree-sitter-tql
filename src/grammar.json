@@ -474,40 +474,44 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "FIELD",
-          "name": "patterns",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "patterns",
+              "content": {
                 "type": "SYMBOL",
                 "name": "match_pattern"
-              },
-              {
-                "type": "REPEAT",
-                "content": {
-                  "type": "SEQ",
-                  "members": [
-                    {
+              }
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "|"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
                       "type": "STRING",
-                      "value": "|"
-                    },
-                    {
-                      "type": "REPEAT",
-                      "content": {
-                        "type": "STRING",
-                        "value": "\n"
-                      }
-                    },
-                    {
+                      "value": "\n"
+                    }
+                  },
+                  {
+                    "type": "FIELD",
+                    "name": "patterns",
+                    "content": {
                       "type": "SYMBOL",
                       "name": "match_pattern"
                     }
-                  ]
-                }
+                  }
+                ]
               }
-            ]
-          }
+            }
+          ]
         },
         {
           "type": "CHOICE",

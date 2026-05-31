@@ -238,7 +238,7 @@ module.exports = grammar({
 
     match_arm: ($) =>
       seq(
-        field("patterns", sep1_newline($.match_pattern, "|")),
+        sep1_newline(field("patterns", $.match_pattern), "|"),
         optional(seq(KEYWORD.IF, field("guard", $.expression))),
         "=>",
         "{",

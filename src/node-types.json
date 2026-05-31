@@ -585,16 +585,8 @@
         "required": true,
         "types": [
           {
-            "type": "\n",
-            "named": false
-          },
-          {
             "type": "match_pattern",
             "named": true
-          },
-          {
-            "type": "|",
-            "named": false
           }
         ]
       }
