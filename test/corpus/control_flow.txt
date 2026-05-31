@@ -465,7 +465,7 @@ match status {
                       (string))))))))))))
 
 ==================
-Match with negative list and record patterns
+Match with negative and exact structured value patterns
 ==================
 
 match value {
@@ -475,9 +475,6 @@ match value {
   },
   {action: "allow", port: 443} => {
     class = "allow web"
-  }
-  {status: 499..600, tags: ["prod", "checkout"]} => {
-    class = "nested"
   }
   _ => {}
 }
@@ -495,9 +492,9 @@ match value {
           (match_pattern
             (expression_pattern
               (pattern_expression
-                (pattern_unary_expression
-                  (pattern_expression
-                    (pattern_primary_expression
+                (unary_expression
+                  (expression
+                    (primary_expression
                       (literal
                         (number)))))))))
         (match_arm
@@ -505,19 +502,15 @@ match value {
             (expression_pattern
               (pattern_expression
                 (pattern_primary_expression
-                  (pattern_list
-                    (match_pattern
-                      (expression_pattern
-                        (pattern_expression
-                          (pattern_primary_expression
-                            (literal
-                              (string))))))
-                    (match_pattern
-                      (expression_pattern
-                        (pattern_expression
-                          (pattern_primary_expression
-                            (literal
-                              (string)))))))))))
+                  (list
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string))))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string)))))))))
           (pipeline
             (statement
               (assignment
@@ -533,70 +526,19 @@ match value {
             (expression_pattern
               (pattern_expression
                 (pattern_primary_expression
-                  (pattern_record
-                    (pattern_record_field
+                  (record
+                    (record_field
                       (identifier)
-                      (match_pattern
-                        (expression_pattern
-                          (pattern_expression
-                            (pattern_primary_expression
-                              (literal
-                                (string)))))))
-                    (pattern_record_field
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string)))))
+                    (record_field
                       (identifier)
-                      (match_pattern
-                        (expression_pattern
-                          (pattern_expression
-                            (pattern_primary_expression
-                              (literal
-                                (number))))))))))))
-          (pipeline
-            (statement
-              (assignment
-                (selector
-                  (field_selector
-                    (identifier)))
-                (expression
-                  (primary_expression
-                    (literal
-                      (string))))))))
-        (match_arm
-          (match_pattern
-            (expression_pattern
-              (pattern_expression
-                (pattern_primary_expression
-                  (pattern_record
-                    (pattern_record_field
-                      (identifier)
-                      (match_pattern
-                        (range_pattern
-                          (pattern_expression
-                            (pattern_primary_expression
-                              (literal
-                                (number))))
-                          (pattern_expression
-                            (pattern_primary_expression
-                              (literal
-                                (number)))))))
-                    (pattern_record_field
-                      (identifier)
-                      (match_pattern
-                        (expression_pattern
-                          (pattern_expression
-                            (pattern_primary_expression
-                              (pattern_list
-                                (match_pattern
-                                  (expression_pattern
-                                    (pattern_expression
-                                      (pattern_primary_expression
-                                        (literal
-                                          (string))))))
-                                (match_pattern
-                                  (expression_pattern
-                                    (pattern_expression
-                                      (pattern_primary_expression
-                                        (literal
-                                          (string)))))))))))))))))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (number))))))))))
           (pipeline
             (statement
               (assignment

@@ -132,9 +132,7 @@ module.exports = grammar({
   conflicts: ($) => [
     // These are necessary conflicts
     [$.record],
-    [$.pattern_record],
     [$.list], // Needed for if [ ... ] disambiguation
-    [$.pattern_list],
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
   ],
@@ -252,7 +250,7 @@ module.exports = grammar({
     match_pattern: ($) =>
       choice($.wildcard_pattern, $.range_pattern, $.expression_pattern),
 
-    wildcard_pattern: ($) => BUILTIN._,
+    wildcard_pattern: (_) => prec(1, BUILTIN._),
 
     expression_pattern: ($) => $.pattern_expression,
 
@@ -351,31 +349,30 @@ module.exports = grammar({
 
     pattern_expression: ($) =>
       prec.left(
+        1,
         choice(
           $.pattern_binary_expression,
-          $.pattern_unary_expression,
-          $.pattern_member_expression,
-          $.pattern_index_expression,
-          $.pattern_call_expression,
+          $.unary_expression,
+          $.member_expression,
+          $.index_expression,
+          $.call_expression,
           $.pattern_primary_expression,
         ),
       ),
 
-    pattern_primary_expression: ($) =>
-      choice(
-        $.literal,
-        $.format_expr,
-        $.identifier,
-        $.dollar_var,
-        $.meta_selector,
-        KEYWORD.THIS,
-        $.pattern_list,
-        $.pattern_record,
-        seq("(", repeat("\n"), $.pattern_expression, repeat("\n"), ")"),
-      ),
-
     pattern_binary_expression: ($) =>
       choice(
+        // Lowest precedence: else (precedence 1). This mirrors the C++ parser,
+        // where match patterns use parse_expression(min_prec=1, stop_at_if=true).
+        prec.left(
+          1,
+          seq(
+            $.pattern_expression,
+            KEYWORD.ELSE,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
         prec.left(
           3,
           seq(
@@ -432,85 +429,21 @@ module.exports = grammar({
         ),
       ),
 
-    pattern_unary_expression: ($) =>
-      choice(
-        prec(5, seq(choice(KEYWORD.NOT, KEYWORD.MOVE), $.pattern_expression)),
-        prec(9, seq(choice("+", "-"), $.pattern_expression)),
-      ),
-
-    pattern_member_expression: ($) =>
-      prec.left(
-        11,
+    pattern_primary_expression: ($) =>
+      prec(
+        1,
         choice(
-          seq($.pattern_expression, ".", $.identifier, optional("?")),
-          seq($.pattern_expression, ".?", $.identifier),
+          $.literal,
+          $.format_expr,
+          $.identifier,
+          $.dollar_var,
+          $.meta_selector,
+          KEYWORD.THIS,
+          $.list,
+          $.record,
+          seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
         ),
       ),
-
-    pattern_index_expression: ($) =>
-      prec.left(
-        11,
-        seq(
-          $.pattern_expression,
-          "[",
-          $.pattern_expression,
-          "]",
-          optional("?"),
-        ),
-      ),
-
-    pattern_call_expression: ($) =>
-      choice(
-        seq($.entity, "(", commaSep($.call_argument), repeat("\n"), ")"),
-        prec(
-          12,
-          seq(
-            field("receiver", $.pattern_expression),
-            ".",
-            field("method", $.entity),
-            "(",
-            commaSep($.call_argument),
-            repeat("\n"),
-            ")",
-          ),
-        ),
-      ),
-
-    pattern_list: ($) =>
-      seq(
-        "[",
-        repeat("\n"),
-        sep(
-          choice($.match_pattern, $.pattern_spread),
-          seq(repeat("\n"), ",", repeat("\n")),
-        ),
-        optional(","),
-        repeat("\n"),
-        "]",
-      ),
-
-    pattern_record: ($) =>
-      seq(
-        "{",
-        repeat("\n"),
-        sep(
-          choice($.pattern_record_field, $.pattern_spread),
-          seq(repeat("\n"), ",", repeat("\n")),
-        ),
-        optional(","),
-        repeat("\n"),
-        "}",
-      ),
-
-    pattern_record_field: ($) =>
-      seq(
-        field("key", choice($.identifier, $.string)),
-        ":",
-        repeat("\n"),
-        field("value", $.match_pattern),
-      ),
-
-    pattern_spread: ($) => seq("...", $.pattern_expression),
 
     primary_expression: ($) =>
       choice(
