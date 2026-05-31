@@ -465,6 +465,38 @@ match status {
                       (string))))))))))))
 
 ==================
+Match with bare guard
+==================
+
+match x {
+  1 if guard => {}
+  _ => {}
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (match_arm
+          (match_pattern
+            (expression_pattern
+              (pattern_expression
+                (pattern_primary_expression
+                  (literal
+                    (number))))))
+          (expression
+            (primary_expression
+              (identifier))))
+        (match_arm
+          (match_pattern
+            (wildcard_pattern)))))))
+
+==================
 Match with negative and exact structured value patterns
 ==================
 

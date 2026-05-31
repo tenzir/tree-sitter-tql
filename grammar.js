@@ -591,7 +591,7 @@ module.exports = grammar({
     // Lambda expression
     lambda_expression: ($) =>
       prec.right(
-        2,
+        -1,
         seq(
           field("parameter", $.identifier),
           "=>",
