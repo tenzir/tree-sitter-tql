@@ -95,7 +95,19 @@ const LOCAL_DEFINITIONS = [
 
 const PUNCTUATION_BRACKETS = ["(", ")"];
 const PUNCTUATION_DELIMITERS = [","];
-const OPERATORS = ["=", "=>", "|", "::", "==", "!=", ">", ">=", "<", "<="];
+const OPERATORS = [
+  "=",
+  "=>",
+  "|",
+  "..",
+  "::",
+  "==",
+  "!=",
+  ">",
+  ">=",
+  "<",
+  "<=",
+];
 const ARITHMETIC_OPERATORS = ["+", "-", "*", "/"];
 
 const KEYWORD = literalEnum(KEYWORDS);
@@ -150,10 +162,7 @@ module.exports = grammar({
 
     frontmatter_line: (_) =>
       token(
-        choice(
-          /[ \t]*\r?\n/,
-          seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/),
-        ),
+        choice(/[ \t]*\r?\n/, seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/)),
       ),
 
     // Comments should be explicit nodes but handled as extras
@@ -222,13 +231,35 @@ module.exports = grammar({
           field("expr", $.expression),
           "{",
           repeat("\n"),
-          repeat(seq($.match_arm, repeat(choice("\n", ",")))),
+          repeat(seq($.match_arm, optional(","), repeat("\n"))),
           "}",
         ),
       ),
 
     match_arm: ($) =>
-      seq(commaSep1($.expression), "=>", "{", repeat("\n"), $.pipeline, "}"),
+      seq(
+        field("patterns", sep1_newline($.match_pattern, "|")),
+        optional(seq(KEYWORD.IF, field("guard", $.expression))),
+        "=>",
+        "{",
+        repeat("\n"),
+        field("body", optional($.pipeline)),
+        "}",
+      ),
+
+    match_pattern: ($) =>
+      choice($.wildcard_pattern, $.range_pattern, $.expression_pattern),
+
+    wildcard_pattern: ($) => BUILTIN._,
+
+    expression_pattern: ($) => $.pattern_expression,
+
+    range_pattern: ($) =>
+      seq(
+        field("lower", $.pattern_expression),
+        "..",
+        field("upper", $.pattern_expression),
+      ),
 
     invocation: ($) =>
       seq(
@@ -313,6 +344,133 @@ module.exports = grammar({
           $.call_expression,
           $.lambda_expression,
           $.primary_expression,
+        ),
+      ),
+
+    pattern_expression: ($) =>
+      prec.left(
+        choice(
+          $.pattern_binary_expression,
+          $.pattern_unary_expression,
+          $.pattern_member_expression,
+          $.pattern_index_expression,
+          $.pattern_call_expression,
+          $.pattern_primary_expression,
+        ),
+      ),
+
+    pattern_primary_expression: ($) =>
+      choice(
+        $.literal,
+        $.format_expr,
+        $.identifier,
+        $.dollar_var,
+        $.meta_selector,
+        KEYWORD.THIS,
+        $.list,
+        $.record,
+        seq("(", repeat("\n"), $.pattern_expression, repeat("\n"), ")"),
+      ),
+
+    pattern_binary_expression: ($) =>
+      choice(
+        prec.left(
+          3,
+          seq(
+            $.pattern_expression,
+            KEYWORD.OR,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          4,
+          seq(
+            $.pattern_expression,
+            KEYWORD.AND,
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          6,
+          seq(
+            $.pattern_expression,
+            choice("==", "!=", ">", ">=", "<", "<=", KEYWORD.IN),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          6,
+          seq(
+            $.pattern_expression,
+            seq(KEYWORD.NOT, KEYWORD.IN),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          7,
+          seq(
+            $.pattern_expression,
+            choice("+", "-"),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+        prec.left(
+          8,
+          seq(
+            $.pattern_expression,
+            choice("*", "/"),
+            repeat("\n"),
+            $.pattern_expression,
+          ),
+        ),
+      ),
+
+    pattern_unary_expression: ($) =>
+      choice(
+        prec(5, seq(choice(KEYWORD.NOT, KEYWORD.MOVE), $.pattern_expression)),
+        prec(9, seq(choice("+", "-"), $.pattern_expression)),
+      ),
+
+    pattern_member_expression: ($) =>
+      prec.left(
+        11,
+        choice(
+          seq($.pattern_expression, ".", $.identifier, optional("?")),
+          seq($.pattern_expression, ".?", $.identifier),
+        ),
+      ),
+
+    pattern_index_expression: ($) =>
+      prec.left(
+        11,
+        seq(
+          $.pattern_expression,
+          "[",
+          $.pattern_expression,
+          "]",
+          optional("?"),
+        ),
+      ),
+
+    pattern_call_expression: ($) =>
+      choice(
+        seq($.entity, "(", commaSep($.call_argument), repeat("\n"), ")"),
+        prec(
+          12,
+          seq(
+            field("receiver", $.pattern_expression),
+            ".",
+            field("method", $.entity),
+            "(",
+            commaSep($.call_argument),
+            repeat("\n"),
+            ")",
+          ),
         ),
       ),
 

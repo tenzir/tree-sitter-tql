@@ -230,6 +230,21 @@
     }
   },
   {
+    "type": "expression_pattern",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "field_selector",
     "named": true,
     "fields": {},
@@ -544,17 +559,65 @@
   {
     "type": "match_arm",
     "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "pipeline",
+            "named": true
+          }
+        ]
+      },
+      "guard": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "patterns": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "\n",
+            "named": false
+          },
+          {
+            "type": "match_pattern",
+            "named": true
+          },
+          {
+            "type": "|",
+            "named": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "match_pattern",
+    "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "expression_pattern",
           "named": true
         },
         {
-          "type": "pipeline",
+          "type": "range_pattern",
+          "named": true
+        },
+        {
+          "type": "wildcard_pattern",
           "named": true
         }
       ]
@@ -626,6 +689,188 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_binary_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_call_expression",
+    "named": true,
+    "fields": {
+      "method": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "entity",
+            "named": true
+          }
+        ]
+      },
+      "receiver": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "pattern_expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "call_argument",
+          "named": true
+        },
+        {
+          "type": "entity",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_binary_expression",
+          "named": true
+        },
+        {
+          "type": "pattern_call_expression",
+          "named": true
+        },
+        {
+          "type": "pattern_index_expression",
+          "named": true
+        },
+        {
+          "type": "pattern_member_expression",
+          "named": true
+        },
+        {
+          "type": "pattern_primary_expression",
+          "named": true
+        },
+        {
+          "type": "pattern_unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_index_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_member_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "pattern_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_primary_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "dollar_var",
+          "named": true
+        },
+        {
+          "type": "format_expr",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "list",
+          "named": true
+        },
+        {
+          "type": "literal",
+          "named": true
+        },
+        {
+          "type": "meta_selector",
+          "named": true
+        },
+        {
+          "type": "pattern_expression",
+          "named": true
+        },
+        {
+          "type": "record",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_unary_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_expression",
           "named": true
         }
       ]
@@ -722,6 +967,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "range_pattern",
+    "named": true,
+    "fields": {
+      "lower": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "pattern_expression",
+            "named": true
+          }
+        ]
+      },
+      "upper": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "pattern_expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -880,6 +1151,11 @@
     }
   },
   {
+    "type": "wildcard_pattern",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "\n",
     "named": false
   },
@@ -917,6 +1193,10 @@
   },
   {
     "type": ".",
+    "named": false
+  },
+  {
+    "type": "..",
     "named": false
   },
   {
