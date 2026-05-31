@@ -132,7 +132,9 @@ module.exports = grammar({
   conflicts: ($) => [
     // These are necessary conflicts
     [$.record],
+    [$.pattern_record],
     [$.list], // Needed for if [ ... ] disambiguation
+    [$.pattern_list],
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
   ],
@@ -367,8 +369,8 @@ module.exports = grammar({
         $.dollar_var,
         $.meta_selector,
         KEYWORD.THIS,
-        $.list,
-        $.record,
+        $.pattern_list,
+        $.pattern_record,
         seq("(", repeat("\n"), $.pattern_expression, repeat("\n"), ")"),
       ),
 
@@ -473,6 +475,42 @@ module.exports = grammar({
           ),
         ),
       ),
+
+    pattern_list: ($) =>
+      seq(
+        "[",
+        repeat("\n"),
+        sep(
+          choice($.match_pattern, $.pattern_spread),
+          seq(repeat("\n"), ",", repeat("\n")),
+        ),
+        optional(","),
+        repeat("\n"),
+        "]",
+      ),
+
+    pattern_record: ($) =>
+      seq(
+        "{",
+        repeat("\n"),
+        sep(
+          choice($.pattern_record_field, $.pattern_spread),
+          seq(repeat("\n"), ",", repeat("\n")),
+        ),
+        optional(","),
+        repeat("\n"),
+        "}",
+      ),
+
+    pattern_record_field: ($) =>
+      seq(
+        field("key", choice($.identifier, $.string)),
+        ":",
+        repeat("\n"),
+        field("value", $.match_pattern),
+      ),
+
+    pattern_spread: ($) => seq("...", $.pattern_expression),
 
     primary_expression: ($) =>
       choice(

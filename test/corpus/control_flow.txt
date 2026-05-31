@@ -476,6 +476,9 @@ match value {
   {action: "allow", port: 443} => {
     class = "allow web"
   }
+  {status: 499..600, tags: ["prod", "checkout"]} => {
+    class = "nested"
+  }
   _ => {}
 }
 
@@ -502,15 +505,19 @@ match value {
             (expression_pattern
               (pattern_expression
                 (pattern_primary_expression
-                  (list
-                    (expression
-                      (primary_expression
-                        (literal
-                          (string))))
-                    (expression
-                      (primary_expression
-                        (literal
-                          (string)))))))))
+                  (pattern_list
+                    (match_pattern
+                      (expression_pattern
+                        (pattern_expression
+                          (pattern_primary_expression
+                            (literal
+                              (string))))))
+                    (match_pattern
+                      (expression_pattern
+                        (pattern_expression
+                          (pattern_primary_expression
+                            (literal
+                              (string)))))))))))
           (pipeline
             (statement
               (assignment
@@ -526,19 +533,70 @@ match value {
             (expression_pattern
               (pattern_expression
                 (pattern_primary_expression
-                  (record
-                    (record_field
+                  (pattern_record
+                    (pattern_record_field
                       (identifier)
-                      (expression
-                        (primary_expression
-                          (literal
-                            (string)))))
-                    (record_field
+                      (match_pattern
+                        (expression_pattern
+                          (pattern_expression
+                            (pattern_primary_expression
+                              (literal
+                                (string)))))))
+                    (pattern_record_field
                       (identifier)
-                      (expression
-                        (primary_expression
-                          (literal
-                            (number))))))))))
+                      (match_pattern
+                        (expression_pattern
+                          (pattern_expression
+                            (pattern_primary_expression
+                              (literal
+                                (number))))))))))))
+          (pipeline
+            (statement
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))
+        (match_arm
+          (match_pattern
+            (expression_pattern
+              (pattern_expression
+                (pattern_primary_expression
+                  (pattern_record
+                    (pattern_record_field
+                      (identifier)
+                      (match_pattern
+                        (range_pattern
+                          (pattern_expression
+                            (pattern_primary_expression
+                              (literal
+                                (number))))
+                          (pattern_expression
+                            (pattern_primary_expression
+                              (literal
+                                (number)))))))
+                    (pattern_record_field
+                      (identifier)
+                      (match_pattern
+                        (expression_pattern
+                          (pattern_expression
+                            (pattern_primary_expression
+                              (pattern_list
+                                (match_pattern
+                                  (expression_pattern
+                                    (pattern_expression
+                                      (pattern_primary_expression
+                                        (literal
+                                          (string))))))
+                                (match_pattern
+                                  (expression_pattern
+                                    (pattern_expression
+                                      (pattern_primary_expression
+                                        (literal
+                                          (string)))))))))))))))))
           (pipeline
             (statement
               (assignment

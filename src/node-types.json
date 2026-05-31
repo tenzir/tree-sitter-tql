@@ -792,6 +792,25 @@
     }
   },
   {
+    "type": "pattern_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "match_pattern",
+          "named": true
+        },
+        {
+          "type": "pattern_spread",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "pattern_member_expression",
     "named": true,
     "fields": {},
@@ -831,10 +850,6 @@
           "named": true
         },
         {
-          "type": "list",
-          "named": true
-        },
-        {
           "type": "literal",
           "named": true
         },
@@ -847,7 +862,75 @@
           "named": true
         },
         {
-          "type": "record",
+          "type": "pattern_list",
+          "named": true
+        },
+        {
+          "type": "pattern_record",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_record",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "pattern_record_field",
+          "named": true
+        },
+        {
+          "type": "pattern_spread",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pattern_record_field",
+    "named": true,
+    "fields": {
+      "key": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "match_pattern",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "pattern_spread",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pattern_expression",
           "named": true
         }
       ]
