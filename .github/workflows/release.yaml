@@ -33,21 +33,50 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: write
-
 jobs:
+  validate-release-config:
+    name: Validate release workflow configuration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate release configuration
+        env:
+          TENZIR_GITHUB_APP_ID: ${{ vars.TENZIR_GITHUB_APP_ID }}
+          TENZIR_GITHUB_APP_PRIVATE_KEY: ${{ secrets.TENZIR_GITHUB_APP_PRIVATE_KEY }}
+          TENZIR_BOT_GPG_SIGNING_KEY: ${{ secrets.TENZIR_BOT_GPG_SIGNING_KEY }}
+        run: |
+          if [ -z "$TENZIR_GITHUB_APP_ID" ]; then
+            echo "::error::Repository variable 'TENZIR_GITHUB_APP_ID' must be set for release runs."
+            exit 1
+          fi
+
+          if [ -z "$TENZIR_GITHUB_APP_PRIVATE_KEY" ]; then
+            echo "::error::Repository secret 'TENZIR_GITHUB_APP_PRIVATE_KEY' must be set for release runs."
+            exit 1
+          fi
+
+          if [ -z "$TENZIR_BOT_GPG_SIGNING_KEY" ]; then
+            echo "::error::Repository secret 'TENZIR_BOT_GPG_SIGNING_KEY' must be set for release runs."
+            exit 1
+          fi
+
   release:
-    uses: tenzir/ship/.github/workflows/release.yaml@main
+    needs: validate-release-config
+    uses: tenzir/ship/.github/workflows/release.yaml@87509bbc44fc9dc383816ab5b0706584c21fbd64
+    permissions:
+      contents: write
     with:
       intro: ${{ inputs.intro }}
       title: ${{ inputs.title }}
       bump: ${{ inputs.bump }}
       version: ${{ inputs.version }}
       rc: ${{ inputs.rc }}
-      post-create: node scripts/set-version.mjs "$RELEASE_VERSION"
-      github_app_id: ${{ vars.TENZIR_AUTOBUMPER_APP_ID }}
+      pre-publish: node scripts/set-version.mjs "$RELEASE_VERSION"
+      github_app_id: ${{ vars.TENZIR_GITHUB_APP_ID }}
       git_user_name: tenzir-bot
       git_user_email: engineering@tenzir.com
+      sign_commits: true
+      sign_tags: true
     secrets:
-      github_app_private_key: ${{ secrets.TENZIR_AUTOBUMPER_APP_PRIVATE_KEY }}
+      github_app_private_key: ${{ secrets.TENZIR_GITHUB_APP_PRIVATE_KEY }}
+      gpg_private_key: ${{ secrets.TENZIR_BOT_GPG_SIGNING_KEY }}
