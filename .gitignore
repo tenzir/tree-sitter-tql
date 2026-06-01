@@ -36,6 +36,9 @@ zig-out/
 # Example dirs
 /examples/*/
 
+# Documentation checkout
+.docs/
+
 # Grammar volatiles
 *.wasm
 *.obj
