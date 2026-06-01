@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      intro:
+        description: "1-2 sentence release introduction"
+        required: true
+        type: string
+      title:
+        description: "User-facing release title"
+        required: false
+        default: ""
+        type: string
+      bump:
+        description: "Version bump type"
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+      version:
+        description: "Explicit stable release version, for example v1.2.3"
+        required: false
+        default: ""
+        type: string
+      rc:
+        description: "Create or continue a release-candidate series"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: tenzir/ship/.github/workflows/release.yaml@main
+    with:
+      intro: ${{ inputs.intro }}
+      title: ${{ inputs.title }}
+      bump: ${{ inputs.bump }}
+      version: ${{ inputs.version }}
+      rc: ${{ inputs.rc }}
+      post-create: node scripts/set-version.mjs "$RELEASE_VERSION"
+      github_app_id: ${{ vars.TENZIR_AUTOBUMPER_APP_ID }}
+      git_user_name: tenzir-bot
+      git_user_email: engineering@tenzir.com
+    secrets:
+      github_app_private_key: ${{ secrets.TENZIR_AUTOBUMPER_APP_PRIVATE_KEY }}
