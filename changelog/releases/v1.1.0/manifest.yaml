@@ -1,0 +1,8 @@
+created: 2026-06-01
+title: Match statement pattern syntax
+intro: >-
+  This release expands Tree-sitter TQL parsing with match statement pattern syntax
+  and adds a shared local quality gate for contributors.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.0.0
