@@ -9,90 +9,17 @@ Features:
 
 - 🚀 Complete syntax support for TQL pipelines, operators, and expressions
 - 📝 Proper handling of significant newlines and pipe separators
-- 🔢 Support for all TQL literal types (strings, numbers, IPs, durations, etc.)
-- 🔀 Control flow structures (if/else, match statements)
+- 🔢 Support for all TQL literal types, including strings, numbers, IP addresses,
+  and durations
+- 🔀 Control flow structures, including `if`, `else`, and `match`
 - 📦 Module paths and function calls
-- 💬 Comments (line and block)
-- 📏 Indentation guidance for braces, pipelines, and collections via Tree-sitter indent queries
-- 🔻 Folding queries for blocks, match statements, and collection literals
-- 🧠 Lambda parameters tracked for editor tooling via locals queries
+- 💬 Line and block comments
+- 🧠 Tree-sitter queries for highlights, indentation, folds, injections, and locals
 
 ## Usage
 
-### Zed
-
-The [tenzir/zed-tql](https://github.com/tenzir/zed-tql) extension bundles the
-latest highlights and parser for TQL. Install it from the repository or through
-the Zed extensions view.
-
-### Neovim
-
-Lazy.nvim example that registers the parser and filetype. Tree-sitter queries
-(highlights, indents, folds, locals) ship in `queries/tql`, so no extra build
-step is
-required:
-
-<details>
-<summary>Lazy.nvim example</summary>
-
-```lua
-return {
-  'nvim-treesitter/nvim-treesitter',
-  build = ':TSUpdate',
-  dependencies = {
-    'tenzir/tree-sitter-tql',
-  },
-  opts = function(_, opts)
-    opts.ensure_installed = {
-      'bash',
-      'c',
-      'comment',
-      'cpp',
-      'fish',
-      'json',
-      'lua',
-      'markdown',
-      'python',
-      'r',
-      'tql',
-      'yaml',
-    }
-
-    opts.highlight = {
-      enable = true,
-      additional_vim_regex_highlighting = true,
-    }
-
-    opts.incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = '<CR>',
-        scope_incremental = '<CR>',
-        node_incremental = '<TAB>',
-        node_decremental = '<S-TAB>',
-      },
-    }
-
-    return opts
-  end,
-  config = function(_, opts)
-    local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
-    parser_config.tql = {
-      install_info = {
-        url = 'https://github.com/tenzir/tree-sitter-tql',
-        files = { 'src/parser.c' },
-        branch = 'main',
-      },
-      filetype = 'tql',
-    }
-
-    require('nvim-treesitter.configs').setup(opts)
-    vim.filetype.add({ extension = { tql = 'tql' } })
-  end,
-}
-```
-
-</details>
+See the official Tenzir documentation for editor setup instructions:
+[Set up syntax highlighting](https://docs.tenzir.com/guides/development/setup-syntax-highlighting).
 
 ## Development
 
