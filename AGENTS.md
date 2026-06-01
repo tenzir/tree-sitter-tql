@@ -17,6 +17,8 @@ npx tree-sitter test
 
 Use `tenzir-ship` to manage the `changelog/` directory.
 
+Cut releases with the `.github/workflows/release.yaml` workflow.
+
 ### Testing
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
