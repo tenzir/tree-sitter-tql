@@ -15,6 +15,8 @@ npx tree-sitter generate
 npx tree-sitter test
 ```
 
+Use `tenzir-ship` to manage the `changelog/` directory.
+
 ### Testing
 
 The grammar includes a comprehensive test suite in the `test/corpus/` directory:
