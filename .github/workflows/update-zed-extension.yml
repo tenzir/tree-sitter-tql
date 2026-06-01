@@ -78,6 +78,30 @@ jobs:
           cp "$FOLDS_PATH" "languages/tql/folds.scm"
           cp "$LOCALS_PATH" "languages/tql/locals.scm"
           sed -i "s/^commit = \".*\"/commit = \"${{ steps.repo_meta.outputs.commit }}\"/" extension.toml
+          current_version="$(
+            sed -nE 's/^version = "([0-9]+\.[0-9]+\.[0-9]+)"/\1/p' extension.toml
+          )"
+          if [ -z "$current_version" ]; then
+            echo "::error::Could not find extension version in extension.toml"
+            exit 1
+          fi
+          latest_tag_version="$(
+            git ls-remote --tags --refs origin 'v[0-9]*.[0-9]*.[0-9]*' \
+              | awk '{ sub("refs/tags/v", "", $2); print $2 }' \
+              | sort -V \
+              | tail -n 1
+          )"
+          base_version="$current_version"
+          if [ -n "$latest_tag_version" ]; then
+            base_version="$(
+              printf '%s\n%s\n' "$current_version" "$latest_tag_version" \
+                | sort -V \
+                | tail -n 1
+            )"
+          fi
+          IFS=. read -r major minor patch <<< "$base_version"
+          next_version="$major.$minor.$((patch + 1))"
+          sed -i "s/^version = \".*\"/version = \"$next_version\"/" extension.toml
           if git diff --quiet --exit-code; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
