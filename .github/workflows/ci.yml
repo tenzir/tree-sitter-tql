@@ -3,22 +3,9 @@ name: CI
 on:
   push:
     branches: [main, master]
-    paths:
-      - grammar.js
-      - src/**
-      - test/**
-      - bindings/**
-      - examples/**
-      - languages/**
-      - queries/**
-      - scripts/**
-      - lefthook.yml
-      - package.json
-      - package-lock.json
-      - tree-sitter.json
-      - .github/workflows/**
   pull_request:
     paths:
+      - .node-version
       - grammar.js
       - src/**
       - test/**
@@ -49,11 +36,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Read Node.js version
+        id: node-version
+        shell: bash
+        run: printf 'version=%s\n' "$(cat .node-version)" >> "$GITHUB_OUTPUT"
       - name: Set up Node.js
         if: matrix.os == 'ubuntu-latest'
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - name: Install dependencies
         if: matrix.os == 'ubuntu-latest'
         run: npm ci
@@ -69,7 +60,7 @@ jobs:
         with:
           test-rust: true
           test-node: true
-          node-version: 20
+          node-version: ${{steps.node-version.outputs.version}}
           test-python: true
           test-go: true
           test-swift: false

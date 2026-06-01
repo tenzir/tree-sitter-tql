@@ -5,6 +5,8 @@ This repository holds the tree-sitter grammar for the Tenzir Query Language
 
 ## Development
 
+The `.node-version` file is the single repo-wide source for the Node.js version.
+
 The grammar is defined in `grammar.js`. To regenerate the parser after grammar
 changes:
 
