@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - changelog/releases/**
       - grammar.js
       - scripts/generate-highlights.mjs
       - scripts/generate-indents.mjs

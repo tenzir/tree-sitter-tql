@@ -14,11 +14,35 @@ permissions:
   attestations: write
 
 jobs:
+  release-notes:
+    name: Generate release notes
+    runs-on: ubuntu-latest
+    outputs:
+      body: ${{ steps.notes.outputs.body }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+      - name: Generate release notes
+        id: notes
+        run: |
+          output_delimiter="release_notes_$(uuidgen)"
+          {
+            echo "body<<$output_delimiter"
+            uvx tenzir-ship show "$GITHUB_REF_NAME" --release -m
+            echo "$output_delimiter"
+          } >> "$GITHUB_OUTPUT"
+
   github:
     name: Release to GitHub
+    needs: release-notes
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
     with:
       generate: true
+      release-body: ${{ needs.release-notes.outputs.body }}
   prebuilds:
     name: Build prebuilds (${{matrix.os}})
     needs: github

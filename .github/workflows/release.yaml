@@ -41,10 +41,16 @@ jobs:
     steps:
       - name: Validate release configuration
         env:
+          RELEASE_RC: ${{ inputs.rc }}
           TENZIR_GITHUB_APP_ID: ${{ vars.TENZIR_GITHUB_APP_ID }}
           TENZIR_GITHUB_APP_PRIVATE_KEY: ${{ secrets.TENZIR_GITHUB_APP_PRIVATE_KEY }}
           TENZIR_BOT_GPG_SIGNING_KEY: ${{ secrets.TENZIR_BOT_GPG_SIGNING_KEY }}
         run: |
+          if [ "$RELEASE_RC" = "true" ]; then
+            echo "::error::Release candidates are not supported by the Tree-sitter publish workflow."
+            exit 1
+          fi
+
           if [ -z "$TENZIR_GITHUB_APP_ID" ]; then
             echo "::error::Repository variable 'TENZIR_GITHUB_APP_ID' must be set for release runs."
             exit 1
@@ -71,7 +77,20 @@ jobs:
       bump: ${{ inputs.bump }}
       version: ${{ inputs.version }}
       rc: ${{ inputs.rc }}
-      pre-publish: node scripts/set-version.mjs "$RELEASE_VERSION"
+      skip-publish: true
+      post-create: |
+        set -euo pipefail
+
+        release_version="$(uvx tenzir-ship release version)"
+        node scripts/set-version.mjs "$release_version"
+        npm run generate
+
+        git add changelog
+        git add -u
+        git commit -m "Release $release_version"
+        git tag -a "$release_version" -m "Release $release_version"
+        git push origin "HEAD:$GITHUB_REF_NAME"
+        git push origin "$release_version"
       github_app_id: ${{ vars.TENZIR_GITHUB_APP_ID }}
       git_user_name: tenzir-bot
       git_user_email: engineering@tenzir.com
