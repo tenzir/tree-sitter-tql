@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - .node-version
+      - changelog/**
       - grammar.js
       - src/**
       - test/**
@@ -26,6 +27,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changelog:
+    name: Validate changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Validate changelog
+        run: uvx tenzir-ship --root changelog validate
+
   test:
     name: Test parser
     runs-on: ${{matrix.os}}
@@ -48,6 +62,9 @@ jobs:
       - name: Install dependencies
         if: matrix.os == 'ubuntu-latest'
         run: npm ci
+      - name: Install uv
+        if: matrix.os == 'ubuntu-latest'
+        uses: astral-sh/setup-uv@v7
       - name: Run fast quality checks
         if: matrix.os == 'ubuntu-latest'
         run: npm run check
