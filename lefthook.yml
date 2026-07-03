@@ -5,6 +5,9 @@ pre-push:
       run: npm run generate && git diff --exit-code HEAD -- src bindings/c/tree_sitter/tree-sitter-tql.h languages/tql queries/tql
     workflows:
       run: npm exec github-actionlint -- .github/workflows/*.yml .github/workflows/*.yaml
+    changelog:
+      glob: "changelog/**"
+      run: uvx tenzir-ship --root changelog validate --lenient
     tree-sitter:
       run: npm exec tree-sitter -- test
 
