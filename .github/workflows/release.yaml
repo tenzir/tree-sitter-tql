@@ -83,6 +83,8 @@ jobs:
 
         release_version="$(uvx tenzir-ship release version)"
         node scripts/set-version.mjs "$release_version"
+        npm ci --ignore-scripts
+        npm rebuild tree-sitter-cli
         npm run generate
 
         git add changelog
