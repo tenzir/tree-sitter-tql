@@ -39,6 +39,7 @@
     "github-actionlint": "^1.7.12",
     "lefthook": "^2.1.10",
     "markdownlint-cli": "^0.49.1",
+    "node-gyp": "^13.0.1",
     "prebuildify": "^6.0.1",
     "prettier": "^3.9.5",
     "tree-sitter": "0.25.0",
