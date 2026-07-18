@@ -1,0 +1,9 @@
+created: 2026-07-18
+title: Development dependency updates
+intro: >-
+  This release updates development dependencies to eliminate all known npm audit findings
+  and seven Dependabot alerts, including a high-severity crafted-ZIP vulnerability.
+  It also restores native Node.js builds on Windows runners with Visual Studio 2026.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.1.0
