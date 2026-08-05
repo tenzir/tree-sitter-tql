@@ -33,7 +33,7 @@ Contributions are welcome! 🎉
    git clone https://github.com/tenzir/tree-sitter-tql
    cd tree-sitter-tql
    npm install
-   npm exec lefthook -- install
+   npm exec -- lefthook install
    ```
 
 2. Regenerate the parser (and highlights) when needed:
