@@ -1,0 +1,8 @@
+created: 2026-08-05
+title: Dependency security updates
+intro: >-
+  Tree-sitter TQL now uses the latest npm dependencies and removes all known npm audit
+  vulnerabilities from its development toolchain.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.1.1
