@@ -3,6 +3,8 @@ title: Multiple pipeline arguments
 type: feature
 authors:
   - claude
+prs:
+  - 8
 created: 2026-08-12T12:30:00.000000Z
 ---
 
