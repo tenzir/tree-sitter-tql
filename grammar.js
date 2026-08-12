@@ -273,6 +273,7 @@ module.exports = grammar({
         optional(
           seq(
             $.pipeline_block,
+            repeat(seq(",", repeat("\n"), $.pipeline_block)),
             optional(seq(",", repeat("\n"), field("arguments", $.arguments))),
           ),
         ),
