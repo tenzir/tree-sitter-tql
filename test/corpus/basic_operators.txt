@@ -128,3 +128,46 @@ select user, timestamp
             (expression
               (primary_expression
                 (identifier)))))))))
+
+==================
+Operator with multiple pipeline arguments
+==================
+
+fork_merge {
+  head 1
+}, {
+  tail 1
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
