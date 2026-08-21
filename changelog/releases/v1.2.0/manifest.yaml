@@ -1,0 +1,9 @@
+created: 2026-08-21
+title: Improve TQL parsing for pipeline arguments and assignments
+intro: >-
+  This release improves TQL parsing for multi-pipeline operators and assignments in
+  expression and package contexts. It eliminates recovery nodes for several valid
+  constructs, improving syntax-tree accuracy and highlighting.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.1.2
