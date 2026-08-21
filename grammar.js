@@ -300,8 +300,10 @@ module.exports = grammar({
       choice(
         KEYWORD.THIS,
         seq(
-          optional(seq(KEYWORD.THIS, ".")),
-          $.identifier,
+          choice(
+            seq(optional(seq(KEYWORD.THIS, ".")), $.identifier),
+            $.dollar_var,
+          ),
           optional("?"),
           repeat(seq(".", $.identifier, optional("?"))),
         ),
@@ -438,6 +440,7 @@ module.exports = grammar({
           $.format_expr,
           $.identifier,
           $.dollar_var,
+          $.qualified_dollar_var,
           $.meta_selector,
           KEYWORD.THIS,
           $.list,
@@ -452,6 +455,7 @@ module.exports = grammar({
         $.format_expr,
         $.identifier,
         $.dollar_var,
+        $.qualified_dollar_var,
         $.meta_selector,
         KEYWORD.THIS,
         BUILTIN._,
@@ -642,6 +646,13 @@ module.exports = grammar({
     dollar_var: ($) =>
       seq(field("sigil", alias("$", $.global_sigil)), $.identifier),
 
+    qualified_dollar_var: ($) =>
+      seq(
+        field("module", $.identifier),
+        alias($.module_separator, "::"),
+        field("name", $.dollar_var),
+      ),
+
     number: ($) =>
       token(
         seq(
@@ -817,9 +828,9 @@ function sep1_newline(rule, separator) {
   return seq(rule, repeat(seq(separator, repeat("\n"), rule)));
 }
 
-// Comma-separated list (zero or more)
+// Comma-separated list (zero or more), with an optional trailing comma
 function commaSep(rule) {
-  return sep(rule, ",");
+  return optional(seq(sep1(rule, ","), optional(",")));
 }
 
 // Comma-separated list (one or more)

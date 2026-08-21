@@ -253,6 +253,10 @@
       "required": false,
       "types": [
         {
+          "type": "dollar_var",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         }
@@ -773,6 +777,10 @@
           "named": true
         },
         {
+          "type": "qualified_dollar_var",
+          "named": true
+        },
+        {
           "type": "record",
           "named": true
         }
@@ -846,6 +854,10 @@
           "named": true
         },
         {
+          "type": "qualified_dollar_var",
+          "named": true
+        },
+        {
           "type": "record",
           "named": true
         }
@@ -870,6 +882,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "qualified_dollar_var",
+    "named": true,
+    "fields": {
+      "module": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "dollar_var",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {

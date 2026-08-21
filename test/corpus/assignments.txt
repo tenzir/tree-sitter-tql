@@ -145,6 +145,121 @@ Meta selector assignment
               (string))))))))
 
 ==================
+Dollar variable assignment
+==================
+
+$into = $log
+$into.start = amazon::$start
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        left: (selector
+          (field_selector
+            (dollar_var
+              sigil: (global_sigil)
+              (identifier))))
+        right: (expression
+          (primary_expression
+            (dollar_var
+              sigil: (global_sigil)
+              (identifier))))))
+    (statement
+      (assignment
+        left: (selector
+          (field_selector
+            (dollar_var
+              sigil: (global_sigil)
+              (identifier))
+            (identifier)))
+        right: (expression
+          (primary_expression
+            (qualified_dollar_var
+              module: (identifier)
+              name: (dollar_var
+                sigil: (global_sigil)
+                (identifier)))))))))
+
+==================
+Package operator assignment
+==================
+
+$into = $log.parse_ssv(
+  header=amazon::$vpc_flow_v2_header,
+  null_value="-",
+)
+$into.start = $into.start?.seconds().from_epoch()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (dollar_var
+              (global_sigil)
+              (identifier))))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (dollar_var
+                  (global_sigil)
+                  (identifier))))
+            (entity
+              (identifier))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (qualified_dollar_var
+                      (identifier)
+                      (dollar_var
+                        (global_sigil)
+                        (identifier)))))))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (dollar_var
+              (global_sigil)
+              (identifier))
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (call_expression
+                (expression
+                  (member_expression
+                    (expression
+                      (primary_expression
+                        (dollar_var
+                          (global_sigil)
+                          (identifier))))
+                    (identifier)))
+                (entity
+                  (identifier))))
+            (entity
+              (identifier))))))))
+
+==================
 Assignment in operator context
 ==================
 
