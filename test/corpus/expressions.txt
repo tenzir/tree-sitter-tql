@@ -336,3 +336,183 @@ map x => x + 1
                       (primary_expression
                         (literal
                           (number))))))))))))))
+
+==================
+Assignment expression in condition
+==================
+
+let $x = 1
+if ($x = foo = 42) {
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (if_statement
+        (expression
+          (primary_expression
+            (expression
+              (assignment_expression
+                (expression
+                  (primary_expression
+                    (dollar_var
+                      (global_sigil)
+                      (identifier))))
+                (expression
+                  (assignment_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))
+        (then_block)))))
+
+==================
+Multiline assignment expressions in containers
+==================
+
+if (a
+= b) {
+}
+let $list = [a =
+b, c
+= d]
+let $record = {first: a
+= b, second: c =
+d}
+let $call = foo(a
+= b, c =
+d)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (primary_expression
+            (expression
+              (assignment_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))
+        (then_block)))
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (list
+              (expression
+                (assignment_expression
+                  (expression
+                    (primary_expression
+                      (identifier)))
+                  (expression
+                    (primary_expression
+                      (identifier)))))
+              (expression
+                (assignment_expression
+                  (expression
+                    (primary_expression
+                      (identifier)))
+                  (expression
+                    (primary_expression
+                      (identifier))))))))))
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (record
+              (record_field
+                (identifier)
+                (expression
+                  (assignment_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (identifier))))))
+              (record_field
+                (identifier)
+                (expression
+                  (assignment_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (identifier)))))))))))
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Bare assignment expression stops at newline
+==================
+
+let $x = a
+= b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (identifier)))))
+    (ERROR)
+    (statement
+      (invocation
+        (entity
+          (identifier))))))

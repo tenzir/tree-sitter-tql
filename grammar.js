@@ -135,7 +135,10 @@ module.exports = grammar({
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
+    [$.parenthesized_argument, $.primary_expression],
     [$.dollar_assignment_target, $.primary_expression],
+    [$.selector, $.primary_expression],
+    [$.multiline_assignment_expression, $._expression_with_newlines],
     [$.entity, $.qualified_dollar_var],
   ],
 
@@ -241,7 +244,12 @@ module.exports = grammar({
     match_arm: ($) =>
       seq(
         sep1_newline(field("patterns", $.match_pattern), "|"),
-        optional(seq(KEYWORD.IF, field("guard", $.expression))),
+        optional(
+          seq(
+            KEYWORD.IF,
+            field("guard", alias($.guard_expression, $.expression)),
+          ),
+        ),
         "=>",
         "{",
         repeat("\n"),
@@ -296,6 +304,40 @@ module.exports = grammar({
         ),
       ),
 
+    assignment_expression: ($) =>
+      prec.right(
+        0,
+        seq(field("left", $.expression), "=", field("right", $.expression)),
+      ),
+
+    // Newlines are trivia inside expression containers in the engine. Keep a
+    // separate production so a bare newline still ends a statement.
+    multiline_expression: ($) =>
+      alias($.multiline_assignment_expression, $.assignment_expression),
+
+    multiline_assignment_expression: ($) =>
+      prec.right(
+        0,
+        seq(
+          field("left", $.expression),
+          newlineSeparated("="),
+          field("right", $._expression_with_newlines),
+        ),
+      ),
+
+    multiline_assignment: ($) =>
+      prec.right(
+        0,
+        seq(
+          field("left", choice($.selector, $.dollar_assignment_target)),
+          newlineSeparated("="),
+          field("right", $._expression_with_newlines),
+        ),
+      ),
+
+    _expression_with_newlines: ($) =>
+      choice($.expression, alias($.multiline_expression, $.expression)),
+
     selector: ($) => choice($.meta_selector, $.field_selector),
 
     // Meta selector - more flexible to allow any identifier after @
@@ -340,7 +382,7 @@ module.exports = grammar({
         seq(
           "(",
           repeat1("\n"),
-          commaSep1($.argument),
+          commaSep1(alias($.parenthesized_argument, $.argument)),
           optional(seq(repeat("\n"), ",")),
           repeat("\n"),
           ")",
@@ -350,19 +392,42 @@ module.exports = grammar({
     // Arguments can be expressions or assignments (for named arguments)
     argument: ($) =>
       choice(
-        $.assignment, // Named argument: foo=bar (when in argument position)
+        prec.dynamic(1, $.assignment), // Named argument: foo=bar
         $.expression,
+      ),
+
+    parenthesized_argument: ($) =>
+      choice(
+        prec.dynamic(1, $.assignment),
+        prec.dynamic(1, alias($.multiline_assignment, $.assignment)),
+        $._expression_with_newlines,
       ),
 
     expression: ($) =>
       prec.left(
         choice(
+          $.assignment_expression,
           $.binary_expression,
           $.unary_expression,
           $.member_expression,
           $.index_expression,
           $.call_expression,
           $.lambda_expression,
+          $.primary_expression,
+        ),
+      ),
+
+    // Match guards use parse_expression(min_prec=1) in the engine, which
+    // excludes bare assignments and lambdas but permits parenthesized forms.
+    guard_expression: ($) =>
+      prec.left(
+        1,
+        choice(
+          $.binary_expression,
+          $.unary_expression,
+          $.member_expression,
+          $.index_expression,
+          $.call_expression,
           $.primary_expression,
         ),
       ),
@@ -462,7 +527,13 @@ module.exports = grammar({
           KEYWORD.THIS,
           $.list,
           $.record,
-          seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
+          seq(
+            "(",
+            repeat("\n"),
+            $._expression_with_newlines,
+            repeat("\n"),
+            ")",
+          ),
         ),
       ),
 
@@ -478,7 +549,7 @@ module.exports = grammar({
         BUILTIN._,
         $.list,
         $.record,
-        seq("(", repeat("\n"), $.expression, repeat("\n"), ")"),
+        seq("(", repeat("\n"), $._expression_with_newlines, repeat("\n"), ")"),
       ),
 
     literal: ($) =>
@@ -584,8 +655,9 @@ module.exports = grammar({
       seq(
         repeat("\n"),
         choice(
-          $.assignment, // Named argument: foo=bar
-          $.expression,
+          prec.dynamic(1, $.assignment),
+          prec.dynamic(1, alias($.multiline_assignment, $.assignment)),
+          $._expression_with_newlines,
         ),
       ),
 
@@ -626,7 +698,7 @@ module.exports = grammar({
         "[",
         repeat("\n"),
         sep(
-          choice($.expression, $.spread),
+          choice($._expression_with_newlines, $.spread),
           seq(repeat("\n"), ",", repeat("\n")),
         ),
         optional(","),
@@ -652,7 +724,7 @@ module.exports = grammar({
         field("key", choice($.identifier, $.string)),
         ":",
         repeat("\n"),
-        field("value", $.expression),
+        field("value", $._expression_with_newlines),
       ),
 
     spread: ($) => seq("...", $.expression),
@@ -832,6 +904,13 @@ function rawStringRegex(prefix, maxHashes = 8) {
 // Helper functions for common grammar patterns
 
 // Zero or more occurrences of rule separated by separator
+function newlineSeparated(separator) {
+  return choice(
+    seq(repeat1("\n"), separator, repeat("\n")),
+    seq(separator, repeat1("\n")),
+  );
+}
+
 function sep(rule, separator) {
   return optional(sep1(rule, separator));
 }
