@@ -135,6 +135,8 @@ module.exports = grammar({
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
+    [$.dollar_assignment_target, $.primary_expression],
+    [$.entity, $.qualified_dollar_var],
   ],
 
   rules: {
@@ -287,7 +289,11 @@ module.exports = grammar({
     assignment: ($) =>
       prec.right(
         0,
-        seq(field("left", $.selector), "=", field("right", $.expression)),
+        seq(
+          field("left", choice($.selector, $.dollar_assignment_target)),
+          "=",
+          field("right", $.expression),
+        ),
       ),
 
     selector: ($) => choice($.meta_selector, $.field_selector),
@@ -300,12 +306,23 @@ module.exports = grammar({
       choice(
         KEYWORD.THIS,
         seq(
-          choice(
-            seq(optional(seq(KEYWORD.THIS, ".")), $.identifier),
-            $.dollar_var,
-          ),
+          optional(seq(KEYWORD.THIS, ".")),
+          $.identifier,
           optional("?"),
           repeat(seq(".", $.identifier, optional("?"))),
+        ),
+      ),
+
+    dollar_assignment_target: ($) =>
+      prec.left(
+        seq(
+          $.dollar_var,
+          repeat(
+            choice(
+              seq(".", $.identifier, optional("?")),
+              seq("[", $.expression, "]", optional("?")),
+            ),
+          ),
         ),
       ),
 
@@ -648,8 +665,9 @@ module.exports = grammar({
 
     qualified_dollar_var: ($) =>
       seq(
-        field("module", $.identifier),
-        alias($.module_separator, "::"),
+        repeat1(
+          seq(field("module", $.identifier), alias($.module_separator, "::")),
+        ),
         field("name", $.dollar_var),
       ),
 

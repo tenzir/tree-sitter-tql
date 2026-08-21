@@ -814,8 +814,17 @@
             "type": "FIELD",
             "name": "left",
             "content": {
-              "type": "SYMBOL",
-              "name": "selector"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "selector"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "dollar_assignment_target"
+                }
+              ]
             }
           },
           {
@@ -885,37 +894,23 @@
                   "type": "SEQ",
                   "members": [
                     {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "STRING",
-                              "value": "this"
-                            },
-                            {
-                              "type": "STRING",
-                              "value": "."
-                            }
-                          ]
-                        },
-                        {
-                          "type": "BLANK"
-                        }
-                      ]
+                      "type": "STRING",
+                      "value": "this"
                     },
                     {
-                      "type": "SYMBOL",
-                      "name": "identifier"
+                      "type": "STRING",
+                      "value": "."
                     }
                   ]
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "dollar_var"
+                  "type": "BLANK"
                 }
               ]
+            },
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
             },
             {
               "type": "CHOICE",
@@ -960,6 +955,81 @@
           ]
         }
       ]
+    },
+    "dollar_assignment_target": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "dollar_var"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "."
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "?"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "["
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "expression"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "]"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "?"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
     },
     "entity": {
       "type": "SEQ",
@@ -2707,21 +2777,29 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "FIELD",
-          "name": "module",
+          "type": "REPEAT1",
           "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "module",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "module_separator"
+                },
+                "named": false,
+                "value": "::"
+              }
+            ]
           }
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "module_separator"
-          },
-          "named": false,
-          "value": "::"
         },
         {
           "type": "FIELD",
@@ -3218,6 +3296,14 @@
     [
       "argument",
       "primary_expression"
+    ],
+    [
+      "dollar_assignment_target",
+      "primary_expression"
+    ],
+    [
+      "entity",
+      "qualified_dollar_var"
     ]
   ],
   "precedences": [],

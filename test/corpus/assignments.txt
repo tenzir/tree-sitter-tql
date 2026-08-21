@@ -149,7 +149,8 @@ Dollar variable assignment
 ==================
 
 $into = $log
-$into.start = amazon::$start
+$into.start = amazon::vpc_flow::$start
+$into[$key] = $value
 
 ---
 
@@ -157,11 +158,10 @@ $into.start = amazon::$start
   (pipeline
     (statement
       (assignment
-        left: (selector
-          (field_selector
-            (dollar_var
-              sigil: (global_sigil)
-              (identifier))))
+        left: (dollar_assignment_target
+          (dollar_var
+            sigil: (global_sigil)
+            (identifier)))
         right: (expression
           (primary_expression
             (dollar_var
@@ -169,19 +169,35 @@ $into.start = amazon::$start
               (identifier))))))
     (statement
       (assignment
-        left: (selector
-          (field_selector
-            (dollar_var
-              sigil: (global_sigil)
-              (identifier))
-            (identifier)))
+        left: (dollar_assignment_target
+          (dollar_var
+            sigil: (global_sigil)
+            (identifier))
+          (identifier))
         right: (expression
           (primary_expression
             (qualified_dollar_var
               module: (identifier)
+              module: (identifier)
               name: (dollar_var
                 sigil: (global_sigil)
-                (identifier)))))))))
+                (identifier)))))))
+    (statement
+      (assignment
+        left: (dollar_assignment_target
+          (dollar_var
+            sigil: (global_sigil)
+            (identifier))
+          (expression
+            (primary_expression
+              (dollar_var
+                sigil: (global_sigil)
+                (identifier)))))
+        right: (expression
+          (primary_expression
+            (dollar_var
+              sigil: (global_sigil)
+              (identifier))))))))
 
 ==================
 Package operator assignment
@@ -199,11 +215,10 @@ $into.start = $into.start?.seconds().from_epoch()
   (pipeline
     (statement
       (assignment
-        (selector
-          (field_selector
-            (dollar_var
-              (global_sigil)
-              (identifier))))
+        (dollar_assignment_target
+          (dollar_var
+            (global_sigil)
+            (identifier)))
         (expression
           (call_expression
             (expression
@@ -236,12 +251,11 @@ $into.start = $into.start?.seconds().from_epoch()
                       (string))))))))))
     (statement
       (assignment
-        (selector
-          (field_selector
-            (dollar_var
-              (global_sigil)
-              (identifier))
-            (identifier)))
+        (dollar_assignment_target
+          (dollar_var
+            (global_sigil)
+            (identifier))
+          (identifier))
         (expression
           (call_expression
             (expression

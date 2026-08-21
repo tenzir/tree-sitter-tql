@@ -42,6 +42,10 @@
         "required": true,
         "types": [
           {
+            "type": "dollar_assignment_target",
+            "named": true
+          },
+          {
             "type": "selector",
             "named": true
           }
@@ -128,6 +132,29 @@
         },
         {
           "type": "entity",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollar_assignment_target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_var",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -252,10 +279,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "dollar_var",
-          "named": true
-        },
         {
           "type": "identifier",
           "named": true
@@ -889,7 +912,7 @@
     "named": true,
     "fields": {
       "module": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
