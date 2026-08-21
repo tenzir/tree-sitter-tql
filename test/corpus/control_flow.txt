@@ -622,3 +622,66 @@ from {action: "accept"} | match action { _ => {} } | discard
       (invocation
         (entity
           (identifier))))))
+
+==================
+Match guard with parenthesized assignment
+==================
+
+match x {
+  _ if (a = b) => {}
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (match_arm
+          (match_pattern
+            (wildcard_pattern))
+          (expression
+            (primary_expression
+              (expression
+                (assignment_expression
+                  (expression
+                    (primary_expression
+                      (identifier)))
+                  (expression
+                    (primary_expression
+                      (identifier))))))))))))
+
+==================
+Match guard with bare assignment
+==================
+
+match x {
+  _ if a = b => {}
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (match_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (ERROR
+          (match_pattern
+            (wildcard_pattern))
+          (expression
+            (assignment_expression
+              (expression
+                (primary_expression
+                  (identifier)))
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (primary_expression
+                      (record))))))))))))
