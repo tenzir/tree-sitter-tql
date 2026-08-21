@@ -42,6 +42,10 @@
         "required": true,
         "types": [
           {
+            "type": "dollar_assignment_target",
+            "named": true
+          },
+          {
             "type": "selector",
             "named": true
           }
@@ -128,6 +132,29 @@
         },
         {
           "type": "entity",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dollar_assignment_target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_var",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -773,6 +800,10 @@
           "named": true
         },
         {
+          "type": "qualified_dollar_var",
+          "named": true
+        },
+        {
           "type": "record",
           "named": true
         }
@@ -846,6 +877,10 @@
           "named": true
         },
         {
+          "type": "qualified_dollar_var",
+          "named": true
+        },
+        {
           "type": "record",
           "named": true
         }
@@ -870,6 +905,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "qualified_dollar_var",
+    "named": true,
+    "fields": {
+      "module": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "dollar_var",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {

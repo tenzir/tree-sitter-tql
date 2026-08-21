@@ -135,6 +135,8 @@ module.exports = grammar({
     [$.list], // Needed for if [ ... ] disambiguation
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
+    [$.dollar_assignment_target, $.primary_expression],
+    [$.entity, $.qualified_dollar_var],
   ],
 
   rules: {
@@ -287,7 +289,11 @@ module.exports = grammar({
     assignment: ($) =>
       prec.right(
         0,
-        seq(field("left", $.selector), "=", field("right", $.expression)),
+        seq(
+          field("left", choice($.selector, $.dollar_assignment_target)),
+          "=",
+          field("right", $.expression),
+        ),
       ),
 
     selector: ($) => choice($.meta_selector, $.field_selector),
@@ -304,6 +310,19 @@ module.exports = grammar({
           $.identifier,
           optional("?"),
           repeat(seq(".", $.identifier, optional("?"))),
+        ),
+      ),
+
+    dollar_assignment_target: ($) =>
+      prec.left(
+        seq(
+          $.dollar_var,
+          repeat(
+            choice(
+              seq(".", $.identifier, optional("?")),
+              seq("[", $.expression, "]", optional("?")),
+            ),
+          ),
         ),
       ),
 
@@ -438,6 +457,7 @@ module.exports = grammar({
           $.format_expr,
           $.identifier,
           $.dollar_var,
+          $.qualified_dollar_var,
           $.meta_selector,
           KEYWORD.THIS,
           $.list,
@@ -452,6 +472,7 @@ module.exports = grammar({
         $.format_expr,
         $.identifier,
         $.dollar_var,
+        $.qualified_dollar_var,
         $.meta_selector,
         KEYWORD.THIS,
         BUILTIN._,
@@ -642,6 +663,14 @@ module.exports = grammar({
     dollar_var: ($) =>
       seq(field("sigil", alias("$", $.global_sigil)), $.identifier),
 
+    qualified_dollar_var: ($) =>
+      seq(
+        repeat1(
+          seq(field("module", $.identifier), alias($.module_separator, "::")),
+        ),
+        field("name", $.dollar_var),
+      ),
+
     number: ($) =>
       token(
         seq(
@@ -817,9 +846,9 @@ function sep1_newline(rule, separator) {
   return seq(rule, repeat(seq(separator, repeat("\n"), rule)));
 }
 
-// Comma-separated list (zero or more)
+// Comma-separated list (zero or more), with an optional trailing comma
 function commaSep(rule) {
-  return sep(rule, ",");
+  return optional(seq(sep1(rule, ","), optional(",")));
 }
 
 // Comma-separated list (one or more)
