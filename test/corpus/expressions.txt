@@ -336,3 +336,46 @@ map x => x + 1
                       (primary_expression
                         (literal
                           (number))))))))))))))
+
+==================
+Assignment expression in condition
+==================
+
+let $x = 1
+if ($x = foo = 42) {
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))
+    (statement
+      (if_statement
+        (expression
+          (primary_expression
+            (expression
+              (assignment_expression
+                (expression
+                  (primary_expression
+                    (dollar_var
+                      (global_sigil)
+                      (identifier))))
+                (expression
+                  (assignment_expression
+                    (expression
+                      (primary_expression
+                        (identifier)))
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))
+        (then_block)))))

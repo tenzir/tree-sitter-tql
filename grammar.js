@@ -136,6 +136,7 @@ module.exports = grammar({
     [$.field_selector, $.primary_expression], // For 'this' ambiguity
     [$.argument, $.primary_expression],
     [$.dollar_assignment_target, $.primary_expression],
+    [$.selector, $.primary_expression],
     [$.entity, $.qualified_dollar_var],
   ],
 
@@ -296,6 +297,12 @@ module.exports = grammar({
         ),
       ),
 
+    assignment_expression: ($) =>
+      prec.right(
+        0,
+        seq(field("left", $.expression), "=", field("right", $.expression)),
+      ),
+
     selector: ($) => choice($.meta_selector, $.field_selector),
 
     // Meta selector - more flexible to allow any identifier after @
@@ -350,13 +357,14 @@ module.exports = grammar({
     // Arguments can be expressions or assignments (for named arguments)
     argument: ($) =>
       choice(
-        $.assignment, // Named argument: foo=bar (when in argument position)
+        prec.dynamic(1, $.assignment), // Named argument: foo=bar
         $.expression,
       ),
 
     expression: ($) =>
       prec.left(
         choice(
+          $.assignment_expression,
           $.binary_expression,
           $.unary_expression,
           $.member_expression,
@@ -581,13 +589,7 @@ module.exports = grammar({
 
     // Arguments in function calls can be assignments or expressions
     call_argument: ($) =>
-      seq(
-        repeat("\n"),
-        choice(
-          $.assignment, // Named argument: foo=bar
-          $.expression,
-        ),
-      ),
+      seq(repeat("\n"), choice(prec.dynamic(1, $.assignment), $.expression)),
 
     format_expr: ($) =>
       seq(
