@@ -981,6 +981,103 @@ let $f = x
 
 
 ==================
+Optional root field with spacing
+==================
+
+x = a ?
+y = a? .b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (identifier)))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (member_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (identifier)))))))
+
+==================
+Optional suffix rejects this
+:error
+==================
+
+x = this?
+
+---
+
+
+
+==================
+Optional suffix rejects metadata
+:error
+==================
+
+x = @name?
+
+---
+
+
+
+==================
+Optional suffix rejects dollar variable
+:error
+==================
+
+x = $var?
+
+---
+
+
+
+==================
+Optional suffix rejects parenthesized expression
+:error
+==================
+
+x = (a)?
+
+---
+
+
+
+==================
+Optional suffix rejects double suffix
+:error
+==================
+
+x = a??
+
+---
+
+
+
+==================
+Optional suffix rejects lambda parameter
+:error
+==================
+
+x = a? => a
+
+---
+
+
+
+==================
 Index rejects whitespace before bracket
 :error
 ==================
