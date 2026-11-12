@@ -65,6 +65,7 @@ const INDENT_BLOCK_RULES = [
   { node: "then_block", open: "{", close: "}" },
   { node: "else_block", open: "{", close: "}" },
   { node: "pipeline_block", open: "{", close: "}" },
+  { node: "pipeline_expression", open: "{", close: "}" },
   { node: "match_statement", open: "{", close: "}" },
   { node: "match_arm", open: "{", close: "}" },
 ];
@@ -80,6 +81,7 @@ const FOLD_NODES = [
   "then_block",
   "else_block",
   "pipeline_block",
+  "pipeline_expression",
   "match_statement",
   "match_arm",
   "list",
@@ -187,6 +189,11 @@ module.exports = grammar({
     [$.selector, $.primary_expression],
     [$.multiline_assignment_expression, $._expression_with_newlines],
     [$.entity, $.qualified_dollar_var],
+    // For `(x) => ...` vs `(x)`
+    [$.lambda_expression, $.primary_expression],
+    [$.field_selector, $.primary_expression, $.lambda_expression],
+    // For newlines between `}` and `else`
+    [$.if_statement],
   ],
 
   rules: {
@@ -264,11 +271,17 @@ module.exports = grammar({
           field("condition", $.expression),
           field("consequence", alias($.block, $.then_block)),
           optional(
-            seq(
-              KEYWORD.ELSE,
-              field(
-                "alternative",
-                choice($.if_statement, alias($.block, $.else_block)),
+            // The engine permits newlines before `else`. Prefer attaching
+            // `else` to the innermost `if` over starting a new statement.
+            prec.dynamic(
+              1,
+              seq(
+                repeat("\n"),
+                KEYWORD.ELSE,
+                field(
+                  "alternative",
+                  choice($.if_statement, alias($.block, $.else_block)),
+                ),
               ),
             ),
           ),
@@ -336,7 +349,12 @@ module.exports = grammar({
         ),
       ),
 
-    pipeline_block: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
+    // A pipeline used as a value, e.g., `let $p = { from {x: 1} }` or the
+    // pipeline argument in `cron "* * * * *", { ... }`.
+    pipeline_expression: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
+
+    // Prefer a trailing operator block over a pipeline expression argument.
+    pipeline_block: ($) => prec(1, seq("{", repeat("\n"), $.pipeline, "}")),
 
     block: ($) =>
       seq("{", repeat("\n"), field("body", optional($.pipeline)), "}"),
@@ -601,6 +619,7 @@ module.exports = grammar({
         BUILTIN._,
         $.list,
         $.record,
+        $.pipeline_expression,
         seq("(", repeat("\n"), $._expression_with_newlines, repeat("\n"), ")"),
       ),
 
@@ -739,7 +758,25 @@ module.exports = grammar({
       prec.right(
         -1,
         seq(
-          field("parameter", $.identifier),
+          choice(
+            field("parameter", $.identifier),
+            // Parenthesized parameter list, e.g., `(left, right) => ...`.
+            // Precedence 0 overrides the outer -1 so that `(x` remains
+            // ambiguous with a parenthesized expression until `=>` follows.
+            prec(
+              0,
+              seq(
+                "(",
+                repeat("\n"),
+                sep1(
+                  field("parameter", $.identifier),
+                  seq(repeat("\n"), ",", repeat("\n")),
+                ),
+                repeat("\n"),
+                ")",
+              ),
+            ),
+          ),
           "=>",
           field("body", $.expression),
         ),

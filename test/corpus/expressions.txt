@@ -784,3 +784,93 @@ ys = xs.map(x => {x: x, n: n?})
                           (expression
                             (primary_expression
                               (identifier))))))))))))))))
+
+==================
+Lambda with parenthesized parameters
+==================
+
+ys = sort(xs, cmp=(left, right) => left.v < right.v)
+zs = xs.map((x) => x + 1)
+w = (a) + 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (identifier))))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (lambda_expression
+                    (identifier)
+                    (identifier)
+                    (expression
+                      (binary_expression
+                        (expression
+                          (member_expression
+                            (expression
+                              (primary_expression
+                                (identifier)))
+                            (identifier)))
+                        (expression
+                          (member_expression
+                            (expression
+                              (primary_expression
+                                (identifier)))
+                            (identifier)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (binary_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (number)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))))))

@@ -715,3 +715,109 @@ match kind? {
               (invocation
                 (entity
                   (identifier))))))))))
+
+==================
+Else on a new line
+==================
+
+if x {}
+else if y {}
+else {}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (primary_expression
+            (identifier)))
+        (then_block)
+        (if_statement
+          (expression
+            (primary_expression
+              (identifier)))
+          (then_block)
+          (else_block))))))
+
+==================
+Pipeline expressions
+==================
+
+let $p = { from {x: 1} }
+cron "* * * * *", {
+  version
+}
+every 1s {
+  from {}
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (primary_expression
+            (pipeline_expression
+              (pipeline
+                (statement
+                  (invocation
+                    (entity
+                      (identifier))
+                    (arguments
+                      (argument
+                        (expression
+                          (primary_expression
+                            (record
+                              (record_field
+                                (identifier)
+                                (expression
+                                  (primary_expression
+                                    (literal
+                                      (number))))))))))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (pipeline_expression
+                  (pipeline
+                    (statement
+                      (invocation
+                        (entity
+                          (identifier))))))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (duration))))))
+        (pipeline_block
+          (pipeline
+            (statement
+              (invocation
+                (entity
+                  (identifier))
+                (arguments
+                  (argument
+                    (expression
+                      (primary_expression
+                        (record)))))))))))))

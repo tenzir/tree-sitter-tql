@@ -522,7 +522,7 @@
         ]
       },
       "parameter": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -871,6 +871,21 @@
     }
   },
   {
+    "type": "pipeline_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pipeline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "primary_expression",
     "named": true,
     "fields": {},
@@ -904,6 +919,10 @@
         },
         {
           "type": "meta_selector",
+          "named": true
+        },
+        {
+          "type": "pipeline_expression",
           "named": true
         },
         {
