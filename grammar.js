@@ -110,6 +110,53 @@ const OPERATORS = [
 ];
 const ARITHMETIC_OPERATORS = ["+", "-", "*", "/"];
 
+// Duration units accepted by the engine, plus the previously supported `hr`.
+// The lexer picks the longest match.
+const DURATION_UNITS = [
+  "nanoseconds",
+  "nanosecond",
+  "nsecs",
+  "nsec",
+  "ns",
+  "microseconds",
+  "microsecond",
+  "usecs",
+  "usec",
+  "us",
+  "milliseconds",
+  "millisecond",
+  "msecs",
+  "msec",
+  "ms",
+  "seconds",
+  "second",
+  "secs",
+  "sec",
+  "s",
+  "minutes",
+  "minute",
+  "mins",
+  "min",
+  "m",
+  "hours",
+  "hour",
+  "hrs",
+  "hr",
+  "h",
+  "days",
+  "day",
+  "d",
+  "weeks",
+  "week",
+  "w",
+  "months",
+  "month",
+  "mo",
+  "years",
+  "year",
+  "y",
+];
+
 const KEYWORD = literalEnum(KEYWORDS);
 const BUILTIN = literalEnum(BUILTIN_VARIABLES);
 const BOOLEAN = literalEnum(BOOLEAN_LITERALS);
@@ -840,8 +887,16 @@ module.exports = grammar({
         ),
       ),
 
-    duration: ($) =>
-      /\d+(ns|us|ms|s|sec|seconds?|m|min|minutes?|h|hr|hours?|d|days?|w|weeks?|y|years?)/,
+    // Mirrors the engine's scalar token (digits with optional `_` separators
+    // and fraction) followed by a duration unit.
+    duration: (_) =>
+      token(
+        seq(
+          /\d+(?:_\d+)*/,
+          optional(seq(".", /\d+(?:_\d+)*/)),
+          choice(...DURATION_UNITS),
+        ),
+      ),
   },
 });
 
@@ -891,17 +946,14 @@ function rawStringRegex(prefix, maxHashes = 8) {
   const variants = [];
   variants.push(`${prefix}"[^"]*"`);
   for (let i = 1; i <= maxHashes; i += 1) {
-    const hashes = "#".repeat(i);
-    const allowedQuotes = [];
-    for (let k = 0; k < i; k += 1) {
-      const innerHashes = "#".repeat(k);
-      allowedQuotes.push(`"${innerHashes}[^#]`);
-    }
-    const baseChar = '[^\"]';
-    const body = allowedQuotes.length
-      ? `${baseChar}|${allowedQuotes.join("|")}`
-      : baseChar;
-    variants.push(`${prefix}${hashes}"(?:${body})*"${hashes}`);
+    // The body may contain anything except the closing delimiter `"` followed
+    // by `i` hashes. A quote followed by fewer than `i` hashes is fine as long
+    // as no further hash follows. Quotes directly before the closing delimiter
+    // are allowed, e.g., `r#""quoted""#`.
+    const quote = `"#{0,${i - 1}}`;
+    const body = `(?:[^"]|(?:${quote})+[^"#])*`;
+    const close = `(?:${quote})*"${"#".repeat(i)}`;
+    variants.push(`${prefix}${"#".repeat(i)}"${body}${close}`);
   }
   return new RegExp(`(?:${variants.join("|")})`);
 }

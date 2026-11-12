@@ -606,3 +606,98 @@ where subnet == 10.0.0.0/8
                   (primary_expression
                     (literal
                       (subnet))))))))))))
+
+==================
+Fractional and calendar duration literals
+==================
+
+from {a: 1.5s, b: 0.5y, c: 1mo, d: 1_000ms, e: 3months, f: 1.5}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))))))))))))
+
+
+==================
+Raw strings with quotes next to delimiters
+==================
+
+from {x: r#""53""#, y: r#""""#, z: r##"a"#b"##}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (record
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
+                          (string))))))))))))))
