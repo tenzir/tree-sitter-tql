@@ -166,11 +166,3 @@ jobs:
         run: npm install -g npm@latest && npm --version
       - name: Publish to npm with provenance
         run: npm publish --access public --provenance
-  pypi:
-    name: Publish PyPI package
-    uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@main
-    needs: github
-    secrets:
-      PYPI_API_TOKEN: ${{secrets.PYPI_API_TOKEN}}
-    with:
-      generate: true
