@@ -12,7 +12,7 @@
     }
   ],
   "metadata": {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "license": "MIT",
     "description": "Tree-sitter grammar for the Tenzir Query Language (TQL)",
     "authors": [

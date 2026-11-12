@@ -1,0 +1,8 @@
+created: 2026-11-12
+intro: >-
+  This release parses optional access on top-level fields such as `sort key?` and
+  closes several smaller gaps with the engine's TQL parser, including scientific durations,
+  pipeline values, and parenthesized lambdas.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.2.0
