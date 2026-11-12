@@ -605,6 +605,7 @@ module.exports = grammar({
           KEYWORD.THIS,
           $.list,
           $.record,
+          $.pipeline_expression,
           seq(
             "(",
             repeat("\n"),

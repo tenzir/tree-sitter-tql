@@ -1904,6 +1904,10 @@
             "name": "record"
           },
           {
+            "type": "SYMBOL",
+            "name": "pipeline_expression"
+          },
+          {
             "type": "SEQ",
             "members": [
               {

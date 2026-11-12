@@ -830,6 +830,10 @@
           "named": true
         },
         {
+          "type": "pipeline_expression",
+          "named": true
+        },
+        {
           "type": "qualified_dollar_var",
           "named": true
         },
