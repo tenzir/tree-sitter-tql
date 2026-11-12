@@ -3712,7 +3712,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "\\d+(?:_\\d+)*"
+            "value": "\\d+"
           },
           {
             "type": "CHOICE",
@@ -3726,7 +3726,28 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "\\d+(?:_\\d+)*"
+                    "value": "\\d+"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[eE]"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "\\d+"
                   }
                 ]
               },

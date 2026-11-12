@@ -612,7 +612,6 @@ write_delimited data?, "|"
                 (literal
                   (string))))))))))
 
-
 ==================
 Optional root field in assignments
 ==================
@@ -671,7 +670,6 @@ diff_hit = file_diff?.match_regex(r"\p{Cf}")
                   (literal
                     (string)))))))))))
 
-
 ==================
 Optional root field with index and else
 ==================
@@ -717,7 +715,6 @@ select schema=@name, event_name=attributes?["event.name"]? else name?
                     (primary_expression
                       (identifier))))))))))))
 
-
 ==================
 Optional root field in if condition
 ==================
@@ -743,7 +740,6 @@ if src_endpoint?.ip? != null {
               (primary_expression
                 (literal)))))
         (then_block)))))
-
 
 ==================
 Optional root field in lambda body

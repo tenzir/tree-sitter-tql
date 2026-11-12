@@ -924,13 +924,15 @@ module.exports = grammar({
         ),
       ),
 
-    // Mirrors the engine's scalar token (digits with optional `_` separators
-    // and fraction) followed by a duration unit.
+    // Mirrors the engine's duration parser: a real number with optional
+    // fraction and unsigned exponent, followed by a duration unit. Unlike
+    // plain numbers, durations do not accept `_` digit separators.
     duration: (_) =>
       token(
         seq(
-          /\d+(?:_\d+)*/,
-          optional(seq(".", /\d+(?:_\d+)*/)),
+          /\d+/,
+          optional(seq(".", /\d+/)),
+          optional(seq(/[eE]/, /\d+/)),
           choice(...DURATION_UNITS),
         ),
       ),

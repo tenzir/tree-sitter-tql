@@ -611,7 +611,7 @@ where subnet == 10.0.0.0/8
 Fractional and calendar duration literals
 ==================
 
-from {a: 1.5s, b: 0.5y, c: 1mo, d: 1_000ms, e: 3months, f: 1.5}
+from {a: 1.5s, b: 0.5y, c: 1mo, d: 1e3s, e: 1.5E2ms, f: 3months, g: 1.5}
 
 ---
 
@@ -661,8 +661,13 @@ from {a: 1.5s, b: 0.5y, c: 1mo, d: 1_000ms, e: 3months, f: 1.5}
                     (expression
                       (primary_expression
                         (literal
+                          (duration)))))
+                  (record_field
+                    (identifier)
+                    (expression
+                      (primary_expression
+                        (literal
                           (number))))))))))))))
-
 
 ==================
 Raw strings with quotes next to delimiters
@@ -701,3 +706,23 @@ from {x: r#""53""#, y: r#""""#, z: r##"a"#b"##}
                       (primary_expression
                         (literal
                           (string))))))))))))))
+
+==================
+Duration rejects digit separators
+:error
+==================
+
+from {d: 1_000ms}
+
+---
+
+
+
+==================
+Duration rejects digit separators in fraction
+:error
+==================
+
+from {d: 1.5_0s}
+
+---
