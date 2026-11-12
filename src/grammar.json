@@ -1828,6 +1828,19 @@
             "name": "identifier"
           },
           {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "STRING",
+                "value": "?"
+              }
+            ]
+          },
+          {
             "type": "SYMBOL",
             "name": "dollar_var"
           },
@@ -1899,6 +1912,19 @@
         {
           "type": "SYMBOL",
           "name": "identifier"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "STRING",
+              "value": "?"
+            }
+          ]
         },
         {
           "type": "SYMBOL",

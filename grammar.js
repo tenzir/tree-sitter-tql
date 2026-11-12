@@ -521,6 +521,7 @@ module.exports = grammar({
           $.literal,
           $.format_expr,
           $.identifier,
+          seq($.identifier, "?"),
           $.dollar_var,
           $.qualified_dollar_var,
           $.meta_selector,
@@ -542,6 +543,10 @@ module.exports = grammar({
         $.literal,
         $.format_expr,
         $.identifier,
+        // Optional root field access, e.g., `x?`. The engine only accepts the
+        // trailing `?` after a bare identifier, not after `this`, `@meta`, or
+        // `$var`.
+        seq($.identifier, "?"),
         $.dollar_var,
         $.qualified_dollar_var,
         $.meta_selector,

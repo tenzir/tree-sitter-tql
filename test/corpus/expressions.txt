@@ -516,3 +516,271 @@ let $x = a
       (invocation
         (entity
           (identifier))))))
+
+==================
+Optional root field access
+==================
+
+where x? != null
+select a?, b?.c?
+sort key?, -secondary
+sort -key?
+drop data?
+write_delimited data?, "|"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+
+==================
+Optional root field in assignments
+==================
+
+transform=transform?
+select id, text=result?.text?
+diff_hit = file_diff?.match_regex(r"\p{Cf}")
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (identifier)))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (member_expression
+                  (expression
+                    (primary_expression
+                      (identifier)))
+                  (identifier))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (literal
+                    (string)))))))))))
+
+
+==================
+Optional root field with index and else
+==================
+
+select schema=@name, event_name=attributes?["event.name"]? else name?
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (primary_expression
+                  (meta_selector
+                    (metadata_sigil)
+                    (identifier))))))
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (binary_expression
+                  (expression
+                    (index_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string))))))
+                  (expression
+                    (primary_expression
+                      (identifier))))))))))))
+
+
+==================
+Optional root field in if condition
+==================
+
+if src_endpoint?.ip? != null {
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal)))))
+        (then_block)))))
+
+
+==================
+Optional root field in lambda body
+==================
+
+ys = xs.map(x => {x: x, n: n?})
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (primary_expression
+                      (record
+                        (record_field
+                          (identifier)
+                          (expression
+                            (primary_expression
+                              (identifier))))
+                        (record_field
+                          (identifier)
+                          (expression
+                            (primary_expression
+                              (identifier))))))))))))))))
