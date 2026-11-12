@@ -178,6 +178,18 @@ module.exports = grammar({
 
   word: ($) => $.identifier,
 
+  // Keywords stay contextual by default. The engine lexes keywords, literals,
+  // `this`, and `_` as dedicated tokens, so they cannot name lambda parameters.
+  reserved: {
+    global: (_) => [],
+    lambda_parameter: (_) => [
+      ...KEYWORDS.filter((keyword) => /^[a-z]+$/.test(keyword)),
+      ...BUILTIN_VARIABLES,
+      ...BOOLEAN_LITERALS,
+      NULL_LITERAL,
+    ],
+  },
+
   conflicts: ($) => [
     // These are necessary conflicts
     [$.record],
@@ -759,25 +771,32 @@ module.exports = grammar({
         -1,
         seq(
           choice(
-            field("parameter", $.identifier),
+            seq(field("parameter", $.identifier), "=>"),
             // Parenthesized parameter list, e.g., `(left, right) => ...`.
             // Precedence 0 overrides the outer -1 so that `(x` remains
             // ambiguous with a parenthesized expression until `=>` follows.
+            // Like the engine, permit newlines around the arrow only in this
+            // form.
             prec(
               0,
               seq(
                 "(",
                 repeat("\n"),
                 sep1(
-                  field("parameter", $.identifier),
+                  field(
+                    "parameter",
+                    reserved("lambda_parameter", $.identifier),
+                  ),
                   seq(repeat("\n"), ",", repeat("\n")),
                 ),
                 repeat("\n"),
                 ")",
+                repeat("\n"),
+                "=>",
+                repeat("\n"),
               ),
             ),
           ),
-          "=>",
           field("body", $.expression),
         ),
       ),

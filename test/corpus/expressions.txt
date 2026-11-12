@@ -870,3 +870,110 @@ w = (a) + 1
               (primary_expression
                 (literal
                   (number))))))))))
+
+==================
+Lambda with newlines around the arrow
+==================
+
+let $f = (x)
+=> x
+let $g = (x, y) =>
+  x + y
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (identifier)
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Lambda rejects reserved parameter true
+:error
+==================
+
+let $f = (x, true) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter this
+:error
+==================
+
+let $f = (x, this) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter underscore
+:error
+==================
+
+let $f = (x, _) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter if
+:error
+==================
+
+let $f = (if, x) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter null
+:error
+==================
+
+let $f = (null) => x
+
+---
+
+
+
+==================
+Bare lambda rejects newline before the arrow
+:error
+==================
+
+let $f = x
+=> x
+
+---
