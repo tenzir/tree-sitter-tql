@@ -516,3 +516,724 @@ let $x = a
       (invocation
         (entity
           (identifier))))))
+
+==================
+Optional root field access
+==================
+
+where x? != null
+select a?, b?.c?
+sort key?, -secondary
+sort -key?
+drop data?
+write_delimited data?, "|"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (unary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
+==================
+Optional root field in assignments
+==================
+
+transform=transform?
+select id, text=result?.text?
+diff_hit = file_diff?.match_regex(r"\p{Cf}")
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (identifier)))))
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (member_expression
+                  (expression
+                    (primary_expression
+                      (identifier)))
+                  (identifier))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (literal
+                    (string)))))))))))
+
+==================
+Optional root field with index and else
+==================
+
+select schema=@name, event_name=attributes?["event.name"]? else name?
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (primary_expression
+                  (meta_selector
+                    (metadata_sigil)
+                    (identifier))))))
+          (argument
+            (assignment
+              (selector
+                (field_selector
+                  (identifier)))
+              (expression
+                (binary_expression
+                  (expression
+                    (index_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string))))))
+                  (expression
+                    (primary_expression
+                      (identifier))))))))))))
+
+==================
+Optional root field in if condition
+==================
+
+if src_endpoint?.ip? != null {
+}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (if_statement
+        (expression
+          (binary_expression
+            (expression
+              (member_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (identifier)))
+            (expression
+              (primary_expression
+                (literal)))))
+        (then_block)))))
+
+==================
+Optional root field in lambda body
+==================
+
+ys = xs.map(x => {x: x, n: n?})
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (primary_expression
+                      (record
+                        (record_field
+                          (identifier)
+                          (expression
+                            (primary_expression
+                              (identifier))))
+                        (record_field
+                          (identifier)
+                          (expression
+                            (primary_expression
+                              (identifier))))))))))))))))
+
+==================
+Lambda with parenthesized parameters
+==================
+
+ys = sort(xs, cmp=(left, right) => left.v < right.v)
+zs = xs.map((x) => x + 1)
+w = (a) + 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (identifier))))
+            (call_argument
+              (assignment
+                (selector
+                  (field_selector
+                    (identifier)))
+                (expression
+                  (lambda_expression
+                    (identifier)
+                    (identifier)
+                    (expression
+                      (binary_expression
+                        (expression
+                          (member_expression
+                            (expression
+                              (primary_expression
+                                (identifier)))
+                            (identifier)))
+                        (expression
+                          (member_expression
+                            (expression
+                              (primary_expression
+                                (identifier)))
+                            (identifier)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (binary_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (expression
+                        (primary_expression
+                          (literal
+                            (number)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (binary_expression
+            (expression
+              (primary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))))
+            (expression
+              (primary_expression
+                (literal
+                  (number))))))))))
+
+==================
+Lambda with newlines around the arrow
+==================
+
+let $f = (x)
+=> x
+let $g = (x, y) =>
+  x + y
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (expression
+              (primary_expression
+                (identifier)))))))
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (identifier)
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (identifier)))))))))))
+
+==================
+Lambda rejects reserved parameter true
+:error
+==================
+
+let $f = (x, true) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter this
+:error
+==================
+
+let $f = (x, this) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter underscore
+:error
+==================
+
+let $f = (x, _) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter if
+:error
+==================
+
+let $f = (if, x) => x
+
+---
+
+
+
+==================
+Lambda rejects reserved parameter null
+:error
+==================
+
+let $f = (null) => x
+
+---
+
+
+
+==================
+Bare lambda rejects newline before the arrow
+:error
+==================
+
+let $f = x
+=> x
+
+---
+
+
+
+==================
+Optional root field with spacing
+==================
+
+x = a ?
+y = a? .b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (identifier)))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (member_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (identifier)))))))
+
+==================
+Optional suffix rejects this
+:error
+==================
+
+x = this?
+
+---
+
+
+
+==================
+Optional suffix rejects metadata
+:error
+==================
+
+x = @name?
+
+---
+
+
+
+==================
+Optional suffix rejects dollar variable
+:error
+==================
+
+x = $var?
+
+---
+
+
+
+==================
+Optional suffix rejects parenthesized expression
+:error
+==================
+
+x = (a)?
+
+---
+
+
+
+==================
+Optional suffix rejects double suffix
+:error
+==================
+
+x = a??
+
+---
+
+
+
+==================
+Optional suffix rejects lambda parameter
+:error
+==================
+
+x = a? => a
+
+---
+
+
+
+==================
+Index rejects whitespace before bracket
+:error
+==================
+
+x = a [0]
+
+---
+
+
+
+==================
+Index rejects whitespace after optional suffix
+:error
+==================
+
+x = a? [0]
+
+---
+
+
+
+==================
+Deprecated leading optional member access
+==================
+
+x = a?.?b?
+y = a.?b()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (member_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (identifier)))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))))))))
+
+==================
+Bare lambda parameter
+==================
+
+let $f = x => x + 1
+ys = xs.map(item => item.value)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (member_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (identifier))))))))))))
+
+==================
+Bare lambda rejects reserved parameter if
+:error
+==================
+
+let $f = if => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter let
+:error
+==================
+
+let $f = let => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter true
+:error
+==================
+
+let $f = true => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter this
+:error
+==================
+
+let $f = this => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter underscore
+:error
+==================
+
+let $f = _ => x
+
+---

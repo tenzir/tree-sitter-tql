@@ -65,6 +65,7 @@ const INDENT_BLOCK_RULES = [
   { node: "then_block", open: "{", close: "}" },
   { node: "else_block", open: "{", close: "}" },
   { node: "pipeline_block", open: "{", close: "}" },
+  { node: "pipeline_expression", open: "{", close: "}" },
   { node: "match_statement", open: "{", close: "}" },
   { node: "match_arm", open: "{", close: "}" },
 ];
@@ -80,6 +81,7 @@ const FOLD_NODES = [
   "then_block",
   "else_block",
   "pipeline_block",
+  "pipeline_expression",
   "match_statement",
   "match_arm",
   "list",
@@ -110,6 +112,53 @@ const OPERATORS = [
 ];
 const ARITHMETIC_OPERATORS = ["+", "-", "*", "/"];
 
+// Duration units accepted by the engine, plus the previously supported `hr`.
+// The lexer picks the longest match.
+const DURATION_UNITS = [
+  "nanoseconds",
+  "nanosecond",
+  "nsecs",
+  "nsec",
+  "ns",
+  "microseconds",
+  "microsecond",
+  "usecs",
+  "usec",
+  "us",
+  "milliseconds",
+  "millisecond",
+  "msecs",
+  "msec",
+  "ms",
+  "seconds",
+  "second",
+  "secs",
+  "sec",
+  "s",
+  "minutes",
+  "minute",
+  "mins",
+  "min",
+  "m",
+  "hours",
+  "hour",
+  "hrs",
+  "hr",
+  "h",
+  "days",
+  "day",
+  "d",
+  "weeks",
+  "week",
+  "w",
+  "months",
+  "month",
+  "mo",
+  "years",
+  "year",
+  "y",
+];
+
 const KEYWORD = literalEnum(KEYWORDS);
 const BUILTIN = literalEnum(BUILTIN_VARIABLES);
 const BOOLEAN = literalEnum(BOOLEAN_LITERALS);
@@ -129,6 +178,18 @@ module.exports = grammar({
 
   word: ($) => $.identifier,
 
+  // Keywords stay contextual by default. The engine lexes keywords, literals,
+  // `this`, and `_` as dedicated tokens, so they cannot name lambda parameters.
+  reserved: {
+    global: (_) => [],
+    lambda_parameter: (_) => [
+      ...KEYWORDS.filter((keyword) => /^[a-z]+$/.test(keyword)),
+      ...BUILTIN_VARIABLES,
+      ...BOOLEAN_LITERALS,
+      NULL_LITERAL,
+    ],
+  },
+
   conflicts: ($) => [
     // These are necessary conflicts
     [$.record],
@@ -140,6 +201,11 @@ module.exports = grammar({
     [$.selector, $.primary_expression],
     [$.multiline_assignment_expression, $._expression_with_newlines],
     [$.entity, $.qualified_dollar_var],
+    // For `(x) => ...` vs `(x)`
+    [$.lambda_expression, $.primary_expression],
+    [$.field_selector, $.primary_expression, $.lambda_expression],
+    // For newlines between `}` and `else`
+    [$.if_statement],
   ],
 
   rules: {
@@ -217,11 +283,17 @@ module.exports = grammar({
           field("condition", $.expression),
           field("consequence", alias($.block, $.then_block)),
           optional(
-            seq(
-              KEYWORD.ELSE,
-              field(
-                "alternative",
-                choice($.if_statement, alias($.block, $.else_block)),
+            // The engine permits newlines before `else`. Prefer attaching
+            // `else` to the innermost `if` over starting a new statement.
+            prec.dynamic(
+              1,
+              seq(
+                repeat("\n"),
+                KEYWORD.ELSE,
+                field(
+                  "alternative",
+                  choice($.if_statement, alias($.block, $.else_block)),
+                ),
               ),
             ),
           ),
@@ -289,7 +361,12 @@ module.exports = grammar({
         ),
       ),
 
-    pipeline_block: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
+    // A pipeline used as a value, e.g., `let $p = { from {x: 1} }` or the
+    // pipeline argument in `cron "* * * * *", { ... }`.
+    pipeline_expression: ($) => seq("{", repeat("\n"), $.pipeline, "}"),
+
+    // Prefer a trailing operator block over a pipeline expression argument.
+    pipeline_block: ($) => prec(1, seq("{", repeat("\n"), $.pipeline, "}")),
 
     block: ($) =>
       seq("{", repeat("\n"), field("body", optional($.pipeline)), "}"),
@@ -521,12 +598,14 @@ module.exports = grammar({
           $.literal,
           $.format_expr,
           $.identifier,
+          seq($.identifier, "?"),
           $.dollar_var,
           $.qualified_dollar_var,
           $.meta_selector,
           KEYWORD.THIS,
           $.list,
           $.record,
+          $.pipeline_expression,
           seq(
             "(",
             repeat("\n"),
@@ -542,6 +621,10 @@ module.exports = grammar({
         $.literal,
         $.format_expr,
         $.identifier,
+        // Optional root field access, e.g., `x?`. The engine only accepts the
+        // trailing `?` after a bare identifier, not after `this`, `@meta`, or
+        // `$var`.
+        seq($.identifier, "?"),
         $.dollar_var,
         $.qualified_dollar_var,
         $.meta_selector,
@@ -549,6 +632,7 @@ module.exports = grammar({
         BUILTIN._,
         $.list,
         $.record,
+        $.pipeline_expression,
         seq("(", repeat("\n"), $._expression_with_newlines, repeat("\n"), ")"),
       ),
 
@@ -622,13 +706,25 @@ module.exports = grammar({
         11,
         choice(
           seq($.expression, ".", $.identifier, optional("?")),
-          seq($.expression, ".?", $.identifier),
+          // Deprecated leading `.?`, which the engine still accepts with a
+          // warning, also in combination with a trailing `?`.
+          seq($.expression, ".?", $.identifier, optional("?")),
         ),
       ),
 
-    // Index access
+    // Index access. Like the engine, require `[` to follow the indexed
+    // expression immediately: `a [0]` is not an index expression.
     index_expression: ($) =>
-      prec.left(11, seq($.expression, "[", $.expression, "]", optional("?"))),
+      prec.left(
+        11,
+        seq(
+          $.expression,
+          token.immediate("["),
+          $.expression,
+          "]",
+          optional("?"),
+        ),
+      ),
 
     // Function calls
     call_expression: ($) =>
@@ -640,7 +736,8 @@ module.exports = grammar({
           12,
           seq(
             field("receiver", $.expression),
-            ".",
+            // The engine ignores a deprecated `.?` before a method call.
+            choice(".", ".?"),
             field("method", $.entity),
             "(",
             commaSep($.call_argument),
@@ -687,8 +784,36 @@ module.exports = grammar({
       prec.right(
         -1,
         seq(
-          field("parameter", $.identifier),
-          "=>",
+          choice(
+            seq(
+              field("parameter", reserved("lambda_parameter", $.identifier)),
+              "=>",
+            ),
+            // Parenthesized parameter list, e.g., `(left, right) => ...`.
+            // Precedence 0 overrides the outer -1 so that `(x` remains
+            // ambiguous with a parenthesized expression until `=>` follows.
+            // Like the engine, permit newlines around the arrow only in this
+            // form.
+            prec(
+              0,
+              seq(
+                "(",
+                repeat("\n"),
+                sep1(
+                  field(
+                    "parameter",
+                    reserved("lambda_parameter", $.identifier),
+                  ),
+                  seq(repeat("\n"), ",", repeat("\n")),
+                ),
+                repeat("\n"),
+                ")",
+                repeat("\n"),
+                "=>",
+                repeat("\n"),
+              ),
+            ),
+          ),
           field("body", $.expression),
         ),
       ),
@@ -835,8 +960,18 @@ module.exports = grammar({
         ),
       ),
 
-    duration: ($) =>
-      /\d+(ns|us|ms|s|sec|seconds?|m|min|minutes?|h|hr|hours?|d|days?|w|weeks?|y|years?)/,
+    // Mirrors the engine's duration parser: a real number with optional
+    // fraction and unsigned exponent, followed by a duration unit. Unlike
+    // plain numbers, durations do not accept `_` digit separators.
+    duration: (_) =>
+      token(
+        seq(
+          /\d+/,
+          optional(seq(".", /\d+/)),
+          optional(seq(/[eE]/, /\d+/)),
+          choice(...DURATION_UNITS),
+        ),
+      ),
   },
 });
 
@@ -886,17 +1021,14 @@ function rawStringRegex(prefix, maxHashes = 8) {
   const variants = [];
   variants.push(`${prefix}"[^"]*"`);
   for (let i = 1; i <= maxHashes; i += 1) {
-    const hashes = "#".repeat(i);
-    const allowedQuotes = [];
-    for (let k = 0; k < i; k += 1) {
-      const innerHashes = "#".repeat(k);
-      allowedQuotes.push(`"${innerHashes}[^#]`);
-    }
-    const baseChar = '[^\"]';
-    const body = allowedQuotes.length
-      ? `${baseChar}|${allowedQuotes.join("|")}`
-      : baseChar;
-    variants.push(`${prefix}${hashes}"(?:${body})*"${hashes}`);
+    // The body may contain anything except the closing delimiter `"` followed
+    // by `i` hashes. A quote followed by fewer than `i` hashes is fine as long
+    // as no further hash follows. Quotes directly before the closing delimiter
+    // are allowed, e.g., `r#""quoted""#`.
+    const quote = `"#{0,${i - 1}}`;
+    const body = `(?:[^"]|(?:${quote})+[^"#])*`;
+    const close = `(?:${quote})*"${"#".repeat(i)}`;
+    variants.push(`${prefix}${"#".repeat(i)}"${body}${close}`);
   }
   return new RegExp(`(?:${variants.join("|")})`);
 }

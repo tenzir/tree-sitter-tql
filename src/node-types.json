@@ -522,7 +522,7 @@
         ]
       },
       "parameter": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -830,6 +830,10 @@
           "named": true
         },
         {
+          "type": "pipeline_expression",
+          "named": true
+        },
+        {
           "type": "qualified_dollar_var",
           "named": true
         },
@@ -857,6 +861,21 @@
   },
   {
     "type": "pipeline_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "pipeline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "pipeline_expression",
     "named": true,
     "fields": {},
     "children": {
@@ -904,6 +923,10 @@
         },
         {
           "type": "meta_selector",
+          "named": true
+        },
+        {
+          "type": "pipeline_expression",
           "named": true
         },
         {
