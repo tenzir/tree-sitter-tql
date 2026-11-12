@@ -977,3 +977,62 @@ let $f = x
 => x
 
 ---
+
+
+
+==================
+Index rejects whitespace before bracket
+:error
+==================
+
+x = a [0]
+
+---
+
+
+
+==================
+Index rejects whitespace after optional suffix
+:error
+==================
+
+x = a? [0]
+
+---
+
+
+
+==================
+Deprecated leading optional member access
+==================
+
+x = a?.?b?
+y = a.?b()
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (member_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (identifier)))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))))))))

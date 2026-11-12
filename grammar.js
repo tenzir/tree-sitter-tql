@@ -706,13 +706,25 @@ module.exports = grammar({
         11,
         choice(
           seq($.expression, ".", $.identifier, optional("?")),
-          seq($.expression, ".?", $.identifier),
+          // Deprecated leading `.?`, which the engine still accepts with a
+          // warning, also in combination with a trailing `?`.
+          seq($.expression, ".?", $.identifier, optional("?")),
         ),
       ),
 
-    // Index access
+    // Index access. Like the engine, require `[` to follow the indexed
+    // expression immediately: `a [0]` is not an index expression.
     index_expression: ($) =>
-      prec.left(11, seq($.expression, "[", $.expression, "]", optional("?"))),
+      prec.left(
+        11,
+        seq(
+          $.expression,
+          token.immediate("["),
+          $.expression,
+          "]",
+          optional("?"),
+        ),
+      ),
 
     // Function calls
     call_expression: ($) =>
@@ -724,7 +736,8 @@ module.exports = grammar({
           12,
           seq(
             field("receiver", $.expression),
-            ".",
+            // The engine ignores a deprecated `.?` before a method call.
+            choice(".", ".?"),
             field("method", $.entity),
             "(",
             commaSep($.call_argument),
