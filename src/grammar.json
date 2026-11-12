@@ -2865,8 +2865,12 @@
                     "type": "FIELD",
                     "name": "parameter",
                     "content": {
-                      "type": "SYMBOL",
-                      "name": "identifier"
+                      "type": "RESERVED",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      "context_name": "lambda_parameter"
                     }
                   },
                   {

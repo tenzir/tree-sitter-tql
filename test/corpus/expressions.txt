@@ -1133,3 +1133,107 @@ y = a.?b()
                 (identifier)))
             (entity
               (identifier))))))))
+
+==================
+Bare lambda parameter
+==================
+
+let $f = x => x + 1
+ys = xs.map(item => item.value)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (let_statement
+        (dollar_var
+          (global_sigil)
+          (identifier))
+        (expression
+          (lambda_expression
+            (identifier)
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (expression
+              (primary_expression
+                (identifier)))
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (lambda_expression
+                  (identifier)
+                  (expression
+                    (member_expression
+                      (expression
+                        (primary_expression
+                          (identifier)))
+                      (identifier))))))))))))
+
+==================
+Bare lambda rejects reserved parameter if
+:error
+==================
+
+let $f = if => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter let
+:error
+==================
+
+let $f = let => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter true
+:error
+==================
+
+let $f = true => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter this
+:error
+==================
+
+let $f = this => x
+
+---
+
+
+
+==================
+Bare lambda rejects reserved parameter underscore
+:error
+==================
+
+let $f = _ => x
+
+---

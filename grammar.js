@@ -785,7 +785,10 @@ module.exports = grammar({
         -1,
         seq(
           choice(
-            seq(field("parameter", $.identifier), "=>"),
+            seq(
+              field("parameter", reserved("lambda_parameter", $.identifier)),
+              "=>",
+            ),
             // Parenthesized parameter list, e.g., `(left, right) => ...`.
             // Precedence 0 overrides the outer -1 so that `(x` remains
             // ambiguous with a parenthesized expression until `=>` follows.
