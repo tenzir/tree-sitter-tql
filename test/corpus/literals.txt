@@ -182,6 +182,17 @@ line"
                 (literal
                   (string))))))))))
 
+==============================
+Single quotes are not strings
+:error
+==============================
+
+x = 'abc'
+
+---
+
+
+
 ==================
 Raw string literals
 ==================

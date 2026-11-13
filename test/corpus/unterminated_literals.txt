@@ -40,32 +40,6 @@ z = 2
             (literal
               (string))))))))
 
-=================================
-Unterminated single-quoted string
-=================================
-
-where x == 'abc
-
----
-
-(program
-  (pipeline
-    (statement
-      (invocation
-        (entity
-          (identifier))
-        (arguments
-          (argument
-            (expression
-              (binary_expression
-                (expression
-                  (primary_expression
-                    (identifier)))
-                (expression
-                  (primary_expression
-                    (literal
-                      (string))))))))))))
-
 ========================
 Unterminated byte string
 ========================
@@ -379,7 +353,7 @@ x = f"{r#"a"b"#}
 Format string with nested literals
 ==================================
 
-x = f"{g("}", r#"a"b"#, '{', f"{1}") /* } */}"
+x = f"{g("}", r#"a"b"#, f"{1}") /* } */}"
 
 ---
 
@@ -398,11 +372,6 @@ x = f"{g("}", r#"a"b"#, '{', f"{1}") /* } */}"
                   (call_expression
                     (entity
                       (identifier))
-                    (call_argument
-                      (expression
-                        (primary_expression
-                          (literal
-                            (string)))))
                     (call_argument
                       (expression
                         (primary_expression
@@ -648,6 +617,37 @@ Unterminated format string in a line comment
 ============================================
 
 x = f"{(1 // }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+=================================
+Unterminated single-quoted string
+:error
+=================================
+
+where x == 'abc
+
+---
+
+
+
+==================================================
+Single quotes in a format string are not strings
+==================================================
+
+x = f"{'"'}"
 
 ---
 

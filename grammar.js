@@ -934,8 +934,7 @@ module.exports = grammar({
     // that editors see a string while it is being typed.
     string: ($) =>
       choice(
-        token(quotedString('"')),
-        token(quotedString("'")),
+        token(quotedString()),
         token(rawStringRegex("r")),
         token(rawStringRegex("br")),
       ),
@@ -1065,13 +1064,14 @@ function literalEnum(literals) {
 // a newline. Like the engine's lexer, this does not validate escapes: the
 // engine rejects unknown ones such as `\q` or a backslash before a newline
 // when it parses the string. Without a closing quote, the string runs to the
-// end of the input, which may end in a lone backslash.
-function quotedString(quote) {
+// end of the input, which may end in a lone backslash. Like the engine, TQL
+// has no single-quoted strings.
+function quotedString() {
   return seq(
     optional("b"),
-    quote,
-    repeat(choice(new RegExp(`[^${quote}\\\\]`), /\\(.|\n)/)),
-    optional(choice(quote, "\\")),
+    '"',
+    repeat(choice(/[^"\\]/, /\\(.|\n)/)),
+    optional(choice('"', "\\")),
   );
 }
 

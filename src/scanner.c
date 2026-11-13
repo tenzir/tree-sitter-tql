@@ -43,12 +43,11 @@ static inline bool is_word(int32_t c) {
 // Skips a plain or byte string from its opening quote, where a backslash
 // escapes any character.
 static Outcome skip_quoted(TSLexer *lexer) {
-  int32_t quote = lexer->lookahead;
   advance(lexer);
   while (!lexer->eof(lexer)) {
     int32_t c = lexer->lookahead;
     advance(lexer);
-    if (c == quote) {
+    if (c == '"') {
       return CLOSED;
     }
     if (c == '\\') {
@@ -173,7 +172,7 @@ static Outcome skip_format_text(TSLexer *lexer, unsigned nesting) {
       continue;
     }
     Outcome outcome = CLOSED;
-    if (c == '"' || c == '\'') {
+    if (c == '"') {
       outcome = skip_quoted(lexer);
     } else if (is_word(c)) {
       outcome = skip_word(lexer, nesting);
