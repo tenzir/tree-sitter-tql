@@ -1,0 +1,7 @@
+created: 2026-11-13
+intro: "This release parses hash-delimited byte strings such as `b#\"\u2026\"#` like\
+  \ the engine does, drops single-quoted strings, which the engine never accepted,\
+  \ and ships bracket pairs to the Zed extension."
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.4.0

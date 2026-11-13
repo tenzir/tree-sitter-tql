@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-tql",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Tree-sitter grammar for the Tenzir Query Language (TQL)",
   "repository": {
     "type": "git",
