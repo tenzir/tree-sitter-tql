@@ -44,16 +44,16 @@
 (number) @number
 (string) @string
 (format_expr) @string
-(ip) @constant
-(subnet) @constant
-(time) @number
-(duration) @number
+(ip) @constant.ip
+(subnet) @constant.subnet
+(time) @number.time
+(duration) @number.duration
 (frontmatter_open) @comment
 (frontmatter_close) @comment
 (comment) @comment
 
 (invocation
-  operator: (entity) @function.call)
+  operator: (entity) @function.operator)
 (call_expression
   (entity) @function.call)
 (call_expression

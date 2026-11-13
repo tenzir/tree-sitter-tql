@@ -1,0 +1,17 @@
+from {at: 2024-01-01T00:00:00Z, took: 5min, src: 10.0.0.1, net: 10.0.0.0/8, n: 42}
+// <- function.operator
+//        ^ number.time
+//                                    ^ number.duration
+//                                               ^ constant.ip
+//                                                              ^ constant.subnet
+//                                                                             ^ number
+where now() - at > 1h and ok == true and x.length() != null
+// <- function.operator
+//    ^ function.call
+//                 ^ number.duration
+//                              ^ boolean
+//                                         ^ function.method
+//                                                     ^ constant.builtin
+select msg = "hi"
+// <- function.operator
+//           ^ string
