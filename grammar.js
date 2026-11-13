@@ -77,6 +77,22 @@ const INDENT_COLLECTION_RULES = [
 
 const INDENT_ALIGNMENT_RULES = [];
 
+// Nodes whose lines keep their indentation, as their text is taken verbatim.
+// A new line inside them takes the indentation of the line before.
+const INDENT_AUTO_NODES = [
+  "string",
+  "format_expr",
+  "comment",
+  "frontmatter_body",
+];
+
+// Tokens that open and close a bracketed region.
+const BRACKET_PAIRS = [
+  { open: "(", close: ")" },
+  { open: "[", close: "]" },
+  { open: "{", close: "}" },
+];
+
 const FOLD_NODES = [
   "then_block",
   "else_block",
@@ -1006,6 +1022,11 @@ module.exports.indentConstants = {
   BLOCKS: INDENT_BLOCK_RULES,
   COLLECTIONS: INDENT_COLLECTION_RULES,
   ALIGNMENTS: INDENT_ALIGNMENT_RULES,
+  AUTO: INDENT_AUTO_NODES,
+};
+
+module.exports.bracketConstants = {
+  PAIRS: BRACKET_PAIRS,
 };
 
 module.exports.foldConstants = {

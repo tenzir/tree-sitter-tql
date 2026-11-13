@@ -21,6 +21,29 @@ Features:
 See the official Tenzir documentation for editor setup instructions:
 [Set up syntax highlighting](https://docs.tenzir.com/guides/development/setup-syntax-highlighting).
 
+### Queries
+
+The grammar ships its queries in `queries/tql/`, with a copy in
+`languages/tql/` for Zed. Editor integrations can rely on these captures:
+
+- `highlights.scm`: standard highlight names, such as `@keyword`, `@string`,
+  and `@comment`.
+- `indents.scm`: `@indent`, `@outdent`, and `@indent.auto`, as described below.
+- `folds.scm`: `@fold` on blocks, lists, records, and front matter.
+- `injections.scm`: `@injection.content` with the `injection.language`
+  property.
+- `locals.scm`: `@local.scope` and `@local.definition` for lambda parameters.
+- `brackets.scm`: `@open` and `@close` on the brackets of the same node, as in
+  Zed.
+
+In `indents.scm`, an `@indent` node indents the lines inside it by one level
+and an `@outdent` token closes such a node, so a line that starts with it keeps
+the indentation of the line that opened the node. Strings, format strings,
+comments, and the body of front matter carry `@indent.auto`, as in
+nvim-treesitter: their text is verbatim, so a line inside them keeps the
+indentation of the line before. The YAML front matter injects the `yaml`
+language into its body.
+
 ### Unterminated literals
 
 A string, format string, or block comment without its closing delimiter runs to
