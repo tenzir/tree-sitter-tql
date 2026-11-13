@@ -482,3 +482,173 @@ x = 1
             (literal
               (number)))))))
   (comment))
+
+==========================================================
+Format string with an empty block comment in a replacement
+==========================================================
+
+x = f"{1 /**/}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))
+                (comment)))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==============================================================
+Format string with a brace in a block comment in a replacement
+==============================================================
+
+x = f"{g(/* } */ 1)}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (call_expression
+                    (entity
+                      (identifier))
+                    (comment)
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (literal
+                            (number)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==================================================
+Format string with a line comment in a replacement
+==================================================
+
+x = f"{(1 // }
+)}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (primary_expression
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))
+                    (comment)))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+=======================================================
+Unterminated format string after an empty block comment
+=======================================================
+
+x = f"{1 /**/
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr)))))))
+
+=============================================
+Unterminated format string in a block comment
+=============================================
+
+x = f"{g(/* }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr)))))))
+
+============================================
+Unterminated format string in a line comment
+============================================
+
+x = f"{(1 // }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr)))))))

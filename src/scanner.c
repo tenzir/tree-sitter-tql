@@ -81,16 +81,17 @@ static Outcome skip_raw(TSLexer *lexer, unsigned hashes) {
   return UNCLOSED;
 }
 
-// Skips a comment from its opening slash, given that a slash or star follows.
+// Skips a comment after its opening slash, from the slash or star that
+// follows it.
 static Outcome skip_comment(TSLexer *lexer) {
+  bool line = lexer->lookahead == '/';
   advance(lexer);
-  if (lexer->lookahead == '/') {
+  if (line) {
     while (!lexer->eof(lexer) && lexer->lookahead != '\n') {
       advance(lexer);
     }
     return lexer->eof(lexer) ? UNCLOSED : CLOSED;
   }
-  advance(lexer);
   bool star = false;
   while (!lexer->eof(lexer)) {
     int32_t c = lexer->lookahead;
