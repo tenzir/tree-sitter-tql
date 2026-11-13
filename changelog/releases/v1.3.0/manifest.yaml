@@ -1,0 +1,8 @@
+created: 2026-11-13
+intro: >-
+  This release parses unterminated strings, format strings, and comments as literals
+  that run to the end of the input, so editors keep highlighting correctly while you
+  type, and adds bracket and indentation queries for editor integrations.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.2.1
