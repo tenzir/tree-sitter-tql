@@ -7,7 +7,7 @@ const { join } = require("node:path");
 const { test } = require("node:test");
 
 const Parser = require("tree-sitter");
-const language = require("../bindings/node");
+const language = require(".");
 
 const parser = new Parser();
 parser.setLanguage(language);
@@ -16,7 +16,7 @@ const query = (name) =>
   new Parser.Query(
     language,
     readFileSync(
-      join(__dirname, "..", "queries", "tql", `${name}.scm`),
+      join(__dirname, "..", "..", "queries", "tql", `${name}.scm`),
       "utf8",
     ),
   );
