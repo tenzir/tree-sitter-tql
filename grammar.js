@@ -81,7 +81,7 @@ const INDENT_ALIGNMENT_RULES = [];
 // A new line inside them takes the indentation of the line before.
 const INDENT_AUTO_NODES = [
   "string",
-  "format_expr",
+  "format_text",
   "comment",
   "frontmatter_body",
 ];
@@ -192,9 +192,10 @@ module.exports = grammar({
     $.comment, // Comments appear as explicit nodes
   ],
 
-  // Format strings that never close become one token, because only a scanner
-  // can tell that across the nested strings and braces of their replacements.
-  externals: ($) => [$._unterminated_format_expr],
+  // The text of a format string that never closes is one token, because only
+  // a scanner can tell that across the nested strings and braces of its
+  // replacements. The sentinel tells the scanner about error recovery.
+  externals: ($) => [$._unterminated_format_text, $._error_sentinel],
 
   word: ($) => $.identifier,
 
@@ -780,8 +781,8 @@ module.exports = grammar({
         ),
       ),
 
-    // A format string without its closing quote is a single token that runs
-    // to the end of the input.
+    // The text of a format string without its closing quote runs to the end
+    // of the input as a single `format_text`.
     format_expr: ($) =>
       choice(
         seq(
@@ -789,7 +790,10 @@ module.exports = grammar({
           repeat(choice($.format_text, $.format_replacement)),
           token.immediate('"'),
         ),
-        $._unterminated_format_expr,
+        seq(
+          token(seq("f", '"')),
+          alias($._unterminated_format_text, $.format_text),
+        ),
       ),
 
     // Text takes precedence over comments, which cannot start inside it.

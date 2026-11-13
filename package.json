@@ -60,7 +60,7 @@
     "generate": "tree-sitter generate && node scripts/generate-highlights.mjs && node scripts/generate-injections.mjs && node scripts/generate-indents.mjs && node scripts/generate-folds.mjs && node scripts/generate-brackets.mjs && node scripts/generate-locals.mjs",
     "prestart": "tree-sitter build --wasm",
     "start": "tree-sitter playground",
-    "test": "node --test bindings/node"
+    "test": "node --test bindings/node test"
   },
   "overrides": {
     "adm-zip": "^0.6.0"

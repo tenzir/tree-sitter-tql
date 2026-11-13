@@ -2809,8 +2809,34 @@
           ]
         },
         {
-          "type": "SYMBOL",
-          "name": "_unterminated_format_expr"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "f"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "\""
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_unterminated_format_text"
+              },
+              "named": true,
+              "value": "format_text"
+            }
+          ]
         }
       ]
     },
@@ -4155,7 +4181,11 @@
   "externals": [
     {
       "type": "SYMBOL",
-      "name": "_unterminated_format_expr"
+      "name": "_unterminated_format_text"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_error_sentinel"
     }
   ],
   "inline": [],

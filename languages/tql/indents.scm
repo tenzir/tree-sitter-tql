@@ -18,7 +18,7 @@
 
 [
   (string)
-  (format_expr)
+  (format_text)
   (comment)
   (frontmatter_body)
 ] @indent.auto

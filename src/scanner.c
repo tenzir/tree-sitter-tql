@@ -2,11 +2,11 @@
 //
 // A format string's replacements are expressions, whose strings, comments,
 // and braces may hold quotes of their own, so whether a format string closes
-// is beyond the grammar's lexer. This scanner looks ahead from `f"` and, if the
-// input ends before the closing quote, returns the rest of the input as one
-// token. Editors then see a format string while it is being typed instead of
-// an error followed by code. Format strings that close are left to the
-// grammar.
+// is beyond the grammar's lexer. Right after `f"`, this scanner looks ahead
+// and, if the input ends before the closing quote, returns the rest of the
+// input as one token, the text of the format string. Editors then see a format
+// string while it is being typed instead of an error followed by code. Format
+// strings that close are left to the grammar.
 
 #include "tree_sitter/parser.h"
 
@@ -14,7 +14,9 @@
 #include <stdint.h>
 
 enum TokenType {
-  UNTERMINATED_FORMAT_EXPR,
+  UNTERMINATED_FORMAT_TEXT,
+  // Never valid in the grammar, so it is only valid during error recovery.
+  ERROR_SENTINEL,
 };
 
 // The outcome of skipping a literal.
@@ -104,7 +106,7 @@ static Outcome skip_comment(TSLexer *lexer) {
   return UNCLOSED;
 }
 
-static Outcome skip_format(TSLexer *lexer, unsigned nesting);
+static Outcome skip_format_text(TSLexer *lexer, unsigned nesting);
 
 // Skips a word and, if it prefixes a raw or format string, the string after
 // it. Returns CLOSED for a word that prefixes neither.
@@ -133,19 +135,19 @@ static Outcome skip_word(TSLexer *lexer, unsigned nesting) {
     return CLOSED;
   }
   if (length == 1 && word[0] == 'f' && lexer->lookahead == '"') {
-    return skip_format(lexer, nesting + 1);
+    advance(lexer);
+    return skip_format_text(lexer, nesting + 1);
   }
   // Any other quote, like that of a byte string, starts a plain string.
   return CLOSED;
 }
 
-// Skips a format string from its opening quote, including the expressions in
-// its replacements.
-static Outcome skip_format(TSLexer *lexer, unsigned nesting) {
+// Skips a format string after its opening quote, including the expressions
+// in its replacements.
+static Outcome skip_format_text(TSLexer *lexer, unsigned nesting) {
   if (nesting > MAX_NESTING) {
     return UNKNOWN;
   }
-  advance(lexer);
   // The depth of braces in the current replacement, 0 outside of one.
   unsigned braces = 0;
   while (!lexer->eof(lexer)) {
@@ -215,38 +217,15 @@ void tree_sitter_tql_external_scanner_deserialize(void *payload,
 bool tree_sitter_tql_external_scanner_scan(void *payload, TSLexer *lexer,
                                            const bool *valid_symbols) {
   (void)payload;
-  if (!valid_symbols[UNTERMINATED_FORMAT_EXPR]) {
+  // During error recovery, every token is valid, also where no format string
+  // opened.
+  if (valid_symbols[ERROR_SENTINEL] ||
+      !valid_symbols[UNTERMINATED_FORMAT_TEXT]) {
     return false;
   }
-  // Skip the whitespace and line continuations before the token, like the
-  // grammar's extras.
-  for (;;) {
-    int32_t c = lexer->lookahead;
-    if (c == ' ' || c == '\t' || c == '\r') {
-      lexer->advance(lexer, true);
-    } else if (c == '\\') {
-      lexer->advance(lexer, true);
-      while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
-        lexer->advance(lexer, true);
-      }
-      if (lexer->lookahead != '\n') {
-        return false;
-      }
-      lexer->advance(lexer, true);
-    } else {
-      break;
-    }
-  }
-  if (lexer->lookahead != 'f') {
+  if (skip_format_text(lexer, 0) != UNCLOSED) {
     return false;
   }
-  advance(lexer);
-  if (lexer->lookahead != '"') {
-    return false;
-  }
-  if (skip_format(lexer, 0) != UNCLOSED) {
-    return false;
-  }
-  lexer->result_symbol = UNTERMINATED_FORMAT_EXPR;
+  lexer->result_symbol = UNTERMINATED_FORMAT_TEXT;
   return true;
 }

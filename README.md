@@ -38,10 +38,11 @@ The grammar ships its queries in `queries/tql/`, with a copy in
 
 In `indents.scm`, an `@indent` node indents the lines inside it by one level
 and an `@outdent` token closes such a node, so a line that starts with it keeps
-the indentation of the line that opened the node. Strings, format strings,
-comments, and the body of front matter carry `@indent.auto`, as in
+the indentation of the line that opened the node. Strings, the text of format
+strings, comments, and the body of front matter carry `@indent.auto`, as in
 nvim-treesitter: their text is verbatim, so a line inside them keeps the
-indentation of the line before. The YAML front matter injects the `yaml`
+indentation of the line before. The replacements of a format string indent
+like other expressions. The YAML front matter injects the `yaml`
 language into its body.
 
 ### Unterminated literals
@@ -50,10 +51,10 @@ A string, format string, or block comment without its closing delimiter runs to
 the end of the input. It parses as a node of the same type as its closed form,
 `string`, `format_expr`, or `comment`, so that editors keep highlighting it as a
 string or comment while it is being typed. For example, `x = "hello` parses as
-an assignment of a `string` that spans `"hello`. A format string without its
-closing quote is a `format_expr` without children. An unterminated literal is
-not an `ERROR` node; it ends at the end of the input without its closing
-delimiter.
+an assignment of a `string` that spans `"hello`. In a format string without its
+closing quote, everything after `f"` is a single `format_text`, including
+replacements. An unterminated literal is not an `ERROR` node; it ends at the end
+of the input without its closing delimiter.
 
 ## Development
 

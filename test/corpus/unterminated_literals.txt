@@ -251,7 +251,8 @@ x = f"hello
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ===========================================
 Unterminated format string in a replacement
@@ -270,7 +271,8 @@ x = f"a {b
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ===============================================
 Unterminated format string with a nested string
@@ -289,7 +291,8 @@ x = f"a {b("c
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ======================================================
 Unterminated format string with a closed nested string
@@ -309,7 +312,8 @@ y = 1
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ================================================
 Unterminated format string with a nested comment
@@ -328,7 +332,8 @@ x = f"{g(/* } " */ 1)
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ======================================================
 Unterminated format string with a nested format string
@@ -347,7 +352,8 @@ x = f"{f"{1}"}
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ===================================================
 Unterminated format string with a nested raw string
@@ -366,7 +372,8 @@ x = f"{r#"a"b"#}
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ==================================
 Format string with nested literals
@@ -613,7 +620,8 @@ x = f"{1 /**/
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 =============================================
 Unterminated format string in a block comment
@@ -632,7 +640,8 @@ x = f"{g(/* }
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
 
 ============================================
 Unterminated format string in a line comment
@@ -651,4 +660,5 @@ x = f"{(1 // }
             (identifier)))
         (expression
           (primary_expression
-            (format_expr)))))))
+            (format_expr
+              (format_text))))))))
