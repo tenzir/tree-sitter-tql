@@ -3,6 +3,8 @@ title: Distinct highlight captures for operators and typed literals
 type: change
 authors:
   - mavam
+prs:
+  - 15
 created: 2026-11-13T14:47:58.835023Z
 ---
 
