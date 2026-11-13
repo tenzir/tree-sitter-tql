@@ -15,3 +15,10 @@
   "}"
   "]"
 ] @outdent
+
+[
+  (string)
+  (format_text)
+  (comment)
+  (frontmatter_body)
+] @indent.auto

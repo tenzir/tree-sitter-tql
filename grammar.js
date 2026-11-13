@@ -77,6 +77,22 @@ const INDENT_COLLECTION_RULES = [
 
 const INDENT_ALIGNMENT_RULES = [];
 
+// Nodes whose lines keep their indentation, as their text is taken verbatim.
+// A new line inside them takes the indentation of the line before.
+const INDENT_AUTO_NODES = [
+  "string",
+  "format_text",
+  "comment",
+  "frontmatter_body",
+];
+
+// Tokens that open and close a bracketed region.
+const BRACKET_PAIRS = [
+  { open: "(", close: ")" },
+  { open: "[", close: "]" },
+  { open: "{", close: "}" },
+];
+
 const FOLD_NODES = [
   "then_block",
   "else_block",
@@ -176,6 +192,11 @@ module.exports = grammar({
     $.comment, // Comments appear as explicit nodes
   ],
 
+  // The text of a format string that never closes is one token, because only
+  // a scanner can tell that across the nested strings and braces of its
+  // replacements. The sentinel tells the scanner about error recovery.
+  externals: ($) => [$._unterminated_format_text, $._error_sentinel],
+
   word: ($) => $.identifier,
 
   // Keywords stay contextual by default. The engine lexes keywords, literals,
@@ -236,12 +257,14 @@ module.exports = grammar({
         choice(/[ \t]*\r?\n/, seq(/[ \t]*-*(?:[^-\r\n][^\r\n]*)/, /\r?\n/)),
       ),
 
-    // Comments should be explicit nodes but handled as extras
+    // Comments should be explicit nodes but handled as extras. A block
+    // comment without its closing `*/` runs to the end of the input.
     comment: (_) =>
       token(
         choice(
           seq("//", /[^\n\r]*/),
           seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"),
+          seq("/*", /([^*]|\*+[^*/])*\**/),
         ),
       ),
 
@@ -758,21 +781,30 @@ module.exports = grammar({
         ),
       ),
 
+    // The text of a format string without its closing quote runs to the end
+    // of the input as a single `format_text`.
     format_expr: ($) =>
-      seq(
-        token(seq("f", '"')),
-        repeat(choice($.format_text, $.format_replacement)),
-        token.immediate('"'),
+      choice(
+        seq(
+          token(seq("f", '"')),
+          repeat(choice($.format_text, $.format_replacement)),
+          token.immediate('"'),
+        ),
+        seq(
+          token(seq("f", '"')),
+          alias($._unterminated_format_text, $.format_text),
+        ),
       ),
 
+    // Text takes precedence over comments, which cannot start inside it.
     format_text: ($) =>
       prec.right(
         repeat1(
           choice(
-            token.immediate(/[^{"\\]+/),
-            token.immediate("{{"),
-            token.immediate("}}"),
-            token.immediate(/\\./),
+            token.immediate(prec(1, /[^{"\\]+/)),
+            token.immediate(prec(1, "{{")),
+            token.immediate(prec(1, "}}")),
+            token.immediate(prec(1, /\\(.|\n)/)),
           ),
         ),
       ),
@@ -893,10 +925,12 @@ module.exports = grammar({
         ),
       ),
 
+    // A string without its closing quote runs to the end of the input, so
+    // that editors see a string while it is being typed.
     string: ($) =>
       choice(
-        token(seq(optional("b"), '"', repeat(choice(/[^"\\]/, /\\./)), '"')),
-        token(seq(optional("b"), "'", repeat(choice(/[^'\\]/, /\\./)), "'")),
+        token(quotedString('"')),
+        token(quotedString("'")),
         token(rawStringRegex("r")),
         token(rawStringRegex("br")),
       ),
@@ -992,6 +1026,11 @@ module.exports.indentConstants = {
   BLOCKS: INDENT_BLOCK_RULES,
   COLLECTIONS: INDENT_COLLECTION_RULES,
   ALIGNMENTS: INDENT_ALIGNMENT_RULES,
+  AUTO: INDENT_AUTO_NODES,
+};
+
+module.exports.bracketConstants = {
+  PAIRS: BRACKET_PAIRS,
 };
 
 module.exports.foldConstants = {
@@ -1017,9 +1056,25 @@ function literalEnum(literals) {
   }, {});
 }
 
+// A plain or byte string, where a backslash escapes any character, including
+// a newline. Like the engine's lexer, this does not validate escapes: the
+// engine rejects unknown ones such as `\q` or a backslash before a newline
+// when it parses the string. Without a closing quote, the string runs to the
+// end of the input, which may end in a lone backslash.
+function quotedString(quote) {
+  return seq(
+    optional("b"),
+    quote,
+    repeat(choice(new RegExp(`[^${quote}\\\\]`), /\\(.|\n)/)),
+    optional(choice(quote, "\\")),
+  );
+}
+
+// A raw string with up to `maxHashes` hashes. Without its closing delimiter,
+// it runs to the end of the input.
 function rawStringRegex(prefix, maxHashes = 8) {
   const variants = [];
-  variants.push(`${prefix}"[^"]*"`);
+  variants.push(`${prefix}"[^"]*"?`);
   for (let i = 1; i <= maxHashes; i += 1) {
     // The body may contain anything except the closing delimiter `"` followed
     // by `i` hashes. A quote followed by fewer than `i` hashes is fine as long
@@ -1027,7 +1082,7 @@ function rawStringRegex(prefix, maxHashes = 8) {
     // are allowed, e.g., `r#""quoted""#`.
     const quote = `"#{0,${i - 1}}`;
     const body = `(?:[^"]|(?:${quote})+[^"#])*`;
-    const close = `(?:${quote})*"${"#".repeat(i)}`;
+    const close = `(?:${quote})*(?:"${"#".repeat(i)})?`;
     variants.push(`${prefix}${"#".repeat(i)}"${body}${close}`);
   }
   return new RegExp(`(?:${variants.join("|")})`);

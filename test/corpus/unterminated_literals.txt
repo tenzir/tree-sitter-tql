@@ -1,0 +1,664 @@
+===================
+Unterminated string
+===================
+
+x = "hello
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+================================================
+Unterminated string runs to the end of the input
+================================================
+
+x = "hello
+y = 1
+z = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+=================================
+Unterminated single-quoted string
+=================================
+
+where x == 'abc
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (binary_expression
+                (expression
+                  (primary_expression
+                    (identifier)))
+                (expression
+                  (primary_expression
+                    (literal
+                      (string))))))))))))
+
+========================
+Unterminated byte string
+========================
+
+x = b"\x00
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+=========================================
+Unterminated string ending in a backslash
+=========================================
+
+x = "hello \
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+=============================
+Unterminated string in a call
+=============================
+
+x = f(a, "b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (call_expression
+            (entity
+              (identifier))
+            (call_argument
+              (expression
+                (primary_expression
+                  (identifier))))
+            (call_argument
+              (expression
+                (primary_expression
+                  (literal
+                    (string)))))
+            (MISSING ")")))))))
+
+===================================
+Unterminated string in nested lists
+===================================
+
+x = [[["a]]]
+
+---
+
+(ERROR
+  (selector
+    (field_selector
+      (identifier)))
+  (expression
+    (primary_expression
+      (literal
+        (string)))))
+
+=======================
+Unterminated raw string
+=======================
+
+x = r"abc
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+===================================
+Unterminated raw string with hashes
+===================================
+
+x = r#"say "hi"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+=================================================
+Unterminated raw string with fewer closing hashes
+=================================================
+
+x = r##"abc"#
+y = 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+============================
+Unterminated raw byte string
+============================
+
+x = br#"abc
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+==========================
+Unterminated format string
+==========================
+
+x = f"hello
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+===========================================
+Unterminated format string in a replacement
+===========================================
+
+x = f"a {b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+===============================================
+Unterminated format string with a nested string
+===============================================
+
+x = f"a {b("c
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+======================================================
+Unterminated format string with a closed nested string
+======================================================
+
+x = f"{g("}")} and
+y = 1
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+================================================
+Unterminated format string with a nested comment
+================================================
+
+x = f"{g(/* } " */ 1)
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+======================================================
+Unterminated format string with a nested format string
+======================================================
+
+x = f"{f"{1}"}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+===================================================
+Unterminated format string with a nested raw string
+===================================================
+
+x = f"{r#"a"b"#}
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+==================================
+Format string with nested literals
+==================================
+
+x = f"{g("}", r#"a"b"#, '{', f"{1}") /* } */}"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (call_expression
+                    (entity
+                      (identifier))
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string)))))
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string)))))
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (literal
+                            (string)))))
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (format_expr
+                            (format_replacement
+                              (expression
+                                (primary_expression
+                                  (literal
+                                    (number)))))))))))
+                (comment)))))))))
+
+==========================
+Unterminated block comment
+==========================
+
+x = 1 /* a
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number)))))))
+  (comment))
+
+==========================================
+Unterminated block comment ending in stars
+==========================================
+
+from x
+/* a **
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (identifier))))))))
+  (comment))
+
+===============================================
+Unterminated block comment with an inner opener
+===============================================
+
+x = 1
+/* a /* b
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number)))))))
+  (comment))
+
+==========================================================
+Format string with an empty block comment in a replacement
+==========================================================
+
+x = f"{1 /**/}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (primary_expression
+                    (literal
+                      (number))))
+                (comment)))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==============================================================
+Format string with a brace in a block comment in a replacement
+==============================================================
+
+x = f"{g(/* } */ 1)}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (call_expression
+                    (entity
+                      (identifier))
+                    (comment)
+                    (call_argument
+                      (expression
+                        (primary_expression
+                          (literal
+                            (number)))))))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+==================================================
+Format string with a line comment in a replacement
+==================================================
+
+x = f"{(1 // }
+)}"
+y = 2
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_replacement
+                (expression
+                  (primary_expression
+                    (expression
+                      (primary_expression
+                        (literal
+                          (number))))
+                    (comment)))))))))
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (number))))))))
+
+=======================================================
+Unterminated format string after an empty block comment
+=======================================================
+
+x = f"{1 /**/
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+=============================================
+Unterminated format string in a block comment
+=============================================
+
+x = f"{g(/* }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+============================================
+Unterminated format string in a line comment
+============================================
+
+x = f"{(1 // }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))

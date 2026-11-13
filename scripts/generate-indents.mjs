@@ -47,7 +47,12 @@ if (!indentConstants) {
   throw new Error("grammar.js does not export indentConstants");
 }
 
-const { BLOCKS = [], COLLECTIONS = [], ALIGNMENTS = [] } = indentConstants;
+const {
+  BLOCKS = [],
+  COLLECTIONS = [],
+  ALIGNMENTS = [],
+  AUTO = [],
+} = indentConstants;
 
 function uniqueBy(items, keyFn) {
   const seen = new Set();
@@ -114,6 +119,15 @@ function buildIndents() {
   );
   if (outdentBlock) {
     lines.push(outdentBlock, "");
+  }
+
+  const autoBlock = buildLineBlock(
+    uniqueBy(AUTO, (node) => node),
+    "@indent.auto",
+    (node) => `(${node})`,
+  );
+  if (autoBlock) {
+    lines.push(autoBlock, "");
   }
 
   // Trim trailing blank line if blocks were appended.

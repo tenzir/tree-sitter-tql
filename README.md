@@ -21,6 +21,46 @@ Features:
 See the official Tenzir documentation for editor setup instructions:
 [Set up syntax highlighting](https://docs.tenzir.com/guides/development/setup-syntax-highlighting).
 
+### Queries
+
+The grammar ships its queries in `queries/tql/`, with a copy in
+`languages/tql/` for Zed. Editor integrations can rely on these captures:
+
+- `highlights.scm`: standard highlight names, such as `@keyword`, `@string`,
+  and `@comment`.
+- `indents.scm`: `@indent`, `@outdent`, and `@indent.auto`, as described below.
+- `folds.scm`: `@fold` on blocks, lists, records, and front matter.
+- `injections.scm`: `@injection.content` with the `injection.language`
+  property.
+- `locals.scm`: `@local.scope` and `@local.definition` for lambda parameters.
+- `brackets.scm`: `@open` and `@close` on the brackets of the same node, as in
+  Zed.
+
+In `indents.scm`, an `@indent` node indents the lines inside it by one level
+and an `@outdent` token closes such a node, so a line that starts with it keeps
+the indentation of the line that opened the node. Strings, the text of format
+strings, comments, and the body of front matter carry `@indent.auto`, as in
+nvim-treesitter: their text is verbatim, so a line inside them keeps the
+indentation of the line before. The replacements of a format string indent
+like other expressions. The YAML front matter injects the `yaml`
+language into its body.
+
+### Unterminated literals
+
+A string, format string, or block comment without its closing delimiter runs to
+the end of the input. It parses as a node of the same type as its closed form,
+`string`, `format_expr`, or `comment`, so that editors keep highlighting it as a
+string or comment while it is being typed. For example, `x = "hello` parses as
+an assignment of a `string` that spans `"hello`. In a format string without its
+closing quote, everything after `f"` is a single `format_text`, including
+replacements. An unterminated literal is not an `ERROR` node; it ends at the end
+of the input without its closing delimiter.
+
+There is one exception: the look-ahead for format strings gives up beyond 64
+format strings nested in each other's replacements. Such an unterminated format
+string falls back to the grammar's error recovery, so it has its usual children
+and `MISSING` nodes.
+
 ## Development
 
 Contributions are welcome! 🎉

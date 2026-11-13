@@ -726,3 +726,70 @@ Duration rejects digit separators in fraction
 from {d: 1.5_0s}
 
 ---
+
+====================================================
+String with an invalid backslash before a line break
+====================================================
+
+x = "a\
+b"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (literal
+              (string))))))))
+
+==========================================
+Format string with comment markers in text
+==========================================
+
+x = f"/* a */{b}// c"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text)
+              (format_replacement
+                (expression
+                  (primary_expression
+                    (identifier))))
+              (format_text))))))))
+
+===========================================================
+Format string with an invalid backslash before a line break
+===========================================================
+
+x = f"a\
+b"
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
