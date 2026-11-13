@@ -1057,8 +1057,10 @@ function literalEnum(literals) {
 }
 
 // A plain or byte string, where a backslash escapes any character, including
-// a newline. Without a closing quote, the string runs to the end of the input,
-// which may end in a lone backslash.
+// a newline. Like the engine's lexer, this does not validate escapes: the
+// engine rejects unknown ones such as `\q` or a backslash before a newline
+// when it parses the string. Without a closing quote, the string runs to the
+// end of the input, which may end in a lone backslash.
 function quotedString(quote) {
   return seq(
     optional("b"),
