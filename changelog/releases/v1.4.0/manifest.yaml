@@ -1,0 +1,9 @@
+created: 2026-11-13
+title: Distinct highlight captures for operators and typed literals
+intro: >-
+  This release gives pipeline operators, times, durations, IP addresses, and subnets
+  highlight captures of their own, so editor themes can color them apart from function
+  calls and other literals.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.3.0
