@@ -8,6 +8,7 @@
       "scope": "source.tql",
       "file-types": ["tql"],
       "injection-regex": "^tql$",
+      "highlights": "queries/tql/highlights.scm",
       "class-name": "TreeSitterTql"
     }
   ],

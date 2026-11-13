@@ -32,6 +32,9 @@ const BUILTIN_VARIABLES = ["_"];
 const BOOLEAN_LITERALS = ["true", "false"];
 const NULL_LITERAL = "null";
 
+// NOTE: Literals that share a theme color refine its capture, such as
+// @number.time, so themes without the refinement color them as before while
+// themes that know it can tell them apart.
 const HIGHLIGHT_NODE_CAPTURES = [
   // NOTE: Capture dollar-prefixed globals as builtin variables to inherit the
   // highlight color from editor themes until native @variable styling is
@@ -43,17 +46,19 @@ const HIGHLIGHT_NODE_CAPTURES = [
   { node: "number", capture: "@number" },
   { node: "string", capture: "@string" },
   { node: "format_expr", capture: "@string" },
-  { node: "ip", capture: "@constant" },
-  { node: "subnet", capture: "@constant" },
-  { node: "time", capture: "@number" },
-  { node: "duration", capture: "@number" },
+  { node: "ip", capture: "@constant.ip" },
+  { node: "subnet", capture: "@constant.subnet" },
+  { node: "time", capture: "@number.time" },
+  { node: "duration", capture: "@number.duration" },
   { node: "frontmatter_open", capture: "@comment" },
   { node: "frontmatter_close", capture: "@comment" },
   { node: "comment", capture: "@comment" },
 ];
 
 const HIGHLIGHT_STRUCTURAL_PATTERNS = [
-  `(invocation\n  operator: (entity) @function.call)`,
+  // NOTE: Operators summarize what a pipeline does, so they get a capture of
+  // their own beside function calls. Themes without it fall back to @function.
+  `(invocation\n  operator: (entity) @function.operator)`,
   `(call_expression\n  (entity) @function.call)`,
   `(call_expression\n  method: (entity) @function.method)`,
   // NOTE: Structural fallback so dollar-prefixed identifiers highlighted as

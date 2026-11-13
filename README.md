@@ -27,7 +27,11 @@ The grammar ships its queries in `queries/tql/`, with a copy in
 `languages/tql/` for Zed. Editor integrations can rely on these captures:
 
 - `highlights.scm`: standard highlight names, such as `@keyword`, `@string`,
-  and `@comment`.
+  and `@comment`. Some refine a standard name so that themes can color them
+  apart: `@function.operator` for operator names, `@number.time` and
+  `@number.duration` for times and durations, and `@constant.ip` and
+  `@constant.subnet` for IP addresses and subnets. Themes without them fall
+  back to the standard name.
 - `indents.scm`: `@indent`, `@outdent`, and `@indent.auto`, as described below.
 - `folds.scm`: `@fold` on blocks, lists, records, and front matter.
 - `injections.scm`: `@injection.content` with the `injection.language`
