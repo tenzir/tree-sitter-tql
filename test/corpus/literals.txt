@@ -182,6 +182,47 @@ line"
                 (literal
                   (string))))))))))
 
+==================================
+Blob string literals with hashes
+==================================
+
+select b#"a")"#, b##"q"#"##, b#"a\"#b"#, b#""#, b########"x"########
+
+---
+
+(program
+  (pipeline
+    (statement
+      (invocation
+        (entity
+          (identifier))
+        (arguments
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string)))))
+          (argument
+            (expression
+              (primary_expression
+                (literal
+                  (string))))))))))
+
 ==============================
 Single quotes are not strings
 :error

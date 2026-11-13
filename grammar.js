@@ -935,8 +935,9 @@ module.exports = grammar({
     string: ($) =>
       choice(
         token(quotedString()),
-        token(rawStringRegex("r")),
-        token(rawStringRegex("br")),
+        token(hashedStringRegex("b", { escapes: true, minHashes: 1 })),
+        token(hashedStringRegex("r")),
+        token(hashedStringRegex("br")),
       ),
 
     metadata_sigil: (_) => "@",
@@ -1075,19 +1076,36 @@ function quotedString() {
   );
 }
 
-// A raw string with up to `maxHashes` hashes. Without its closing delimiter,
-// it runs to the end of the input.
-function rawStringRegex(prefix, maxHashes = 8) {
+// A string with a prefix and between `minHashes` and `maxHashes` hashes before
+// its opening quote, such as the raw string `r#"…"#` or the byte string
+// `b#"…"#`. Like in the engine, it closes at the first quote followed by as
+// many hashes as it opened with. With `escapes`, a backslash escapes any
+// character, including a quote, as in a plain string. Without its closing
+// delimiter, the string runs to the end of the input, which may then end in a
+// lone backslash if the string has escapes.
+function hashedStringRegex(
+  prefix,
+  { escapes = false, minHashes = 0, maxHashes = 8 } = {},
+) {
+  const escape = String.raw`\\(?:.|\n)`;
+  const char = escapes ? String.raw`(?:[^"\\]|${escape})` : `[^"]`;
+  const charAfterQuote = escapes
+    ? String.raw`(?:[^"#\\]|${escape})`
+    : `[^"#]`;
+  const lone = escapes ? String.raw`|\\` : "";
   const variants = [];
-  variants.push(`${prefix}"[^"]*"?`);
-  for (let i = 1; i <= maxHashes; i += 1) {
+  for (let i = minHashes; i <= maxHashes; i += 1) {
+    if (i === 0) {
+      variants.push(`${prefix}"${char}*(?:"${lone})?`);
+      continue;
+    }
     // The body may contain anything except the closing delimiter `"` followed
     // by `i` hashes. A quote followed by fewer than `i` hashes is fine as long
     // as no further hash follows. Quotes directly before the closing delimiter
     // are allowed, e.g., `r#""quoted""#`.
     const quote = `"#{0,${i - 1}}`;
-    const body = `(?:[^"]|(?:${quote})+[^"#])*`;
-    const close = `(?:${quote})*(?:"${"#".repeat(i)})?`;
+    const body = `(?:${char}|(?:${quote})+${charAfterQuote})*`;
+    const close = `(?:${quote})*(?:"${"#".repeat(i)}${lone})?`;
     variants.push(`${prefix}${"#".repeat(i)}"${body}${close}`);
   }
   return new RegExp(`(?:${variants.join("|")})`);

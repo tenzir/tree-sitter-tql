@@ -15,3 +15,7 @@ where now() - at > 1h and ok == true and x.length() != null
 select msg = "hi"
 // <- function.operator
 //           ^ string
+select data = b#"a")"#, n = 1
+// <- function.operator
+//                 ^ string
+//                          ^ number

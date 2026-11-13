@@ -30,7 +30,7 @@ typedef enum {
 // Bounds the recursion for format strings nested in replacements.
 #define MAX_NESTING 64
 
-// The number of hashes the grammar allows for raw strings.
+// The number of hashes the grammar allows for raw and byte strings.
 #define MAX_HASHES 8
 
 static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
@@ -60,11 +60,19 @@ static Outcome skip_quoted(TSLexer *lexer) {
   return UNCLOSED;
 }
 
-// Skips a raw string from its opening quote. It closes at the first quote
-// followed by as many hashes as it opened with.
-static Outcome skip_raw(TSLexer *lexer, unsigned hashes) {
+// Skips a raw string or a byte string with hashes from its opening quote. It
+// closes at the first quote followed by as many hashes as it opened with. With
+// `escapes`, as in a byte string, a backslash escapes any character.
+static Outcome skip_hashed(TSLexer *lexer, unsigned hashes, bool escapes) {
   advance(lexer);
   while (!lexer->eof(lexer)) {
+    if (escapes && lexer->lookahead == '\\') {
+      advance(lexer);
+      if (!lexer->eof(lexer)) {
+        advance(lexer);
+      }
+      continue;
+    }
     if (lexer->lookahead != '"') {
       advance(lexer);
       continue;
@@ -107,10 +115,10 @@ static Outcome skip_comment(TSLexer *lexer) {
 
 static Outcome skip_format_text(TSLexer *lexer, unsigned nesting);
 
-// Skips a word and, if it prefixes a raw or format string, the string after
-// it. Returns CLOSED for a word that prefixes neither.
+// Skips a word and, if it prefixes a string with hashes or a format string,
+// the string after it. Returns CLOSED for a word that prefixes neither.
 static Outcome skip_word(TSLexer *lexer, unsigned nesting) {
-  // Only the words `r`, `br`, and `f` change how a string is read.
+  // Only the words `r`, `b`, `br`, and `f` change how a string is read.
   char word[3] = {0};
   unsigned length = 0;
   while (is_word(lexer->lookahead)) {
@@ -122,14 +130,16 @@ static Outcome skip_word(TSLexer *lexer, unsigned nesting) {
   }
   bool raw = (length == 1 && word[0] == 'r') ||
              (length == 2 && word[0] == 'b' && word[1] == 'r');
-  if (raw) {
+  bool blob = length == 1 && word[0] == 'b';
+  // A byte string without hashes is a plain string, which the caller skips.
+  if (raw || (blob && lexer->lookahead == '#')) {
     unsigned hashes = 0;
     while (lexer->lookahead == '#') {
       advance(lexer);
       hashes++;
     }
     if (lexer->lookahead == '"' && hashes <= MAX_HASHES) {
-      return skip_raw(lexer, hashes);
+      return skip_hashed(lexer, hashes, blob);
     }
     return CLOSED;
   }
@@ -137,7 +147,8 @@ static Outcome skip_word(TSLexer *lexer, unsigned nesting) {
     advance(lexer);
     return skip_format_text(lexer, nesting + 1);
   }
-  // Any other quote, like that of a byte string, starts a plain string.
+  // Any other quote, like that of a byte string without hashes, starts a
+  // plain string.
   return CLOSED;
 }
 
