@@ -56,6 +56,11 @@ closing quote, everything after `f"` is a single `format_text`, including
 replacements. An unterminated literal is not an `ERROR` node; it ends at the end
 of the input without its closing delimiter.
 
+There is one exception: the look-ahead for format strings gives up beyond 64
+format strings nested in each other's replacements. Such an unterminated format
+string falls back to the grammar's error recovery, so it has its usual children
+and `MISSING` nodes.
+
 ## Development
 
 Contributions are welcome! 🎉
