@@ -21,6 +21,17 @@ Features:
 See the official Tenzir documentation for editor setup instructions:
 [Set up syntax highlighting](https://docs.tenzir.com/guides/development/setup-syntax-highlighting).
 
+### Unterminated literals
+
+A string, format string, or block comment without its closing delimiter runs to
+the end of the input. It parses as a node of the same type as its closed form,
+`string`, `format_expr`, or `comment`, so that editors keep highlighting it as a
+string or comment while it is being typed. For example, `x = "hello` parses as
+an assignment of a `string` that spans `"hello`. A format string without its
+closing quote is a `format_expr` without children. An unterminated literal is
+not an `ERROR` node; it ends at the end of the input without its closing
+delimiter.
+
 ## Development
 
 Contributions are welcome! 🎉
