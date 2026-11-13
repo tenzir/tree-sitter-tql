@@ -765,14 +765,15 @@ module.exports = grammar({
         token.immediate('"'),
       ),
 
+    // Text takes precedence over comments, which cannot start inside it.
     format_text: ($) =>
       prec.right(
         repeat1(
           choice(
-            token.immediate(/[^{"\\]+/),
-            token.immediate("{{"),
-            token.immediate("}}"),
-            token.immediate(/\\./),
+            token.immediate(prec(1, /[^{"\\]+/)),
+            token.immediate(prec(1, "{{")),
+            token.immediate(prec(1, "}}")),
+            token.immediate(prec(1, /\\(.|\n)/)),
           ),
         ),
       ),
@@ -895,8 +896,8 @@ module.exports = grammar({
 
     string: ($) =>
       choice(
-        token(seq(optional("b"), '"', repeat(choice(/[^"\\]/, /\\./)), '"')),
-        token(seq(optional("b"), "'", repeat(choice(/[^'\\]/, /\\./)), "'")),
+        token(quotedString('"')),
+        token(quotedString("'")),
         token(rawStringRegex("r")),
         token(rawStringRegex("br")),
       ),
@@ -1015,6 +1016,17 @@ function literalEnum(literals) {
     acc[key] = literal;
     return acc;
   }, {});
+}
+
+// A plain or byte string, where a backslash escapes any character, including
+// a newline.
+function quotedString(quote) {
+  return seq(
+    optional("b"),
+    quote,
+    repeat(choice(new RegExp(`[^${quote}\\\\]`), /\\(.|\n)/)),
+    quote,
+  );
 }
 
 function rawStringRegex(prefix, maxHashes = 8) {
