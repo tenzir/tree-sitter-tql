@@ -1,5 +1,5 @@
-// Checks what the queries capture and where unterminated literals end, which
-// the corpus tests cannot express.
+// Checks what the queries capture and where literals end, which the corpus
+// tests cannot express.
 
 const assert = require("node:assert");
 const { readFileSync } = require("node:fs");
@@ -32,6 +32,7 @@ test("unterminated literals run to the end of the input", () => {
   for (const [source, type, literal] of [
     ['x = "a\ny = 1', "string", '"a\ny = 1'],
     ['x = r#"a"\ny = 1', "string", 'r#"a"\ny = 1'],
+    ['x = b#"a"\ny = 1', "string", 'b#"a"\ny = 1'],
     ['x = f"a {b("c\ny = 1', "format_expr", 'f"a {b("c\ny = 1'],
     ["x = 1 /* a\ny = 2", "comment", "/* a\ny = 2"],
   ]) {
@@ -50,6 +51,23 @@ test("unterminated literals run to the end of the input", () => {
     format.namedChildren.map((n) => [n.type, n.text]),
     [["format_text", "a {b"]],
   );
+});
+
+test("byte strings with hashes close like raw strings", () => {
+  // Unlike raw strings, they process escapes, so `\"` never closes them.
+  for (const [source, literal] of [
+    ['x = b#"a")"#', 'b#"a")"#'],
+    ['x = b##"q"#"##', 'b##"q"#"##'],
+    ['x = b#"a\\"#b"#', 'b#"a\\"#b"#'],
+    ['x = b#"a\\\\"#', 'b#"a\\\\"#'],
+    ['x = b#"""#', 'b#"""#'],
+  ]) {
+    const tree = parser.parse(source);
+    const node = tree.rootNode.descendantForIndex(4);
+    assert.strictEqual(node.type, "string", source);
+    assert.strictEqual(node.text, literal, source);
+    assert.strictEqual(tree.rootNode.hasError, false, source);
+  }
 });
 
 test("indentation of verbatim text excludes replacements", () => {

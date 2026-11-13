@@ -40,11 +40,12 @@ z = 2
             (literal
               (string))))))))
 
-=================================
-Unterminated single-quoted string
-=================================
+====================================
+Unterminated byte string with hashes
+====================================
 
-where x == 'abc
+where x == b##"abc"#
+y = 1
 
 ---
 
@@ -379,7 +380,7 @@ x = f"{r#"a"b"#}
 Format string with nested literals
 ==================================
 
-x = f"{g("}", r#"a"b"#, '{', f"{1}") /* } */}"
+x = f"{g("}", r#"a"b"#, b#"a")"#, f"{1}") /* } */}"
 
 ---
 
@@ -648,6 +649,57 @@ Unterminated format string in a line comment
 ============================================
 
 x = f"{(1 // }
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+===================================================
+Unterminated format string with a hashed byte string
+===================================================
+
+x = f"{b#"}"#
+
+---
+
+(program
+  (pipeline
+    (statement
+      (assignment
+        (selector
+          (field_selector
+            (identifier)))
+        (expression
+          (primary_expression
+            (format_expr
+              (format_text))))))))
+
+=================================
+Unterminated single-quoted string
+:error
+=================================
+
+where x == 'abc
+
+---
+
+
+
+==================================================
+Single quotes in a format string are not strings
+==================================================
+
+x = f"{'"'}"
 
 ---
 
