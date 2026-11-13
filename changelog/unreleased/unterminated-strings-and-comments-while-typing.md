@@ -3,6 +3,8 @@ title: Unterminated strings and comments while typing
 type: feature
 authors:
   - mavam
+prs:
+  - 13
 created: 2026-11-13T07:32:38.97924Z
 ---
 

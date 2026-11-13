@@ -3,6 +3,8 @@ title: Comment markers and escaped line breaks in strings
 type: bugfix
 authors:
   - mavam
+prs:
+  - 13
 created: 2026-11-13T07:32:40.820315Z
 ---
 

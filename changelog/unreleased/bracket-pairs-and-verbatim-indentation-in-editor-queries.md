@@ -3,6 +3,8 @@ title: Bracket pairs and verbatim indentation in editor queries
 type: feature
 authors:
   - mavam
+prs:
+  - 13
 created: 2026-11-13T07:32:39.836597Z
 ---
 
