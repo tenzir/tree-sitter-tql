@@ -21,10 +21,6 @@ const KEYWORDS = [
   "?",
   ".",
   "...",
-  "[",
-  "]",
-  "{",
-  "}",
   ":",
 ];
 
@@ -55,6 +51,19 @@ const HIGHLIGHT_NODE_CAPTURES = [
   { node: "comment", capture: "@comment" },
 ];
 
+// Nodes that braces delimit. Their braces are captured by node, so that the
+// braces of a format string replacement, which stand out of the string, take
+// no second capture: editors resolve competing captures in different orders.
+const BRACE_NODES = [
+  "then_block",
+  "else_block",
+  "pipeline_block",
+  "pipeline_expression",
+  "match_statement",
+  "match_arm",
+  "record",
+];
+
 const HIGHLIGHT_STRUCTURAL_PATTERNS = [
   // NOTE: Operators summarize what a pipeline does, so they get a capture of
   // their own beside function calls. Themes without it fall back to @function.
@@ -64,6 +73,10 @@ const HIGHLIGHT_STRUCTURAL_PATTERNS = [
   // NOTE: Structural fallback so dollar-prefixed identifiers highlighted as
   // builtin variables even when not parsed as dollar_var (e.g., errors).
   `((identifier) @variable.builtin (#match? @variable.builtin "^\\$[A-Za-z_]\\w*$"))`,
+  ...BRACE_NODES.map((node) => {
+    return `(${node}\n  ["{" "}"] @punctuation.bracket)`;
+  }),
+  `(format_replacement\n  ["{" "}"] @punctuation.special)`,
 ];
 
 const INDENT_BLOCK_RULES = [
@@ -116,7 +129,7 @@ const LOCAL_DEFINITIONS = [
   { node: "lambda_expression", field: "parameter", type: "identifier" },
 ];
 
-const PUNCTUATION_BRACKETS = ["(", ")"];
+const PUNCTUATION_BRACKETS = ["(", ")", "[", "]"];
 const PUNCTUATION_DELIMITERS = [","];
 const OPERATORS = [
   "=",
