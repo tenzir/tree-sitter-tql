@@ -14,10 +14,6 @@
   "?"
   "."
   "..."
-  "["
-  "]"
-  "{"
-  "}"
   ":"
 ] @keyword
 
@@ -59,10 +55,28 @@
 (call_expression
   method: (entity) @function.method)
 ((identifier) @variable.builtin (#match? @variable.builtin "^\$[A-Za-z_]\w*$"))
+(then_block
+  ["{" "}"] @punctuation.bracket)
+(else_block
+  ["{" "}"] @punctuation.bracket)
+(pipeline_block
+  ["{" "}"] @punctuation.bracket)
+(pipeline_expression
+  ["{" "}"] @punctuation.bracket)
+(match_statement
+  ["{" "}"] @punctuation.bracket)
+(match_arm
+  ["{" "}"] @punctuation.bracket)
+(record
+  ["{" "}"] @punctuation.bracket)
+(format_replacement
+  ["{" "}"] @punctuation.special)
 
 [
   "("
   ")"
+  "["
+  "]"
 ] @punctuation.bracket
 
 [
