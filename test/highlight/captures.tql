@@ -19,3 +19,14 @@ select data = b#"a")"#, n = 1
 // <- function.operator
 //                 ^ string
 //                          ^ number
+let $r = {xs: [1, 2], s: f"a{x}b"}
+//       ^ punctuation.bracket
+//            ^ punctuation.bracket
+//                 ^ punctuation.bracket
+//                          ^ punctuation.special
+//                            ^ punctuation.special
+//                               ^ punctuation.bracket
+if x { drop y } else { drop z }
+//   ^ punctuation.bracket
+//            ^ punctuation.bracket
+//                   ^ punctuation.bracket
