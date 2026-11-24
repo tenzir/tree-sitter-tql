@@ -1,0 +1,7 @@
+created: 2026-11-24
+intro: >-
+  ```sh gh workflowBrackets and braces now highlight as punctuation instead of keywords,
+  so editors no longer color them like let or and.
+source:
+  mode: sync-stable-queue
+  previous_stable: v1.5.0
